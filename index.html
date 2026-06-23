@@ -1,0 +1,3184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Placement Exam</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --bg:#F4EEE2; --bg2:#EFE7D6; --paper:#FFFDF8; --surface:#FFFFFF;
+    --ink:#26252B; --muted:#736E63; --line:#E7DECB;
+    --primary:#15756E; --primary-d:#0F5B55; --primary-soft:#E2F0EE;
+    --accent:#E1A33B; --accent-d:#C9892A;
+    --ok:#2E7D5B; --ok-bg:#E7F4EC; --err:#C2553F; --err-bg:#FBEAE5;
+    --shadow:0 10px 30px -12px rgba(40,35,20,.25);
+    --radius:16px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:'Mulish',system-ui,sans-serif;color:var(--ink);line-height:1.6;
+    background:
+      radial-gradient(1200px 600px at 100% -10%, #FBF4E5 0%, transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, #EAF3F1 0%, transparent 55%),
+      var(--bg);
+    min-height:100vh;
+  }
+  .wrap{max-width:780px;margin:0 auto;padding:28px 18px 60px}
+  h1,h2,h3,.serif{font-family:'Fraunces',Georgia,serif;color:var(--ink);letter-spacing:-.01em}
+  h2{font-size:1.7rem;font-weight:600;line-height:1.2;margin-bottom:6px}
+  h3{font-size:1.15rem;font-weight:600;margin-bottom:8px}
+  .muted{color:var(--muted)}
+  .hidden{display:none!important}
+
+  .brand{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+  .brand .logo{width:42px;height:42px;border-radius:12px;flex:0 0 auto;
+    background:linear-gradient(135deg,var(--primary),#1b9a8f);color:#fff;
+    display:grid;place-items:center;font-family:'Fraunces',serif;font-weight:700;font-size:1.25rem;
+    box-shadow:0 6px 16px -6px rgba(21,117,110,.6)}
+  .brand .t{font-family:'Fraunces',serif;font-weight:600;font-size:1.05rem;line-height:1.1}
+  .brand .s{font-size:.78rem;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:26px;box-shadow:var(--shadow);margin-bottom:18px}
+  .eyebrow{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--primary);background:var(--primary-soft);
+    padding:5px 11px;border-radius:999px;margin-bottom:14px}
+
+  label{display:block;font-weight:600;font-size:.9rem;margin:14px 0 6px}
+  .help{font-size:.8rem;color:var(--muted);margin-top:-2px;margin-bottom:6px}
+  input[type=text],input[type=password],input[type=email],select,textarea{
+    width:100%;padding:13px 14px;border:1.5px solid var(--line);border-radius:11px;
+    font-family:inherit;font-size:1rem;color:var(--ink);background:var(--paper);transition:.18s}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--primary);
+    box-shadow:0 0 0 4px var(--primary-soft)}
+  textarea{resize:vertical;min-height:160px;line-height:1.7;user-select:text;-webkit-user-select:text}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:560px){.grid2{grid-template-columns:1fr}}
+
+  button{font-family:inherit;font-weight:700;font-size:1rem;cursor:pointer;border:none;
+    border-radius:12px;padding:14px 22px;transition:.18s;color:#fff;
+    background:linear-gradient(135deg,var(--primary),var(--primary-d));
+    box-shadow:0 8px 20px -10px rgba(21,117,110,.8)}
+  button:hover{transform:translateY(-1px);filter:saturate(1.05)}
+  button:active{transform:translateY(0)}
+  .btn-block{width:100%;margin-top:8px}
+  .btn-ghost{background:transparent;color:var(--muted);box-shadow:none;border:1.5px solid var(--line);font-weight:600}
+  .btn-ghost:hover{color:var(--ink);background:var(--paper)}
+
+  .exam-top{display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:16px 20px;margin-bottom:12px}
+  .sec-name{font-family:'Fraunces',serif;font-weight:600;font-size:1.15rem}
+  .sec-step{font-size:.78rem;color:var(--muted)}
+  .timer{font-family:'Fraunces',serif;font-weight:700;font-size:1.5rem;color:var(--primary);
+    display:flex;align-items:center;gap:8px}
+  .timer.warn{color:var(--err);animation:pulse 1s infinite}
+  @keyframes pulse{50%{opacity:.55}}
+  .timer .dot{width:9px;height:9px;border-radius:50%;background:currentColor}
+
+  .track{height:8px;background:var(--line);border-radius:999px;overflow:hidden;margin-bottom:18px}
+  .fill{height:100%;width:0;border-radius:999px;transition:width .4s ease;
+    background:linear-gradient(90deg,var(--accent),var(--primary))}
+
+  #questions{user-select:none;-webkit-user-select:none}
+  #questions textarea{user-select:text;-webkit-user-select:text}
+  .passage{background:linear-gradient(180deg,#FBF6EA,#FFFDF8);border:1px solid var(--line);
+    border-left:4px solid var(--accent);border-radius:12px;padding:18px 20px;margin-bottom:22px;
+    font-size:.98rem}
+  .passage .ttl{font-family:'Fraunces',serif;font-weight:600;font-size:1.05rem;
+    color:var(--primary-d);margin-bottom:8px}
+
+  .q{padding:18px 0;border-top:1px solid var(--line)}
+  .q:first-child{border-top:none}
+  .q .qtext{font-weight:700;margin-bottom:12px;font-size:1.02rem}
+  .q .qtext .num{color:var(--primary);font-family:'Fraunces',serif}
+  .opts{display:flex;flex-direction:column;gap:9px}
+  .opt{display:flex;align-items:center;gap:12px;padding:13px 15px;border:1.5px solid var(--line);
+    border-radius:11px;cursor:pointer;background:var(--paper);transition:.15s;font-size:.97rem}
+  .opt:hover{border-color:var(--primary);background:#fff}
+  .opt input{appearance:none;width:20px;height:20px;border:2px solid #C9BFA8;border-radius:50%;
+    flex:0 0 auto;position:relative;transition:.15s}
+  .opt input:checked{border-color:var(--primary)}
+  .opt input:checked::after{content:"";position:absolute;inset:3px;border-radius:50%;background:var(--primary)}
+  .opt:has(input:checked){border-color:var(--primary);background:var(--primary-soft);font-weight:600}
+
+  .note{font-size:.85rem;color:var(--muted);background:var(--paper);border:1px dashed var(--line);
+    border-radius:11px;padding:12px 14px;margin:6px 0 14px;display:flex;gap:9px;align-items:flex-start}
+  .note b{color:var(--ink)}
+  .note.warn{background:var(--err-bg);border-color:#f1c4b8;color:#8a3b2a}
+  .note.warn b{color:#7a2f20}
+
+  .loader-wrap{text-align:center;padding:36px 10px}
+  .spin{width:54px;height:54px;border-radius:50%;margin:0 auto 18px;
+    border:5px solid var(--primary-soft);border-top-color:var(--primary);animation:rot 1s linear infinite}
+  @keyframes rot{to{transform:rotate(360deg)}}
+
+  .result-hero{text-align:center;padding:8px 0 6px}
+  .cefr-ring{width:170px;height:170px;border-radius:50%;margin:6px auto 14px;display:grid;place-items:center;
+    color:#fff;position:relative;box-shadow:0 16px 36px -16px rgba(21,117,110,.7);
+    background:conic-gradient(var(--accent) var(--p,70%), rgba(255,255,255,.25) 0)}
+  .cefr-ring .inner{width:138px;height:138px;border-radius:50%;display:grid;place-items:center;
+    background:linear-gradient(135deg,var(--primary),var(--primary-d))}
+  .cefr-ring .lvl{font-family:'Fraunces',serif;font-weight:700;font-size:3rem;line-height:1}
+  .cefr-ring .cap{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;opacity:.85}
+  .totline{font-size:1.05rem;margin-bottom:2px}
+  .totline b{font-family:'Fraunces',serif;color:var(--primary);font-size:1.3rem}
+
+  .skill{margin:14px 0}
+  .skill .lab{display:flex;justify-content:space-between;font-weight:600;font-size:.92rem;margin-bottom:6px}
+  .skill .lab .pct{font-family:'Fraunces',serif;color:var(--primary-d)}
+  .bar{height:11px;background:var(--line);border-radius:999px;overflow:hidden}
+  .bar > span{display:block;height:100%;border-radius:999px;width:0;transition:width .9s cubic-bezier(.2,.8,.2,1);
+    background:linear-gradient(90deg,var(--primary),#27a89c)}
+  .feedback{background:var(--ok-bg);border:1px solid #CDE8D7;border-left:4px solid var(--ok);
+    border-radius:12px;padding:16px 18px;margin-top:18px;font-size:.96rem}
+  .feedback .h{font-weight:700;color:var(--ok);margin-bottom:5px;display:flex;align-items:center;gap:7px}
+  .equiv{text-align:center;color:var(--muted);font-size:.9rem;margin-top:16px}
+  .row-actions{display:flex;gap:10px;margin-top:18px}
+  .row-actions button{flex:1}
+
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(120%);
+    background:var(--ink);color:#fff;padding:13px 18px;border-radius:12px;font-size:.9rem;font-weight:600;
+    box-shadow:var(--shadow);transition:.35s;z-index:50;max-width:90%;text-align:center}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .toast.warn{background:var(--err)}
+
+  /* ===== Listening (reproductor con límite de plays) ===== */
+  .audio-ev{border-left:4px solid var(--primary)}
+  .audio-ctl{display:flex;align-items:center;gap:14px;margin-top:12px;flex-wrap:wrap}
+  .play-btn{background:linear-gradient(135deg,var(--primary),var(--primary-d));color:#fff;
+    border:none;border-radius:11px;padding:11px 20px;font-weight:700;font-size:.95rem;cursor:pointer;
+    box-shadow:0 8px 18px -10px rgba(21,117,110,.8);transition:.15s;display:inline-flex;align-items:center;gap:8px}
+  .play-btn:hover{transform:translateY(-1px)}
+  .play-btn.playing{background:linear-gradient(135deg,var(--accent),var(--accent-d));cursor:default}
+  .play-btn.locked,.play-btn:disabled{background:#C9BFA8;box-shadow:none;cursor:not-allowed;transform:none}
+  .plays-left{font-size:.85rem;font-weight:700;color:var(--accent-d)}
+
+  /* ===== Evidencia visual (Reading con imágenes/maquetas) ===== */
+  .evidence{border-left:4px solid var(--primary);background:linear-gradient(180deg,#F3F8F7,#FFFDF8)}
+  .ev-email{background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:6px}
+  .ev-email .hd{background:#F6F1E6;border-bottom:1px solid var(--line);padding:11px 14px;font-size:.86rem;line-height:1.5}
+  .ev-email .hd .f{color:var(--muted)} .ev-email .hd b{color:var(--ink)}
+  .ev-email .bd{padding:14px 16px;font-size:.95rem;line-height:1.65}
+  .ev-log{background:#1f2430;color:#cfe3df;border-radius:10px;padding:14px 16px;margin-top:6px;overflow-x:auto;
+    font-family:'Consolas','SF Mono',ui-monospace,monospace;font-size:.82rem;line-height:1.7;white-space:pre}
+  .ev-log .ok{color:#86e0b0} .ev-log .hot{color:#f0b86a} .ev-log .u{color:#8ec7ff}
+  .ev-chat{margin-top:6px;display:flex;flex-direction:column;gap:8px}
+  .ev-chat .b{max-width:80%;padding:9px 13px;border-radius:14px;font-size:.92rem;line-height:1.45}
+  .ev-chat .me{align-self:flex-end;background:var(--primary-soft);border-bottom-right-radius:4px}
+  .ev-chat .ot{align-self:flex-start;background:#F1ECE0;border-bottom-left-radius:4px}
+  .ev-chat .who{font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand">
+    <div class="logo">E</div>
+    <div>
+      <div class="t">English Placement Exam</div>
+      <div class="s">CEFR · A1 – C2</div>
+    </div>
+  </div>
+
+  <!-- ===== HOME ===== -->
+  <div id="home-screen" class="card">
+    <span class="eyebrow">Bienvenido / Welcome</span>
+    <h2>Antes de empezar</h2>
+    <p class="muted" style="margin-bottom:6px">Completa tus datos. Asegúrate de tener buena conexión.</p>
+    <div class="grid2">
+      <div>
+        <label>Nombre completo</label>
+        <input type="text" id="student-name" placeholder="Nombre y apellidos">
+      </div>
+      <div>
+        <label>Tipo de documento</label>
+        <select id="student-doctype">
+          <option value="CC">Cédula (CC)</option>
+          <option value="TI">Tarjeta de identidad (TI)</option>
+          <option value="CE">Cédula extranjería (CE)</option>
+          <option value="PAS">Pasaporte</option>
+        </select>
+      </div>
+      <div>
+        <label>Número de documento</label>
+        <input type="text" id="student-doc" placeholder="1234567890">
+      </div>
+      <div>
+        <label>Ficha / Grupo</label>
+        <input type="text" id="student-ficha" placeholder="Ej: 2899123">
+      </div>
+      <div style="grid-column:1/-1">
+        <label>Programa de formación (opcional)</label>
+        <input type="text" id="student-program" placeholder="Ej: ADSO, Bilingüismo, otro...">
+      </div>
+    </div>
+    <div class="note" style="margin-top:16px;background:var(--primary-soft);border-color:#bfe0db">
+      <span>🕵️</span>
+      <div>
+        <b>Tu misión: Auditor Forense Junior.</b> Hubo una filtración de datos en la institución.
+        Los textos y audios de esta prueba son <b>evidencias del caso</b>: correos interceptados,
+        registros de servidor y audios recuperados. Analízalos con cuidado para avanzar en la investigación.
+        <span class="muted">(Tu nivel de inglés se mide igual que en un examen estándar.)</span>
+      </div>
+    </div>
+    <div class="note">
+      <span>ℹ️</span>
+      <div>
+        <b>Instrucciones.</b> El examen tiene 5 secciones: Reading, Listening, Grammar, Vocabulary y Writing.
+        Cada sección tiene tiempo límite; al agotarse, pasas automáticamente a la siguiente y no
+        puedes regresar. En <b>Listening</b>, cada audio se puede reproducir <b>máximo 2 veces</b>.
+        Las preguntas y el orden de las respuestas son distintos para cada persona.
+      </div>
+    </div>
+    <div class="note warn">
+      <span>🛡️</span>
+      <div>
+        <b>Examen vigilado.</b> Durante la prueba se <b>bloquea y registra</b>: copiar, cortar, pegar,
+        clic derecho, traducir, atajos de teclado, abrir herramientas del navegador y salir de la pestaña.
+        Cualquier intento queda guardado y será revisado por tu docente.
+      </div>
+    </div>
+    <button class="btn-block" onclick="startExam()">Comenzar examen</button>
+  </div>
+
+  <!-- ===== EXAM ===== -->
+  <div id="exam-layout" class="hidden">
+    <div class="exam-top card">
+      <div>
+        <div class="sec-name" id="sec-name">Reading</div>
+        <div class="sec-step" id="sec-step">Sección 1 de 4</div>
+      </div>
+      <div class="timer" id="timer"><span class="dot"></span><span id="timer-t">20:00</span></div>
+    </div>
+    <div class="track"><div class="fill" id="fill"></div></div>
+    <div id="questions" class="card"></div>
+    <button class="btn-block" id="next-btn" onclick="handleNextSection()">Siguiente sección →</button>
+  </div>
+
+  <!-- ===== LOADING ===== -->
+  <div id="loading-screen" class="card hidden">
+    <div class="loader-wrap">
+      <div class="spin"></div>
+      <h2>Calificando tu examen…</h2>
+      <p class="muted">La IA está evaluando tu Writing y calculando tu nivel. Un momento.</p>
+    </div>
+  </div>
+
+  <!-- ===== RESULTS ===== -->
+  <div id="results-screen" class="card hidden">
+    <div class="result-hero">
+      <span class="eyebrow">Resultado</span>
+      <div class="cefr-ring" id="ring"><div class="inner">
+        <div class="lvl" id="r-cefr">B2</div><div class="cap">Nivel CEFR</div>
+      </div></div>
+      <div class="totline">Puntaje total: <b id="r-total">0%</b></div>
+      <div class="muted" id="r-name" style="font-size:.9rem"></div>
+    </div>
+
+    <div style="margin-top:20px">
+      <div class="skill"><div class="lab"><span>📖 Reading</span><span class="pct" id="r-read">0%</span></div><div class="bar"><span id="b-read"></span></div></div>
+      <div class="skill"><div class="lab"><span>🎧 Listening</span><span class="pct" id="r-lis">0%</span></div><div class="bar"><span id="b-lis"></span></div></div>
+      <div class="skill"><div class="lab"><span>✍️ Grammar</span><span class="pct" id="r-gram">0%</span></div><div class="bar"><span id="b-gram"></span></div></div>
+      <div class="skill"><div class="lab"><span>📚 Vocabulary</span><span class="pct" id="r-voc">0%</span></div><div class="bar"><span id="b-voc"></span></div></div>
+      <div class="skill"><div class="lab"><span>🖊️ Writing</span><span class="pct" id="r-wri">0%</span></div><div class="bar"><span id="b-wri"></span></div></div>
+    </div>
+
+    <div class="feedback">
+      <div class="h">💬 Comentarios del examinador (IA)</div>
+      <div id="r-feedback">—</div>
+    </div>
+    <div class="equiv" id="r-equiv"></div>
+    <div class="row-actions">
+      <button class="btn-ghost" onclick="window.print()">🖨️ Guardar / Imprimir</button>
+      <button onclick="location.reload()">Finalizar</button>
+    </div>
+  </div>
+
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =========================================================
+   BANCO DE PREGUNTAS  (item bank — se elige N al azar)
+   answer = texto exacto de la opción correcta.
+   fixed  = no barajar opciones (True/False/Not Given).
+========================================================= */
+const BANK = {
+  "reading": {
+    "timeLimit": 30,
+    "pickText": 2,
+    "pickEvidence": 1,
+    "passages": [
+      {
+        "title": "Text — Email from a friend (A2/B1)",
+        "text": "Hi Sarah,<br><br>I'm writing to tell you about my trip to London! It's been amazing so far. Yesterday, I visited the British Museum. It was so big that I couldn't see everything in one day. The weather has been quite rainy, but I bought a beautiful red umbrella near Covent Garden, so I don't mind.<br><br>Tomorrow, my plan is to take a boat tour on the River Thames. I hope the sun comes out! Food here is better than people say. I tried fish and chips, and it was delicious. My hotel is nice but a bit noisy because it's right in the city center.<br><br>Best wishes,<br>Mark",
+        "questions": [
+          {
+            "id": "r_a1",
+            "q": "Where did Mark buy his umbrella?",
+            "options": [
+              "British Museum",
+              "Covent Garden",
+              "River Thames",
+              "His hotel"
+            ]
+          },
+          {
+            "id": "r_a2",
+            "q": "What does Mark think about the food?",
+            "options": [
+              "It is terrible.",
+              "It is better than expected.",
+              "It is too expensive.",
+              "It is very healthy."
+            ]
+          },
+          {
+            "id": "r_a3",
+            "q": "Why is Mark's hotel noisy?",
+            "options": [
+              "It is near the river.",
+              "It is too big.",
+              "It is in the city center.",
+              "Because of the rain."
+            ]
+          },
+          {
+            "id": "r_a4",
+            "q": "True / False / Not Given: Mark saw everything in the British Museum.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          },
+          {
+            "id": "r_a5",
+            "q": "True / False / Not Given: Sarah has visited London before.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          },
+          {
+            "id": "r_a6",
+            "q": "True / False / Not Given: Mark likes his new umbrella.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          }
+        ]
+      },
+      {
+        "title": "Text — Technology and the Future (B1/B2)",
+        "text": "The rapid advancement of artificial intelligence (AI) is reshaping how we work and live. While some fear that robots will replace human jobs, experts suggest that AI will instead create new types of employment. According to a recent study, AI could displace 50 million jobs worldwide, but it will also generate 65 million new roles.<br><br>One major benefit of AI is its ability to process massive amounts of data in seconds, which is revolutionizing healthcare. Doctors can now use machine learning algorithms to detect diseases like cancer much earlier than before. However, this raises important ethical questions regarding patient privacy.<br><br>Despite these challenges, the integration of technology seems inevitable. Education systems must adapt, focusing on skills like critical thinking rather than rote memorization.",
+        "questions": [
+          {
+            "id": "r_b1",
+            "q": "According to experts, what is the impact of AI on employment?",
+            "options": [
+              "It will destroy all jobs.",
+              "It will only replace human jobs.",
+              "It will create more jobs than it destroys.",
+              "It will have no effect."
+            ]
+          },
+          {
+            "id": "r_b2",
+            "q": "How is AI helping in healthcare?",
+            "options": [
+              "By replacing doctors.",
+              "By processing data to detect diseases earlier.",
+              "By keeping patient data private.",
+              "By making hospitals cheaper."
+            ]
+          },
+          {
+            "id": "r_b3",
+            "q": "What concern is mentioned about AI in healthcare?",
+            "options": [
+              "It is too slow.",
+              "It is too expensive.",
+              "Ethical issues about data privacy.",
+              "Robots making mistakes."
+            ]
+          },
+          {
+            "id": "r_b4",
+            "q": "What should education focus on for the future?",
+            "options": [
+              "Rote memorization.",
+              "Programming languages only.",
+              "Critical thinking.",
+              "Using AI to cheat."
+            ]
+          },
+          {
+            "id": "r_b5",
+            "q": "True / False / Not Given: AI can process data very quickly.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          },
+          {
+            "id": "r_b6",
+            "q": "True / False / Not Given: The article says technology integration can be stopped.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          }
+        ]
+      },
+      {
+        "title": "Text — Working from Home (B1)",
+        "text": "Ten years ago, working from home was unusual. Today, millions of people do their jobs without ever entering an office. The change happened quickly, and many companies were surprised to find that their employees could be just as productive at home.<br><br>Remote work has clear advantages. Workers save time and money because they no longer travel to an office every day. However, there are disadvantages: some people feel lonely without colleagues nearby, and it can be difficult to separate work from personal life when both happen in the same place.<br><br>Experts believe the future will be \"hybrid\": employees will spend some days at home and others in the office.",
+        "questions": [
+          {
+            "id": "r_c1",
+            "q": "What surprised many companies?",
+            "options": [
+              "That employees worked slower at home.",
+              "That employees could be just as productive at home.",
+              "That nobody wanted to work from home.",
+              "That offices were cheaper."
+            ]
+          },
+          {
+            "id": "r_c2",
+            "q": "What is one advantage of remote work mentioned?",
+            "options": [
+              "Workers earn more money.",
+              "Workers save travel time and money.",
+              "Workers never feel lonely.",
+              "Workers do less work."
+            ]
+          },
+          {
+            "id": "r_c3",
+            "q": "What does 'hybrid' mean in the text?",
+            "options": [
+              "Working only at home.",
+              "Working only in the office.",
+              "Mixing home and office days.",
+              "Working at night."
+            ]
+          },
+          {
+            "id": "r_c4",
+            "q": "True / False / Not Given: Remote work can make some people feel lonely.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          },
+          {
+            "id": "r_c5",
+            "q": "True / False / Not Given: Working from home was common ten years ago.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          },
+          {
+            "id": "r_c6",
+            "q": "True / False / Not Given: Most workers prefer the office to their home.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          }
+        ]
+      },
+      {
+        "title": "Text — The Importance of Sleep (B1)",
+        "text": "Most adults need between seven and nine hours of sleep each night, yet many people regularly get far less. Scientists have discovered that sleep is not simply a period of rest. While we sleep, the brain organises memories from the day and removes waste products that build up when we are awake.<br><br>People who do not sleep enough often struggle to concentrate, make more mistakes, and may feel irritable. Long-term lack of sleep has even been linked to serious health problems such as heart disease. Experts recommend going to bed at the same time every night and avoiding screens before sleeping, because the light they produce can trick the brain into thinking it is still daytime.",
+        "questions": [
+          {
+            "id": "r_d1",
+            "q": "How many hours of sleep do most adults need?",
+            "options": [
+              "Three to five",
+              "Seven to nine",
+              "Ten to twelve",
+              "Less than seven"
+            ]
+          },
+          {
+            "id": "r_d2",
+            "q": "What does the brain do during sleep?",
+            "options": [
+              "Nothing, it rests completely",
+              "Organises memories and removes waste",
+              "Produces more light",
+              "Increases anxiety"
+            ]
+          },
+          {
+            "id": "r_d3",
+            "q": "Why should we avoid screens before bed?",
+            "options": [
+              "They are boring",
+              "Their light tricks the brain into thinking it is daytime",
+              "They use too much electricity",
+              "They damage the eyes only"
+            ]
+          },
+          {
+            "id": "r_d4",
+            "q": "True / False / Not Given: Lack of sleep has been linked to heart disease.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          },
+          {
+            "id": "r_d5",
+            "q": "True / False / Not Given: Everyone needs exactly eight hours of sleep.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          },
+          {
+            "id": "r_d6",
+            "q": "True / False / Not Given: Daytime naps are essential for health.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          }
+        ]
+      },
+      {
+        "title": "Text — Plastic and the Oceans (B2)",
+        "text": "Every year, millions of tonnes of plastic end up in the world's oceans. Unlike natural materials, plastic does not break down completely; instead, it slowly fragments into tiny pieces known as microplastics. These particles are now found everywhere, from the deepest ocean trenches to the fish on our plates.<br><br>Marine animals frequently mistake floating plastic for food, which can injure or kill them. Although some governments have banned single-use items such as plastic bags and straws, campaigners argue that these measures are not enough. The real solution, they say, lies in redesigning products so that less plastic is produced in the first place, rather than simply trying to clean up the damage afterwards.",
+        "questions": [
+          {
+            "id": "r_e1",
+            "q": "What happens to plastic in the ocean?",
+            "options": [
+              "It disappears completely",
+              "It fragments into microplastics",
+              "It turns into a natural material",
+              "It sinks and stays whole"
+            ]
+          },
+          {
+            "id": "r_e2",
+            "q": "Why is plastic dangerous to marine animals?",
+            "options": [
+              "It is too cold",
+              "They mistake it for food",
+              "It makes the water salty",
+              "It is too heavy to move"
+            ]
+          },
+          {
+            "id": "r_e3",
+            "q": "What do campaigners believe is the real solution?",
+            "options": [
+              "Banning all fishing",
+              "Cleaning beaches only",
+              "Producing less plastic in the first place",
+              "Using more straws"
+            ]
+          },
+          {
+            "id": "r_e4",
+            "q": "True / False / Not Given: Microplastics have been found in fish that people eat.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          },
+          {
+            "id": "r_e5",
+            "q": "True / False / Not Given: Banning plastic bags has completely solved the problem.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          },
+          {
+            "id": "r_e6",
+            "q": "True / False / Not Given: Plastic pollution costs governments billions each year.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          }
+        ]
+      },
+      {
+        "title": "Text — The Story of Coffee (B1/B2)",
+        "text": "Coffee is one of the most popular drinks in the world, but few people know its surprising history. According to legend, coffee was discovered in Ethiopia by a goat herder who noticed that his goats became unusually energetic after eating the red berries of a certain plant.<br><br>From Africa, coffee spread to the Arabian Peninsula, where the first coffee houses opened. These places quickly became centres of conversation, music and business. When coffee arrived in Europe in the seventeenth century, some people were suspicious of the dark drink. Today, however, coffee is enjoyed by millions and supports the livelihoods of farmers across dozens of countries.",
+        "questions": [
+          {
+            "id": "r_f1",
+            "q": "Where was coffee first discovered, according to legend?",
+            "options": [
+              "Europe",
+              "Ethiopia",
+              "Arabia",
+              "America"
+            ]
+          },
+          {
+            "id": "r_f2",
+            "q": "How was coffee supposedly discovered?",
+            "options": [
+              "A scientist invented it",
+              "A herder noticed his goats became energetic",
+              "A king ordered it",
+              "Farmers planted it by accident"
+            ]
+          },
+          {
+            "id": "r_f3",
+            "q": "What did the first coffee houses become?",
+            "options": [
+              "Places that closed quickly",
+              "Centres of conversation and business",
+              "Places only for kings",
+              "Shops that sold only tea"
+            ]
+          },
+          {
+            "id": "r_f4",
+            "q": "True / False / Not Given: Some Europeans were suspicious of coffee at first.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          },
+          {
+            "id": "r_f5",
+            "q": "True / False / Not Given: Coffee houses first opened in Europe.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          },
+          {
+            "id": "r_f6",
+            "q": "True / False / Not Given: Coffee is the most expensive drink in the world.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          }
+        ]
+      },
+      {
+        "title": "Text — Why We Form Habits (C1)",
+        "text": "Habits are the brain's way of saving effort. When we repeat an action in a consistent context, the brain gradually shifts control of that behaviour from conscious decision-making to automatic routine, freeing up mental energy for other tasks. This process, sometimes called \"chunking\", explains why experienced drivers can navigate familiar roads while barely thinking about it.<br><br>The downside is that the same mechanism makes unwanted habits remarkably persistent: because the behaviour no longer requires deliberate thought, willpower alone is often insufficient to change it. Researchers suggest that the most effective strategy is not to suppress a habit but to identify the cue that triggers it and deliberately substitute a more desirable routine, keeping the original reward intact.",
+        "questions": [
+          {
+            "id": "r_g1",
+            "q": "Why does the brain form habits?",
+            "options": [
+              "To waste energy",
+              "To save mental effort",
+              "To make us forget",
+              "To slow us down"
+            ]
+          },
+          {
+            "id": "r_g2",
+            "q": "What is 'chunking'?",
+            "options": [
+              "Forgetting information",
+              "Shifting a behaviour from conscious to automatic",
+              "Breaking a bad habit",
+              "Driving dangerously"
+            ]
+          },
+          {
+            "id": "r_g3",
+            "q": "Why is willpower often not enough to change a habit?",
+            "options": [
+              "People are simply lazy",
+              "The behaviour no longer requires deliberate thought",
+              "Habits are illegal",
+              "The brain enjoys suffering"
+            ]
+          },
+          {
+            "id": "r_g4",
+            "q": "What strategy do researchers recommend?",
+            "options": [
+              "Suppressing the habit with pure willpower",
+              "Substituting a new routine for the same cue and reward",
+              "Ignoring the habit completely",
+              "Punishing yourself each time"
+            ]
+          },
+          {
+            "id": "r_g5",
+            "q": "True / False / Not Given: Experienced drivers must fully concentrate on familiar roads.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          },
+          {
+            "id": "r_g6",
+            "q": "True / False / Not Given: The writer believes habits can never be changed.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          }
+        ]
+      },
+      {
+        "title": "Text — My First Online Course (A2)",
+        "text": "Camila is a young student in Medellín. She wants to learn to code, so she takes a free online course about web pages. The course is short and easy. Every night, after dinner, she opens her old laptop and watches one video. Then she writes some simple code and tries it on the screen.<br><br>At first, Camila makes many mistakes, but she does not give up. Her brother helps her when she has a problem. After two months, she can make a small web page with her name and a photo. She is very happy and wants to learn more. Now she dreams of working in technology one day.",
+        "questions": [
+          {
+            "id": "rk_a1",
+            "q": "Where does Camila live?",
+            "options": [
+              "Bogotá",
+              "Medellín",
+              "Cali",
+              "Cartagena"
+            ]
+          },
+          {
+            "id": "rk_a2",
+            "q": "When does Camila study?",
+            "options": [
+              "In the morning",
+              "At night after dinner",
+              "At noon",
+              "On weekends only"
+            ]
+          },
+          {
+            "id": "rk_a3",
+            "q": "Who helps Camila when she has a problem?",
+            "options": [
+              "Her brother",
+              "Her teacher",
+              "Her mother",
+              "A friend"
+            ]
+          },
+          {
+            "id": "rk_a4",
+            "q": "True / False / Not Given: The online course is expensive.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          },
+          {
+            "id": "rk_a5",
+            "q": "True / False / Not Given: Camila gives up after many mistakes.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          },
+          {
+            "id": "rk_a6",
+            "q": "True / False / Not Given: Camila uses a brand new computer.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          }
+        ]
+      },
+      {
+        "title": "Text — Taking the Bus to Class (A2/B1)",
+        "text": "Every morning, Andrés takes the bus to his training center in Bogotá. He studies software development in the morning and works in a small shop in the afternoon. The bus is often full, so he stands near the door and listens to a podcast in English. He says this is a good way to practice while he travels.<br><br>The trip takes about forty minutes when there is no heavy traffic. On rainy days, the streets are slow and the bus arrives late. Because of this, Andrés leaves home early. He likes the bus because it is cheaper than a taxi, and he can save money for his English exam. For him, every minute counts.",
+        "questions": [
+          {
+            "id": "rk_b1",
+            "q": "What does Andrés do in the afternoon?",
+            "options": [
+              "He studies software",
+              "He works in a shop",
+              "He sleeps",
+              "He plays sports"
+            ]
+          },
+          {
+            "id": "rk_b2",
+            "q": "What does he listen to on the bus?",
+            "options": [
+              "Music",
+              "A podcast in English",
+              "The news",
+              "A radio show in Spanish"
+            ]
+          },
+          {
+            "id": "rk_b3",
+            "q": "Why does Andrés like taking the bus?",
+            "options": [
+              "It is faster than a taxi",
+              "It is cheaper than a taxi",
+              "It is never full",
+              "It has free internet"
+            ]
+          },
+          {
+            "id": "rk_b4",
+            "q": "How long is the trip with no heavy traffic?",
+            "options": [
+              "Twenty minutes",
+              "About forty minutes",
+              "One hour",
+              "Ten minutes"
+            ]
+          },
+          {
+            "id": "rk_b5",
+            "q": "True / False / Not Given: Andrés leaves home early on rainy days.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          },
+          {
+            "id": "rk_b6",
+            "q": "True / False / Not Given: Andrés always finds a seat on the bus.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          }
+        ]
+      },
+      {
+        "title": "Text — Working in a Team (B1)",
+        "text": "When Laura started her first internship at a software company, she thought that programming was a job you do alone. She soon discovered that this was not true. Every Monday, her team had a short meeting to plan the week and to share problems. Each person explained what they were doing, and the others gave ideas or offered help.<br><br>At first, Laura was nervous about speaking, especially because some meetings were in English. However, her colleagues were patient and friendly. They told her that asking questions was normal, and that nobody knows everything. After a few weeks, Laura felt more confident. She learned that good communication is as important as good code, and that a strong team can solve problems much faster than one person working alone.",
+        "questions": [
+          {
+            "id": "rk_c1",
+            "q": "What did Laura believe before her internship?",
+            "options": [
+              "That programming is done alone",
+              "That meetings are boring",
+              "That English is easy",
+              "That teams are slow"
+            ]
+          },
+          {
+            "id": "rk_c2",
+            "q": "What happened every Monday?",
+            "options": [
+              "The team had a party",
+              "The team had a planning meeting",
+              "Laura worked from home",
+              "The company was closed"
+            ]
+          },
+          {
+            "id": "rk_c3",
+            "q": "Why was Laura nervous at first?",
+            "options": [
+              "The work was too easy",
+              "Some meetings were in English",
+              "She did not like her job",
+              "The office was far away"
+            ]
+          },
+          {
+            "id": "rk_c4",
+            "q": "What did Laura finally learn?",
+            "options": [
+              "That code is more important than people",
+              "That communication matters as much as code",
+              "That teams are not useful",
+              "That she should work alone"
+            ]
+          },
+          {
+            "id": "rk_c5",
+            "q": "True / False / Not Given: Laura's colleagues were impatient with her.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          },
+          {
+            "id": "rk_c6",
+            "q": "True / False / Not Given: Laura earned a high salary during her internship.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          }
+        ]
+      },
+      {
+        "title": "Text — A Small Online Business (B1)",
+        "text": "Julián studies systems development, but in his free time he runs a small online business. He sells handmade leather wallets that his mother makes at home. Julián takes photos of the products, writes short descriptions, and posts them on social media. He also answers messages from customers and arranges delivery through a local courier.<br><br>The business is not big, but it helps the family pay some bills. Julián uses what he learns in his studies to improve the process. For example, he created a simple spreadsheet to control orders and money, and he is now building a basic web page to show the products. He believes that technology can help even the smallest business grow, and he hopes to sell to other cities in the future.",
+        "questions": [
+          {
+            "id": "rk_d1",
+            "q": "What does Julián sell?",
+            "options": [
+              "Mobile phones",
+              "Handmade leather wallets",
+              "Online courses",
+              "Coffee"
+            ]
+          },
+          {
+            "id": "rk_d2",
+            "q": "Who makes the products?",
+            "options": [
+              "His mother",
+              "His brother",
+              "A factory",
+              "Julián himself"
+            ]
+          },
+          {
+            "id": "rk_d3",
+            "q": "How does Julián promote the products?",
+            "options": [
+              "On television",
+              "On social media",
+              "In a physical store",
+              "In a newspaper"
+            ]
+          },
+          {
+            "id": "rk_d4",
+            "q": "What tool did Julián create to control orders?",
+            "options": [
+              "A mobile app",
+              "A simple spreadsheet",
+              "A video channel",
+              "A printed catalogue"
+            ]
+          },
+          {
+            "id": "rk_d5",
+            "q": "True / False / Not Given: The business helps the family pay some bills.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          },
+          {
+            "id": "rk_d6",
+            "q": "True / False / Not Given: Julián already sells in many countries.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          }
+        ]
+      },
+      {
+        "title": "Text — Studying and Working at the Same Time (B2)",
+        "text": "Balancing study and work is a challenge that many SENA students know very well. Mariana, for instance, attends her software development classes in the morning and works as a junior support technician in the evening. Although the schedule is demanding, she insists that the experience is worth it. The job allows her to apply theory to real situations and, at the same time, to earn money that covers her transport and study materials.<br><br>The most difficult part, she admits, is managing her time. To stay organised, she plans every week in advance and avoids leaving tasks until the last minute. She has also learned to say no to activities that would distract her. While some of her friends gave up because they felt exhausted, Mariana has developed habits that not only help her survive but also prepare her for the pressures of a future professional career.",
+        "questions": [
+          {
+            "id": "rk_e1",
+            "q": "When does Mariana work?",
+            "options": [
+              "In the morning",
+              "In the evening",
+              "At night only",
+              "On weekends"
+            ]
+          },
+          {
+            "id": "rk_e2",
+            "q": "What is the main benefit of her job, according to the text?",
+            "options": [
+              "It is very easy",
+              "It lets her apply theory and earn money",
+              "It gives her a lot of free time",
+              "It replaces her classes"
+            ]
+          },
+          {
+            "id": "rk_e3",
+            "q": "What does Mariana say is the most difficult part?",
+            "options": [
+              "Understanding her teachers",
+              "Managing her time",
+              "Travelling to work",
+              "Learning English"
+            ]
+          },
+          {
+            "id": "rk_e4",
+            "q": "How does Mariana stay organised?",
+            "options": [
+              "She studies only when she feels like it",
+              "She plans every week in advance",
+              "She works fewer hours",
+              "She asks others to do her tasks"
+            ]
+          },
+          {
+            "id": "rk_e5",
+            "q": "True / False / Not Given: Some of Mariana's friends gave up because they felt exhausted.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          },
+          {
+            "id": "rk_e6",
+            "q": "True / False / Not Given: Mariana plans to stop working after she graduates.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          }
+        ]
+      },
+      {
+        "title": "Text — Technology and the Environment (C1)",
+        "text": "The relationship between technology and the environment is far more complex than it first appears. On the one hand, digital tools are frequently praised for reducing paper consumption, optimising energy use in buildings, and enabling remote work that cuts down on commuting. On the other hand, the very infrastructure that sustains our connected lives carries a significant ecological cost. Vast data centres consume enormous quantities of electricity, and the constant demand for newer devices generates mountains of electronic waste, much of which is never properly recycled.<br><br>For students entering the technology sector, this tension presents both a responsibility and an opportunity. Rather than treating sustainability as an afterthought, developers can design software that runs efficiently on older hardware, thereby extending the useful life of existing machines. Likewise, conscious choices about cloud providers and coding practices can measurably reduce a project's carbon footprint. In short, the future professionals who acknowledge these trade-offs will be far better equipped to build solutions that are not only innovative but also genuinely responsible.",
+        "questions": [
+          {
+            "id": "rk_f1",
+            "q": "According to the text, why is technology sometimes praised?",
+            "options": [
+              "Because it always saves money",
+              "Because it reduces paper and enables remote work",
+              "Because it never uses electricity",
+              "Because it replaces all workers"
+            ]
+          },
+          {
+            "id": "rk_f2",
+            "q": "What ecological problem do data centres cause?",
+            "options": [
+              "They consume enormous amounts of electricity",
+              "They produce too much paper",
+              "They reduce internet speed",
+              "They create new jobs"
+            ]
+          },
+          {
+            "id": "rk_f3",
+            "q": "How can developers help extend the life of older machines?",
+            "options": [
+              "By selling them quickly",
+              "By designing software that runs efficiently on older hardware",
+              "By buying new devices often",
+              "By avoiding the cloud completely"
+            ]
+          },
+          {
+            "id": "rk_f4",
+            "q": "What is the main message of the second paragraph?",
+            "options": [
+              "Sustainability should be ignored",
+              "Developers can make responsible choices that reduce environmental impact",
+              "Technology cannot be improved",
+              "Old hardware must be thrown away"
+            ]
+          },
+          {
+            "id": "rk_f5",
+            "q": "True / False / Not Given: Most electronic waste is properly recycled.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          },
+          {
+            "id": "rk_f6",
+            "q": "True / False / Not Given: The text says coding practices can reduce a project's carbon footprint.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          }
+        ]
+      }
+    ],
+    "evidence": [
+      {
+        "title": "Evidence #1 — Intercepted email (B1)",
+        "evidence": true,
+        "text": "<div class=\"ev-email\">\n  <div class=\"hd\"><span class=\"f\">From:</span> <b>Marcela Torres</b> &lt;m.torres@nexora.co&gt;<br>\n  <span class=\"f\">To:</span> Javier Rivas &lt;j.rivas@nexora.co&gt;<br>\n  <span class=\"f\">Date:</span> Tue, 14:32 &nbsp;&middot;&nbsp; <span class=\"f\">Subject:</span> <b>Re: cleanup before Friday</b></div>\n  <div class=\"bd\">Hi Javier,<br><br>Thanks for the heads-up. I've moved the old reports out of the shared folder so the auditors won't waste time on them. Could you do the same with the backups?<br><br>Also, please don't mention the weekend access to anyone &mdash; it will only complicate things. We did nothing wrong, but you know how these audits are.<br><br>Let's talk in person at lunch.<br>Marcela</div>\n</div>",
+        "questions": [
+          {
+            "id": "re_a1",
+            "q": "Who wrote this email?",
+            "options": [
+              "Marcela Torres",
+              "Javier Rivas",
+              "The auditors",
+              "The IT manager"
+            ]
+          },
+          {
+            "id": "re_a2",
+            "q": "What did Marcela remove from the shared folder?",
+            "options": [
+              "The backups",
+              "The old reports",
+              "The audit results",
+              "Her contract"
+            ]
+          },
+          {
+            "id": "re_a3",
+            "q": "What does Marcela ask Javier to do?",
+            "options": [
+              "Delete his account",
+              "Do the same with the backups",
+              "Speak to the auditors",
+              "Reset the servers"
+            ]
+          },
+          {
+            "id": "re_a4",
+            "q": "What does Marcela ask Javier NOT to mention?",
+            "options": [
+              "The weekend access",
+              "The lunch meeting",
+              "The new reports",
+              "Her email address"
+            ]
+          },
+          {
+            "id": "re_a5",
+            "q": "True / False / Not Given: Marcela prefers to discuss this in writing.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          },
+          {
+            "id": "re_a6",
+            "q": "True / False / Not Given: Marcela admits in the email that they broke the law.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          }
+        ]
+      },
+      {
+        "title": "Evidence #2 — Server access log (B2)",
+        "evidence": true,
+        "text": "<div class=\"ev-log\"><span class=\"hot\">// access.log &mdash; customer database</span>\n2026-03-14 01:58:02  LOGIN   <span class=\"u\">user=a.ramirez</span>  ip=10.0.4.12     status=<span class=\"ok\">OK</span>\n2026-03-14 02:03:47  QUERY   <span class=\"u\">user=a.ramirez</span>  table=customers  rows=48211\n2026-03-14 02:41:09  EXPORT  <span class=\"u\">user=a.ramirez</span>  file=customers_full.csv  size=<span class=\"hot\">92MB</span>\n2026-03-14 02:44:55  LOGOUT  <span class=\"u\">user=a.ramirez</span>  ip=10.0.4.12\n2026-03-14 09:12:30  LOGIN   <span class=\"u\">user=a.ramirez</span>  ip=192.168.1.45  status=<span class=\"ok\">OK</span></div>",
+        "questions": [
+          {
+            "id": "re_b1",
+            "q": "At what time did the first login happen?",
+            "options": [
+              "01:58",
+              "02:41",
+              "09:12",
+              "02:44"
+            ]
+          },
+          {
+            "id": "re_b2",
+            "q": "Which table did the user access?",
+            "options": [
+              "customers",
+              "employees",
+              "backups",
+              "reports"
+            ]
+          },
+          {
+            "id": "re_b3",
+            "q": "What file was exported?",
+            "options": [
+              "customers_full.csv",
+              "access.log",
+              "report.pdf",
+              "backup.zip"
+            ]
+          },
+          {
+            "id": "re_b4",
+            "q": "Compared with the night activity, the 09:12 login used a different ___.",
+            "options": [
+              "IP address",
+              "username",
+              "table",
+              "status"
+            ]
+          },
+          {
+            "id": "re_b5",
+            "q": "True / False / Not Given: The same username appears more than once in the log.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          },
+          {
+            "id": "re_b6",
+            "q": "True / False / Not Given: The large export happened during normal working hours.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          }
+        ]
+      },
+      {
+        "title": "Evidence #3 — Recovered chat (B1/B2)",
+        "evidence": true,
+        "text": "<div class=\"ev-chat\">\n  <div class=\"b ot\"><div class=\"who\">Dani</div>hey, did you ever change the admin password like IT asked?</div>\n  <div class=\"b me\"><div class=\"who\">Sam</div>not yet &#128517; still using the old one, it's easier for everyone</div>\n  <div class=\"b ot\"><div class=\"who\">Dani</div>Sam... that's exactly what the auditors are looking for</div>\n  <div class=\"b me\"><div class=\"who\">Sam</div>relax, nobody outside the team knows it</div>\n  <div class=\"b ot\"><div class=\"who\">Dani</div>we literally wrote it on the whiteboard in the meeting room &#129318;</div>\n  <div class=\"b me\"><div class=\"who\">Sam</div>...ok that's a problem</div>\n</div>",
+        "questions": [
+          {
+            "id": "re_c1",
+            "q": "What did the IT department ask Sam to do?",
+            "options": [
+              "Change the admin password",
+              "Clean the meeting room",
+              "Call the auditors",
+              "Buy a new laptop"
+            ]
+          },
+          {
+            "id": "re_c2",
+            "q": "Why hasn't Sam changed the password?",
+            "options": [
+              "He forgot the new one",
+              "The old one is easier for everyone",
+              "IT never asked him",
+              "It is against the rules"
+            ]
+          },
+          {
+            "id": "re_c3",
+            "q": "Where was the password written?",
+            "options": [
+              "On the whiteboard in the meeting room",
+              "In a private email",
+              "On a personal phone",
+              "In the server log"
+            ]
+          },
+          {
+            "id": "re_c4",
+            "q": "How does Sam feel at the end of the chat?",
+            "options": [
+              "He realises it is a problem",
+              "He is proud of himself",
+              "He is angry with Dani",
+              "He is completely calm"
+            ]
+          },
+          {
+            "id": "re_c5",
+            "q": "True / False / Not Given: Sam is sure that only the team knows the password.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          },
+          {
+            "id": "re_c6",
+            "q": "True / False / Not Given: Dani thinks the password is well protected.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          }
+        ]
+      }
+    ]
+  },
+  "grammar": {
+    "timeLimit": 20,
+    "pick": 18,
+    "questions": [
+      {
+        "id": "g1",
+        "q": "I ___ to the cinema every weekend.",
+        "options": [
+          "go",
+          "goes",
+          "going",
+          "went"
+        ]
+      },
+      {
+        "id": "g2",
+        "q": "She ___ an apple when I saw her.",
+        "options": [
+          "was eating",
+          "eats",
+          "has eaten",
+          "eaten"
+        ]
+      },
+      {
+        "id": "g3",
+        "q": "Where ___ you yesterday?",
+        "options": [
+          "are",
+          "was",
+          "were",
+          "did"
+        ]
+      },
+      {
+        "id": "g4",
+        "q": "He doesn't have ___ money left.",
+        "options": [
+          "some",
+          "any",
+          "no",
+          "much of"
+        ]
+      },
+      {
+        "id": "g5",
+        "q": "This is ___ book I have ever read.",
+        "options": [
+          "the better",
+          "the best",
+          "best",
+          "more good"
+        ]
+      },
+      {
+        "id": "g6",
+        "q": "I have lived here ___ 2015.",
+        "options": [
+          "since",
+          "for",
+          "from",
+          "during"
+        ]
+      },
+      {
+        "id": "g7",
+        "q": "If it rains, we ___ at home.",
+        "options": [
+          "would stay",
+          "stayed",
+          "will stay",
+          "stay"
+        ]
+      },
+      {
+        "id": "g8",
+        "q": "The package ___ yesterday morning.",
+        "options": [
+          "was delivered",
+          "delivered",
+          "has delivered",
+          "is delivered"
+        ]
+      },
+      {
+        "id": "g9",
+        "q": "You ___ wear a uniform here, it's mandatory.",
+        "options": [
+          "might",
+          "should",
+          "must",
+          "can"
+        ]
+      },
+      {
+        "id": "g10",
+        "q": "She asked me where ___.",
+        "options": [
+          "I am going",
+          "was I going",
+          "I was going",
+          "am I going"
+        ]
+      },
+      {
+        "id": "g11",
+        "q": "By this time next year, I ___ my degree.",
+        "options": [
+          "will finish",
+          "will have finished",
+          "finish",
+          "would finish"
+        ]
+      },
+      {
+        "id": "g12",
+        "q": "I wish I ___ more time to travel.",
+        "options": [
+          "have",
+          "had",
+          "have had",
+          "will have"
+        ]
+      },
+      {
+        "id": "g13",
+        "q": "Not only ___ late, but he also forgot his passport.",
+        "options": [
+          "did he arrive",
+          "he arrived",
+          "he did arrive",
+          "arrived he"
+        ]
+      },
+      {
+        "id": "g14",
+        "q": "The CEO proposed that the new policy ___ implemented immediately.",
+        "options": [
+          "is",
+          "was",
+          "be",
+          "has been"
+        ]
+      },
+      {
+        "id": "g15",
+        "q": "If she had studied harder, she ___ the exam.",
+        "options": [
+          "would pass",
+          "will pass",
+          "passed",
+          "would have passed"
+        ]
+      },
+      {
+        "id": "g16",
+        "q": "Neither of the two answers ___ correct.",
+        "options": [
+          "is",
+          "are",
+          "were",
+          "have"
+        ]
+      },
+      {
+        "id": "g17",
+        "q": "By the time we arrived, the film ___.",
+        "options": [
+          "had already started",
+          "already started",
+          "has already started",
+          "was already start"
+        ]
+      },
+      {
+        "id": "g18",
+        "q": "She's not used to ___ up so early.",
+        "options": [
+          "get",
+          "gets",
+          "getting",
+          "got"
+        ]
+      },
+      {
+        "id": "g19",
+        "q": "I'd rather you ___ smoke in here.",
+        "options": [
+          "don't",
+          "didn't",
+          "not",
+          "weren't"
+        ]
+      },
+      {
+        "id": "g20",
+        "q": "The more you practise, ___ you become.",
+        "options": [
+          "the better",
+          "better",
+          "the best",
+          "more good"
+        ]
+      },
+      {
+        "id": "g21",
+        "q": "Hardly ___ down when the phone rang.",
+        "options": [
+          "had I sat",
+          "I had sat",
+          "did I sit",
+          "I sat"
+        ]
+      },
+      {
+        "id": "g22",
+        "q": "He denied ___ the window.",
+        "options": [
+          "to break",
+          "breaking",
+          "break",
+          "broke"
+        ]
+      },
+      {
+        "id": "g23",
+        "q": "It's high time we ___ home.",
+        "options": [
+          "go",
+          "went",
+          "have gone",
+          "will go"
+        ]
+      },
+      {
+        "id": "g24",
+        "q": "She had her car ___ yesterday.",
+        "options": [
+          "repair",
+          "repaired",
+          "to repair",
+          "repairing"
+        ]
+      },
+      {
+        "id": "g25",
+        "q": "___ harder, he would have passed the test.",
+        "options": [
+          "Had he studied",
+          "If he studied",
+          "Did he study",
+          "He had studied"
+        ]
+      },
+      {
+        "id": "g26",
+        "q": "The hotel ___ we stayed was wonderful.",
+        "options": [
+          "which",
+          "where",
+          "that",
+          "who"
+        ]
+      },
+      {
+        "id": "g27",
+        "q": "I look forward to ___ from you soon.",
+        "options": [
+          "hear",
+          "hearing",
+          "heard",
+          "be hearing"
+        ]
+      },
+      {
+        "id": "g28",
+        "q": "He's the man ___ wallet was stolen.",
+        "options": [
+          "who",
+          "whose",
+          "which",
+          "whom"
+        ]
+      },
+      {
+        "id": "g29",
+        "q": "No sooner had I arrived ___ the meeting started.",
+        "options": [
+          "when",
+          "than",
+          "then",
+          "that"
+        ]
+      },
+      {
+        "id": "g30",
+        "q": "By next month, they ___ here for ten years.",
+        "options": [
+          "will live",
+          "will have lived",
+          "have lived",
+          "live"
+        ]
+      },
+      {
+        "id": "g31",
+        "q": "If I ___ you, I would accept the offer.",
+        "options": [
+          "am",
+          "was",
+          "were",
+          "be"
+        ]
+      },
+      {
+        "id": "g32",
+        "q": "The report needs ___ before Friday.",
+        "options": [
+          "finish",
+          "to finishing",
+          "finishing",
+          "finished"
+        ]
+      },
+      {
+        "id": "gk1",
+        "q": "My teacher ___ English at the SENA every morning.",
+        "options": [
+          "teach",
+          "teaches",
+          "teaching",
+          "taught"
+        ]
+      },
+      {
+        "id": "gk2",
+        "q": "We ___ a new programming project last week.",
+        "options": [
+          "start",
+          "starts",
+          "started",
+          "starting"
+        ]
+      },
+      {
+        "id": "gk3",
+        "q": "There ___ many computers in the classroom.",
+        "options": [
+          "is",
+          "are",
+          "was",
+          "be"
+        ]
+      },
+      {
+        "id": "gk4",
+        "q": "Right now my classmates ___ a mobile app in the lab.",
+        "options": [
+          "build",
+          "builds",
+          "are building",
+          "built"
+        ]
+      },
+      {
+        "id": "gk5",
+        "q": "I have studied Python ___ two years.",
+        "options": [
+          "since",
+          "for",
+          "during",
+          "ago"
+        ]
+      },
+      {
+        "id": "gk6",
+        "q": "She is the most talented developer ___ our team.",
+        "options": [
+          "of",
+          "in",
+          "at",
+          "from"
+        ]
+      },
+      {
+        "id": "gk7",
+        "q": "You ___ submit the report before Friday or you will fail.",
+        "options": [
+          "can",
+          "must",
+          "might",
+          "could"
+        ]
+      },
+      {
+        "id": "gk8",
+        "q": "If you click that button, the program ___ the file automatically.",
+        "options": [
+          "save",
+          "saves",
+          "will saving",
+          "saved"
+        ]
+      },
+      {
+        "id": "gk9",
+        "q": "My laptop is faster ___ yours.",
+        "options": [
+          "than",
+          "then",
+          "that",
+          "as"
+        ]
+      },
+      {
+        "id": "gk10",
+        "q": "The teacher who ___ us last year moved to another city.",
+        "options": [
+          "teach",
+          "teaches",
+          "taught",
+          "teaching"
+        ]
+      },
+      {
+        "id": "gk11",
+        "q": "This is the website ___ I learned to code.",
+        "options": [
+          "who",
+          "where",
+          "which",
+          "whose"
+        ]
+      },
+      {
+        "id": "gk12",
+        "q": "I am looking forward to ___ my first internship next month.",
+        "options": [
+          "start",
+          "starts",
+          "starting",
+          "started"
+        ]
+      },
+      {
+        "id": "gk13",
+        "q": "The new software ___ by our team last semester.",
+        "options": [
+          "was developed",
+          "developed",
+          "is developing",
+          "develops"
+        ]
+      },
+      {
+        "id": "gk14",
+        "q": "If I ___ more time, I would learn JavaScript too.",
+        "options": [
+          "have",
+          "had",
+          "has",
+          "will have"
+        ]
+      },
+      {
+        "id": "gk15",
+        "q": "By the time the class started, we ___ already opened the computers.",
+        "options": [
+          "have",
+          "has",
+          "had",
+          "having"
+        ]
+      },
+      {
+        "id": "gk16",
+        "q": "She asked me whether I ___ finished the exercise yet.",
+        "options": [
+          "have",
+          "has",
+          "had",
+          "having"
+        ]
+      },
+      {
+        "id": "gk17",
+        "q": "You should get your code ___ before the final presentation.",
+        "options": [
+          "review",
+          "reviews",
+          "reviewed",
+          "reviewing"
+        ]
+      },
+      {
+        "id": "gk18",
+        "q": "He told me that he ___ send the email the following day.",
+        "options": [
+          "will",
+          "would",
+          "shall",
+          "can"
+        ]
+      },
+      {
+        "id": "gk19",
+        "q": "Neither the teacher nor the students ___ aware of the deadline.",
+        "options": [
+          "was",
+          "were",
+          "is",
+          "being"
+        ]
+      },
+      {
+        "id": "gk20",
+        "q": "I would rather you ___ on social media during the lesson.",
+        "options": [
+          "do not chat",
+          "not chatting",
+          "will not chat",
+          "are not chatting"
+        ]
+      },
+      {
+        "id": "gk21",
+        "q": "If I had backed up my project, I ___ all my work yesterday.",
+        "options": [
+          "would not lose",
+          "would not have lost",
+          "will not lose",
+          "had not lost"
+        ]
+      },
+      {
+        "id": "gk22",
+        "q": "It is essential that every student ___ a copy of the manual.",
+        "options": [
+          "has",
+          "have",
+          "having",
+          "had"
+        ]
+      },
+      {
+        "id": "gk23",
+        "q": "Not only ___ the bug, but she also improved the design.",
+        "options": [
+          "she fixed",
+          "did she fix",
+          "she did fix",
+          "fixed she"
+        ]
+      },
+      {
+        "id": "gk24",
+        "q": "Hardly ___ the meeting started when the internet went down.",
+        "options": [
+          "had",
+          "has",
+          "have",
+          "did"
+        ]
+      },
+      {
+        "id": "gk25",
+        "q": "If I had passed that exam, I ___ studying here right now.",
+        "options": [
+          "would be",
+          "would have been",
+          "will be",
+          "am"
+        ]
+      },
+      {
+        "id": "gk26",
+        "q": "___ harder last year, you would have your certificate now.",
+        "options": [
+          "Had you worked",
+          "You had worked",
+          "Did you work",
+          "If you work"
+        ]
+      },
+      {
+        "id": "gk27",
+        "q": "The manager insisted that the deadline ___ moved to Monday.",
+        "options": [
+          "is",
+          "was",
+          "be",
+          "being"
+        ]
+      },
+      {
+        "id": "gk28",
+        "q": "So complex ___ the algorithm that nobody could understand it.",
+        "options": [
+          "was",
+          "it was",
+          "that was",
+          "being"
+        ]
+      }
+    ]
+  },
+  "vocabulary": {
+    "timeLimit": 14,
+    "pick": 16,
+    "questions": [
+      {
+        "id": "v1",
+        "q": "I need to ___ my phone, the battery is almost dead.",
+        "options": [
+          "charge",
+          "load",
+          "fill",
+          "switch"
+        ]
+      },
+      {
+        "id": "v2",
+        "q": "The company decided to ___ a new product next month.",
+        "options": [
+          "launch",
+          "begin",
+          "invent",
+          "discover"
+        ]
+      },
+      {
+        "id": "v3",
+        "q": "Despite the heavy rain, they ___ to arrive on time.",
+        "options": [
+          "succeeded",
+          "managed",
+          "achieved",
+          "fulfilled"
+        ]
+      },
+      {
+        "id": "v4",
+        "q": "He is very ___; he always expects the worst.",
+        "options": [
+          "optimistic",
+          "pessimistic",
+          "reliable",
+          "sensible"
+        ]
+      },
+      {
+        "id": "v5",
+        "q": "The government plans to ___ taxes to reduce inflation.",
+        "options": [
+          "rise",
+          "arise",
+          "raise",
+          "lift"
+        ]
+      },
+      {
+        "id": "v6",
+        "q": "Please ___ me to call the dentist tomorrow.",
+        "options": [
+          "remember",
+          "remind",
+          "recall",
+          "memorize"
+        ]
+      },
+      {
+        "id": "v7",
+        "q": "The witness gave a detailed ___ of the robbery.",
+        "options": [
+          "description",
+          "definition",
+          "instruction",
+          "direction"
+        ]
+      },
+      {
+        "id": "v8",
+        "q": "It is highly ___ that it will snow tomorrow.",
+        "options": [
+          "probably",
+          "likely",
+          "surely",
+          "definitely"
+        ]
+      },
+      {
+        "id": "v9",
+        "q": "We need an alternative ___ of energy.",
+        "options": [
+          "source",
+          "resource",
+          "origin",
+          "base"
+        ]
+      },
+      {
+        "id": "v10",
+        "q": "She gave a brilliant ___ at the conference.",
+        "options": [
+          "act",
+          "performance",
+          "acting",
+          "playing"
+        ]
+      },
+      {
+        "id": "v11",
+        "q": "The flight was ___ because of bad weather.",
+        "options": [
+          "delayed",
+          "slowed",
+          "missed",
+          "lost"
+        ]
+      },
+      {
+        "id": "v12",
+        "q": "She has a wide ___ of interests.",
+        "options": [
+          "range",
+          "amount",
+          "number",
+          "group"
+        ]
+      },
+      {
+        "id": "v13",
+        "q": "Could you ___ me a favour, please?",
+        "options": [
+          "make",
+          "do",
+          "give",
+          "take"
+        ]
+      },
+      {
+        "id": "v14",
+        "q": "The medicine had no ___ on him at all.",
+        "options": [
+          "affect",
+          "effect",
+          "impact",
+          "result"
+        ]
+      },
+      {
+        "id": "v15",
+        "q": "They ___ a lot of money on advertising.",
+        "options": [
+          "spend",
+          "pay",
+          "cost",
+          "waste"
+        ]
+      },
+      {
+        "id": "v16",
+        "q": "I'm really looking ___ to the holidays.",
+        "options": [
+          "forward",
+          "up",
+          "after",
+          "into"
+        ]
+      },
+      {
+        "id": "v17",
+        "q": "She ___ a strong argument during the debate.",
+        "options": [
+          "made",
+          "did",
+          "took",
+          "gave"
+        ]
+      },
+      {
+        "id": "v18",
+        "q": "He apologised ___ being late to the meeting.",
+        "options": [
+          "for",
+          "of",
+          "about",
+          "with"
+        ]
+      },
+      {
+        "id": "v19",
+        "q": "After hours of talks, the two sides reached an ___.",
+        "options": [
+          "agreement",
+          "arrangement",
+          "agree",
+          "accordance"
+        ]
+      },
+      {
+        "id": "v20",
+        "q": "I can't ___ with his behaviour any longer.",
+        "options": [
+          "put up",
+          "take up",
+          "get up",
+          "make up"
+        ]
+      },
+      {
+        "id": "v21",
+        "q": "The factory ___ off hundreds of workers last year.",
+        "options": [
+          "laid",
+          "lay",
+          "lied",
+          "let"
+        ]
+      },
+      {
+        "id": "v22",
+        "q": "Her report was clear and ___.",
+        "options": [
+          "concise",
+          "precise",
+          "briefly",
+          "short"
+        ]
+      },
+      {
+        "id": "v23",
+        "q": "We should ___ advantage of this opportunity.",
+        "options": [
+          "take",
+          "make",
+          "do",
+          "have"
+        ]
+      },
+      {
+        "id": "v24",
+        "q": "The team made a major scientific ___.",
+        "options": [
+          "discover",
+          "discovery",
+          "discovering",
+          "discovered"
+        ]
+      },
+      {
+        "id": "v25",
+        "q": "His remarks were not ___ to the topic at all.",
+        "options": [
+          "relevant",
+          "relevance",
+          "relation",
+          "related"
+        ]
+      },
+      {
+        "id": "v26",
+        "q": "The company is trying to cut ___ on costs.",
+        "options": [
+          "down",
+          "off",
+          "up",
+          "out"
+        ]
+      },
+      {
+        "id": "vk1",
+        "q": "My internet connection is very ___; it never fails.",
+        "options": [
+          "fast",
+          "reliable",
+          "loud",
+          "empty"
+        ]
+      },
+      {
+        "id": "vk2",
+        "q": "Please turn ___ your computer before you leave the lab.",
+        "options": [
+          "off",
+          "out",
+          "away",
+          "over"
+        ]
+      },
+      {
+        "id": "vk3",
+        "q": "I need to find ___ how this function works.",
+        "options": [
+          "out",
+          "on",
+          "up",
+          "off"
+        ]
+      },
+      {
+        "id": "vk4",
+        "q": "She is very ___ at solving coding problems quickly.",
+        "options": [
+          "good",
+          "well",
+          "nice",
+          "strong"
+        ]
+      },
+      {
+        "id": "vk5",
+        "q": "A person who writes computer programs is a ___.",
+        "options": [
+          "painter",
+          "programmer",
+          "plumber",
+          "player"
+        ]
+      },
+      {
+        "id": "vk6",
+        "q": "We had to ___ a meeting to discuss the new project.",
+        "options": [
+          "do",
+          "make",
+          "take",
+          "set up"
+        ]
+      },
+      {
+        "id": "vk7",
+        "q": "The opposite of difficult is ___.",
+        "options": [
+          "hard",
+          "easy",
+          "heavy",
+          "busy"
+        ]
+      },
+      {
+        "id": "vk8",
+        "q": "My teacher gave me useful ___ on how to improve my code.",
+        "options": [
+          "advice",
+          "advise",
+          "notice",
+          "device"
+        ]
+      },
+      {
+        "id": "vk9",
+        "q": "Could you ___ up the file? My laptop might crash.",
+        "options": [
+          "back",
+          "look",
+          "give",
+          "put"
+        ]
+      },
+      {
+        "id": "vk10",
+        "q": "He is a ___ worker who never gives up.",
+        "options": [
+          "hardly",
+          "hard",
+          "hardness",
+          "harden"
+        ]
+      },
+      {
+        "id": "vk11",
+        "q": "After many errors, we finally ___ the bug in the program.",
+        "options": [
+          "took off",
+          "came across",
+          "sorted out",
+          "put off"
+        ]
+      },
+      {
+        "id": "vk12",
+        "q": "The application of new students is ___ on Monday.",
+        "options": [
+          "date",
+          "deadline",
+          "due",
+          "time"
+        ]
+      },
+      {
+        "id": "vk13",
+        "q": "To get the job, you must ___ a strong interview.",
+        "options": [
+          "do",
+          "make",
+          "give",
+          "have"
+        ]
+      },
+      {
+        "id": "vk14",
+        "q": "Learning to code requires a lot of ___ and practice.",
+        "options": [
+          "patient",
+          "patience",
+          "patiently",
+          "patientness"
+        ]
+      },
+      {
+        "id": "vk15",
+        "q": "The presentation was so boring that I almost ___ asleep.",
+        "options": [
+          "fell",
+          "felt",
+          "fall",
+          "feel"
+        ]
+      },
+      {
+        "id": "vk16",
+        "q": "Our company decided to ___ a new policy on remote work.",
+        "options": [
+          "carry out",
+          "run into",
+          "give in",
+          "call off"
+        ]
+      },
+      {
+        "id": "vk17",
+        "q": "He showed great ___ when he led the team through the crisis.",
+        "options": [
+          "leader",
+          "lead",
+          "leadership",
+          "leading"
+        ]
+      },
+      {
+        "id": "vk18",
+        "q": "The project failed because the goals were too ___.",
+        "options": [
+          "ambition",
+          "ambitious",
+          "ambitiously",
+          "ambitions"
+        ]
+      },
+      {
+        "id": "vk19",
+        "q": "Despite the setback, the team remained ___ about the launch.",
+        "options": [
+          "optimist",
+          "optimism",
+          "optimistic",
+          "optimize"
+        ]
+      },
+      {
+        "id": "vk20",
+        "q": "The new intern quickly ___ the company culture and habits.",
+        "options": [
+          "took on",
+          "gave away",
+          "adapted to",
+          "ran out"
+        ]
+      }
+    ]
+  },
+  "writing": {
+    "timeLimit": 30,
+    "pick": 2,
+    "tasks": [
+      {
+        "id": "w1",
+        "prompt": "A friend invited you to their birthday party next weekend, but you cannot attend. Write an email explaining why and suggesting another time to meet.",
+        "min": 50
+      },
+      {
+        "id": "w2",
+        "prompt": "Some people think social media has made communication better; others think it has made it worse. What is your opinion? Give reasons and examples.",
+        "min": 120
+      },
+      {
+        "id": "w3",
+        "prompt": "Your school is organising a cultural event. Write an email to the organiser with your ideas and offer to help.",
+        "min": 60
+      },
+      {
+        "id": "w4",
+        "prompt": "Many people believe technology makes us less social. Do you agree? Give reasons and examples to support your view.",
+        "min": 120
+      },
+      {
+        "id": "w5",
+        "prompt": "Some people prefer to live in a big city, while others prefer the countryside. Discuss both views and give your own opinion.",
+        "min": 140
+      },
+      {
+        "id": "w6",
+        "prompt": "Your town is planning to build a new park. Write a letter to the local council giving your opinion and some suggestions.",
+        "min": 80
+      },
+      {
+        "id": "w7",
+        "prompt": "Many young people want to travel before starting university. Do you think this is a good idea? Give reasons and examples.",
+        "min": 120
+      },
+      {
+        "id": "wk1",
+        "prompt": "Write an email to your instructor explaining why you missed your English class last week. Apologise, give a clear reason and ask for the homework you need to do.",
+        "min": 60
+      },
+      {
+        "id": "wk2",
+        "prompt": "You saw an advert for an internship at a software company. Write an email introducing yourself. Say what you study, what skills you have and why you want the internship.",
+        "min": 70
+      },
+      {
+        "id": "wk3",
+        "prompt": "Write a short note to a classmate inviting them to join your team project. Explain what the project is about, when you will meet and what help you need from them.",
+        "min": 60
+      },
+      {
+        "id": "wk4",
+        "prompt": "Write a message to a friend describing your city. Mention places young people like, the public transport and one thing you would change to make it better.",
+        "min": 70
+      },
+      {
+        "id": "wk5",
+        "prompt": "Describe a study or work project you have done. Explain the problem it solves, the technology or tools you used, and what you learned while working on it.",
+        "min": 120
+      },
+      {
+        "id": "wk6",
+        "prompt": "Some people prefer studying online; others prefer face-to-face classes. Discuss both views and give your own opinion, using examples from your experience.",
+        "min": 140
+      },
+      {
+        "id": "wk7",
+        "prompt": "Many young people say social media is a powerful tool for learning and finding jobs, while others say it is a waste of time. Discuss both sides and give your opinion.",
+        "min": 150
+      },
+      {
+        "id": "wk8",
+        "prompt": "\"Working in a team is more valuable than working alone.\" To what extent do you agree or disagree? Support your answer with reasons and examples.",
+        "min": 150
+      },
+      {
+        "id": "wk9",
+        "prompt": "Technology is changing the way we work very quickly. Discuss how automation and artificial intelligence might affect jobs in your field, and what skills workers will need in the future.",
+        "min": 160
+      },
+      {
+        "id": "wk10",
+        "prompt": "After graduating, some people look for a stable job in a company, while others prefer to start their own business. Evaluate the advantages and disadvantages of both, and explain which you would choose and why.",
+        "min": 160
+      }
+    ]
+  },
+  "listening": {
+    "timeLimit": 15,
+    "pickClips": 2,
+    "clips": [
+      {
+        "id": "lis_badge",
+        "file": "audio/lis_badge.mp3",
+        "title": "Recovered voicemail — Front desk (A2)",
+        "questions": [
+          {
+            "id": "l_a1",
+            "q": "Who is calling?",
+            "options": [
+              "Diana from the front desk",
+              "A manager",
+              "The auditor",
+              "A police officer"
+            ]
+          },
+          {
+            "id": "l_a2",
+            "q": "What is ready for the listener?",
+            "options": [
+              "A new access badge",
+              "A new computer",
+              "A meeting room",
+              "A parking space"
+            ]
+          },
+          {
+            "id": "l_a3",
+            "q": "When was the old badge used?",
+            "options": [
+              "Last Saturday night",
+              "This morning",
+              "On Sunday afternoon",
+              "Before five today"
+            ]
+          },
+          {
+            "id": "l_a4",
+            "q": "What should the listener do?",
+            "options": [
+              "Come to the front desk before five",
+              "Send an email",
+              "Call the police",
+              "Wait until tomorrow"
+            ]
+          },
+          {
+            "id": "l_a5",
+            "q": "True / False / Not Given: Diana is certain the listener used the badge on Saturday.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          }
+        ]
+      },
+      {
+        "id": "lis_maintenance",
+        "file": "audio/lis_maintenance.mp3",
+        "title": "Intercepted announcement — IT department (A2/B1)",
+        "questions": [
+          {
+            "id": "l_b1",
+            "q": "Who is the announcement from?",
+            "options": [
+              "The IT department",
+              "The manager",
+              "A client",
+              "The cleaning team"
+            ]
+          },
+          {
+            "id": "l_b2",
+            "q": "When will the servers be updated?",
+            "options": [
+              "Tonight, 9 p.m. to midnight",
+              "Tomorrow morning",
+              "This weekend",
+              "Right now"
+            ]
+          },
+          {
+            "id": "l_b3",
+            "q": "What will NOT work during the update?",
+            "options": [
+              "The network and email",
+              "The lights",
+              "The elevators",
+              "The phones"
+            ]
+          },
+          {
+            "id": "l_b4",
+            "q": "What must employees do before leaving?",
+            "options": [
+              "Save all their files",
+              "Turn off the lights",
+              "Lock the doors",
+              "Restart the servers"
+            ]
+          },
+          {
+            "id": "l_b5",
+            "q": "True / False / Not Given: IT can recover any work that is lost.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          }
+        ]
+      },
+      {
+        "id": "lis_complaint",
+        "file": "audio/lis_complaint.mp3",
+        "title": "Recovered voice note — A complaint (B1)",
+        "questions": [
+          {
+            "id": "l_c1",
+            "q": "When did the speaker send the final version?",
+            "options": [
+              "Monday morning",
+              "Friday night",
+              "This afternoon",
+              "Last month"
+            ]
+          },
+          {
+            "id": "l_c2",
+            "q": "What happened to her file?",
+            "options": [
+              "Someone replaced it with an older version",
+              "It was deleted by accident",
+              "She lost her password",
+              "It was sent to a client"
+            ]
+          },
+          {
+            "id": "l_c3",
+            "q": "What does she want the listener to do?",
+            "options": [
+              "Check who had access to the folder",
+              "Write the report again",
+              "Call the client",
+              "Forget about it"
+            ]
+          },
+          {
+            "id": "l_c4",
+            "q": "How does the speaker feel?",
+            "options": [
+              "Upset",
+              "Happy",
+              "Bored",
+              "Relaxed"
+            ]
+          },
+          {
+            "id": "l_c5",
+            "q": "True / False / Not Given: The speaker knows exactly who changed the file.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          }
+        ]
+      },
+      {
+        "id": "lis_statement",
+        "file": "audio/lis_statement.mp3",
+        "title": "Witness statement to the auditor (B1/B2)",
+        "questions": [
+          {
+            "id": "l_d1",
+            "q": "What time did the speaker arrive at the office?",
+            "options": [
+              "At eight",
+              "At ten",
+              "After lunch",
+              "At midnight"
+            ]
+          },
+          {
+            "id": "l_d2",
+            "q": "Where was the speaker during the morning?",
+            "options": [
+              "In a meeting with the design team",
+              "At home",
+              "In the server room",
+              "On a business trip"
+            ]
+          },
+          {
+            "id": "l_d3",
+            "q": "Why does the speaker say it was not them?",
+            "options": [
+              "They never opened the client database that week",
+              "They were on holiday",
+              "They have no computer",
+              "They had already resigned"
+            ]
+          },
+          {
+            "id": "l_d4",
+            "q": "What does the speaker suggest at the end?",
+            "options": [
+              "Their password may not be safe",
+              "They want a new job",
+              "The auditor is lying",
+              "They will pay for the damage"
+            ]
+          },
+          {
+            "id": "l_d5",
+            "q": "True / False / Not Given: The speaker was completely alone all morning.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          }
+        ]
+      },
+      {
+        "id": "lis_briefing",
+        "file": "audio/lis_briefing.mp3",
+        "title": "Security briefing — The timeline (B2)",
+        "questions": [
+          {
+            "id": "l_e1",
+            "q": "When did the unusual activity start?",
+            "options": [
+              "Around two in the morning",
+              "At lunchtime",
+              "In the evening",
+              "At nine a.m."
+            ]
+          },
+          {
+            "id": "l_e2",
+            "q": "What did the person download?",
+            "options": [
+              "A large number of customer records",
+              "A single email",
+              "Some photos",
+              "The company website"
+            ]
+          },
+          {
+            "id": "l_e3",
+            "q": "Why does the speaker find the case strange?",
+            "options": [
+              "The same account was also used normally during the day",
+              "No files were taken",
+              "The building was full",
+              "The password was very long"
+            ]
+          },
+          {
+            "id": "l_e4",
+            "q": "What does the speaker think about the password?",
+            "options": [
+              "It was shared, guessed or written down",
+              "It was extremely secure",
+              "It was never used",
+              "It was changed every week"
+            ]
+          },
+          {
+            "id": "l_e5",
+            "q": "What is the priority now, according to the speaker?",
+            "options": [
+              "To find out how the credentials were exposed",
+              "To blame an employee",
+              "To close the company",
+              "To buy new computers"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "lis_expert",
+        "file": "audio/lis_expert.mp3",
+        "title": "Expert interview — The consultant (B2/C1)",
+        "questions": [
+          {
+            "id": "l_f1",
+            "q": "According to the expert, was the attack technically advanced?",
+            "options": [
+              "No, it was not",
+              "Yes, very advanced",
+              "It used brand-new malware",
+              "It was impossible to understand"
+            ]
+          },
+          {
+            "id": "l_f2",
+            "q": "How did the attacker get into the system?",
+            "options": [
+              "Using legitimate credentials",
+              "By breaking the firewall",
+              "With a virus",
+              "By stealing a laptop"
+            ]
+          },
+          {
+            "id": "l_f3",
+            "q": "What does this kind of breach usually point to?",
+            "options": [
+              "A human factor",
+              "A hardware failure",
+              "A power cut",
+              "A software bug"
+            ]
+          },
+          {
+            "id": "l_f4",
+            "q": "Which of these does the expert NOT mention as a possible cause?",
+            "options": [
+              "A stolen laptop",
+              "A reused password",
+              "A phishing email",
+              "Access rights never removed"
+            ]
+          },
+          {
+            "id": "l_f5",
+            "q": "True / False / Not Given: The expert blames the technology for failing.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true
+          }
+        ]
+      }
+    ]
+  }
+};
+
+/* ===================================================================
+   CONFIGURACIÓN — rellena estos dos valores UNA sola vez (docente).
+   Son llaves PÚBLICAS: el Anon Key solo sirve para llamar a 'grade-exam'.
+   NI la llave de OpenRouter NI las respuestas correctas viven aquí: todo
+   eso está en la Edge Function 'grade-exam' (servidor).
+   =================================================================== */
+const SUPABASE_URL      = 'https://sacugfirjijrizcpsihn.supabase.co';  // tu proyecto
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhY3VnZmlyamlqcml6Y3BzaWhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxNjUwMDMsImV4cCI6MjA5Nzc0MTAwM30.amTi6bZ350kAML-UQgMlghCz7ZoQD6esfpfZa7DRSlE';  // anon public (segura por RLS)
+const GRADE_FN_PATH     = '/functions/v1/bright-handler';      // función desplegada (slug auto de Supabase)
+
+// Los pesos de cada destreza y el corte CEFR viven AHORA en el servidor (Edge Function),
+// junto con la clave de respuestas. El cliente solo muestra lo que la función calcula.
+const SECTIONS = ['reading','listening','grammar','vocabulary','writing'];
+const SEC_LABEL = { reading:'Reading', listening:'Listening', grammar:'Grammar', vocabulary:'Vocabulary', writing:'Writing' };
+const SEC_INTRO = {
+  reading:'🗂️ Evidencia documental del caso. Lee con atención: los detalles importan.',
+  listening:'🎧 Audios recuperados de la investigación. Cada audio se reproduce máximo 2 veces.',
+  grammar:'🧩 Reconstrucción del informe: elige la forma correcta en cada línea.',
+  vocabulary:'🔤 Terminología del caso: completa con la palabra precisa.',
+  writing:'🖊️ Tu reporte como auditor: redacta con tus propias palabras.'
+};
+
+/* state */
+let exam=null, answers={};
+let secIndex=0, timerInt=null, timeLeft=0, secStart=0, examStart=0;
+let student={}, examActive=false;
+
+/* telemetría antitrampa */
+let telemetry = { tab_switch:0, blur:0, copy:0, cut:0, paste:0, contextmenu:0, devtools:0, shortcut:0, print:0, audio_play:0, audio_overplay:0, log:[] };
+function logEvent(type){
+  telemetry[type]=(telemetry[type]||0)+1;
+  if(telemetry.log.length<400) telemetry.log.push({t:type, s:Math.round((Date.now()-examStart)/1000)});
+}
+function totalAlerts(){ return telemetry.tab_switch+telemetry.blur+telemetry.copy+telemetry.cut+telemetry.paste+telemetry.contextmenu+telemetry.devtools+telemetry.shortcut; }
+
+/* utils */
+const $=id=>document.getElementById(id);
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function pick(arr,n){ return shuffle(arr).slice(0,n); }
+function toast(msg,warn){ const t=$('toast'); t.textContent=msg; t.className='toast show'+(warn?' warn':''); clearTimeout(toast._t); toast._t=setTimeout(()=>t.className='toast'+(warn?' warn':''),3000); }
+function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+/* ===== antitrampa (se activa solo durante el examen) ===== */
+function setupAntiCheat(){
+  const blk=(e,type,msg)=>{ if(!examActive) return; e.preventDefault(); logEvent(type); if(msg) toast(msg,true); };
+  document.addEventListener('copy',     e=>blk(e,'copy','🚫 Copiar está deshabilitado durante el examen.'));
+  document.addEventListener('cut',      e=>blk(e,'cut','🚫 Cortar está deshabilitado.'));
+  document.addEventListener('paste',    e=>blk(e,'paste','🚫 Pegar está deshabilitado (no puedes pegar traducciones).'));
+  document.addEventListener('contextmenu',e=>blk(e,'contextmenu','🚫 Clic derecho deshabilitado (no se puede traducir la selección).'));
+  document.addEventListener('dragstart',e=>{ if(examActive) e.preventDefault(); });
+  window.addEventListener('blur', ()=>{ if(examActive){ logEvent('blur'); } });
+  document.addEventListener('visibilitychange', ()=>{
+    if(examActive && document.hidden){ logEvent('tab_switch'); toast('⚠️ Saliste de la pestaña. Esto queda registrado.',true); }
+  });
+  window.addEventListener('beforeprint', ()=>{ if(examActive) logEvent('print'); });
+  document.addEventListener('keydown', e=>{
+    if(!examActive) return;
+    const k=(e.key||'').toLowerCase();
+    if(e.key==='F12' || (e.ctrlKey&&e.shiftKey&&['i','j','c'].includes(k)) || ((e.ctrlKey||e.metaKey)&&k==='u')){
+      e.preventDefault(); logEvent('devtools'); toast('🚫 Herramientas del navegador bloqueadas.',true); return;
+    }
+    if((e.ctrlKey||e.metaKey) && ['c','v','x','p','s'].includes(k)){
+      e.preventDefault(); logEvent('shortcut'); toast('🚫 Atajo de teclado deshabilitado.',true);
+    }
+  });
+}
+
+/* build a randomized exam form */
+function prepQ(q){ return { id:q.id, q:q.q, options:(q.fixed?q.options.slice():shuffle(q.options)) }; }
+
+function buildExam(){
+  exam={};
+  // Reading = 1 evidencia visual garantizada + N textos normales, en orden barajado
+  const chosen = shuffle([
+    ...pick(BANK.reading.evidence, BANK.reading.pickEvidence),
+    ...pick(BANK.reading.passages, BANK.reading.pickText)
+  ]);
+  exam.reading={ timeLimit:BANK.reading.timeLimit, passages: chosen.map(p=>({
+    title:p.title, text:p.text, evidence:!!p.evidence, questions:p.questions.map(prepQ)
+  }))};
+  // Listening = N audios al azar (cada uno con su reproductor limitado)
+  exam.listening={ timeLimit:BANK.listening.timeLimit, clips: pick(BANK.listening.clips,BANK.listening.pickClips).map(c=>({
+    id:c.id, file:c.file, title:c.title, questions:c.questions.map(prepQ)
+  }))};
+  ['grammar','vocabulary'].forEach(sec=>{
+    exam[sec]={ timeLimit:BANK[sec].timeLimit, questions:pick(BANK[sec].questions,BANK[sec].pick).map(prepQ) };
+  });
+  exam.writing={ timeLimit:BANK.writing.timeLimit, tasks:pick(BANK.writing.tasks,BANK.writing.pick) };
+}
+
+/* ===== flow ===== */
+window.onload=()=>{
+  if(SUPABASE_URL.includes('TU-PROYECTO')||SUPABASE_ANON_KEY.includes('PEGA_AQUI'))
+    toast('⚠️ Falta configurar SUPABASE_URL / SUPABASE_ANON_KEY en el código.',true);
+  setupAntiCheat();
+};
+
+function startExam(){
+  const name=$('student-name').value.trim(), doc=$('student-doc').value.trim();
+  if(!name||!doc){ toast('Ingresa nombre y documento.',true); return; }
+  student={ nombre:name, documento:doc, tipo_documento:$('student-doctype').value,
+            ficha:$('student-ficha').value.trim(), programa:$('student-program').value.trim() };
+  buildExam();
+  answers={}; examStart=Date.now(); examActive=true;
+  telemetry={ tab_switch:0, blur:0, copy:0, cut:0, paste:0, contextmenu:0, devtools:0, shortcut:0, print:0, audio_play:0, audio_overplay:0, log:[] };
+  $('home-screen').classList.add('hidden'); $('exam-layout').classList.remove('hidden');
+  loadSection(0);
+}
+
+function loadSection(i){
+  secIndex=i; const sec=SECTIONS[i]; const data=exam[sec];
+  $('sec-name').textContent=SEC_LABEL[sec];
+  $('sec-step').textContent=`Sección ${i+1} de ${SECTIONS.length}`;
+  $('next-btn').textContent=(i===SECTIONS.length-1)?'Finalizar y enviar ✓':'Siguiente sección →';
+  $('fill').style.width=`${(i/SECTIONS.length)*100}%`;
+  $('questions').innerHTML=renderSection(sec,data);
+  if(sec==='writing') wireWriting();
+  if(sec==='listening') wireAudio();
+  window.scrollTo({top:0,behavior:'smooth'});
+  timeLeft=data.timeLimit*60; secStart=Date.now(); updateTimer();
+  clearInterval(timerInt);
+  timerInt=setInterval(()=>{ timeLeft--; updateTimer(); if(timeLeft<=0){ clearInterval(timerInt); toast('⏰ Tiempo agotado en esta sección.',true); handleNextSection(); } },1000);
+}
+
+function renderSection(sec,data){
+  const intro = SEC_INTRO[sec]?`<div class="note"><span>🕵️</span><div>${SEC_INTRO[sec]}</div></div>`:'';
+  if(sec==='writing'){
+    return intro+`<div class="note warn"><span>🔒</span><div>En Writing no se puede copiar ni pegar. Escribe con tus propias palabras.</div></div>`+
+      data.tasks.map((t,idx)=>`
+       <div class="q">
+         <div class="qtext"><span class="num">Task ${idx+1}.</span> ${esc(t.prompt)} <span class="muted">(mínimo ${t.min} palabras)</span></div>
+         <textarea id="${t.id}" data-wc placeholder="Write your answer here..."></textarea>
+         <div class="muted" style="font-size:.82rem;margin-top:4px"><span class="wc" data-for="${t.id}">0</span> palabras</div>
+       </div>`).join('');
+  }
+  let n=0, html=intro;
+  if(sec==='reading'){
+    data.passages.forEach(p=>{ html+=`<div class="passage${p.evidence?' evidence':''}"><div class="ttl">${esc(p.title)}</div>${p.text}</div>`;
+      p.questions.forEach(q=>{ n++; html+=questionHTML(q,n); }); });
+  } else if(sec==='listening'){
+    data.clips.forEach(c=>{
+      html+=`<div class="passage audio-ev">
+        <div class="ttl">🎧 ${esc(c.title)}</div>
+        <audio id="aud_${c.id}" src="${c.file}" preload="auto"></audio>
+        <div class="audio-ctl">
+          <button type="button" class="play-btn" id="play_${c.id}" data-aud="${c.id}">▶ Reproducir audio</button>
+          <span class="plays-left" id="left_${c.id}">2 reproducciones disponibles</span>
+        </div>
+        <div class="muted" style="font-size:.8rem;margin-top:8px">Escucha con atención y responde. No podrás reproducirlo más de 2 veces.</div>
+      </div>`;
+      c.questions.forEach(q=>{ n++; html+=questionHTML(q,n); });
+    });
+  } else { data.questions.forEach(q=>{ n++; html+=questionHTML(q,n); }); }
+  return html;
+}
+function questionHTML(q,n){
+  return `<div class="q"><div class="qtext"><span class="num">${n}.</span> ${esc(q.q)}</div><div class="opts">`+
+    q.options.map(o=>`<label class="opt"><input type="radio" name="${q.id}" value="${esc(o)}">${esc(o)}</label>`).join('')+
+    `</div></div>`;
+}
+function wireWriting(){
+  document.querySelectorAll('textarea[data-wc]').forEach(ta=>{
+    ta.addEventListener('input',()=>{ const wc=(ta.value.trim().match(/\S+/g)||[]).length;
+      const el=document.querySelector(`.wc[data-for="${ta.id}"]`); if(el) el.textContent=wc; });
+  });
+}
+
+/* ===== Listening: reproductor con máximo 2 reproducciones por audio ===== */
+const MAX_PLAYS = 2;
+function wireAudio(){
+  document.querySelectorAll('.play-btn').forEach(btn=>{
+    const id=btn.dataset.aud, aud=$('aud_'+id), leftEl=$('left_'+id);
+    let left=MAX_PLAYS, playing=false;
+    const word=n=>n+' reproducci'+(n===1?'ón':'ones')+' disponible'+(n===1?'':'s');
+    leftEl.textContent=word(left);
+    btn.addEventListener('click',()=>{
+      if(playing) return;
+      if(left<=0){ logEvent('audio_overplay'); toast('🚫 Ya usaste las 2 reproducciones de este audio.',true); return; }
+      left--; playing=true; logEvent('audio_play');
+      try{ aud.currentTime=0; }catch(e){}
+      const p=aud.play();
+      if(p&&p.catch) p.catch(()=>{ playing=false; toast('⚠️ No se pudo reproducir el audio.',true); });
+      btn.textContent='⏸ Reproduciendo…'; btn.classList.add('playing');
+      leftEl.textContent=word(left);
+    });
+    aud.addEventListener('ended',()=>{
+      playing=false; btn.classList.remove('playing');
+      if(left<=0){ btn.textContent='🔒 Audio bloqueado'; btn.disabled=true; btn.classList.add('locked'); leftEl.textContent='Sin reproducciones restantes'; }
+      else btn.textContent='▶ Reproducir de nuevo';
+    });
+    aud.addEventListener('error',()=>{ toast('⚠️ No se pudo cargar el audio ('+id+').',true); });
+  });
+}
+
+function updateTimer(){
+  const m=String(Math.floor(timeLeft/60)).padStart(2,'0'), s=String(timeLeft%60).padStart(2,'0');
+  $('timer-t').textContent=`${m}:${s}`; $('timer').classList.toggle('warn',timeLeft<=60);
+}
+function saveCurrent(){
+  const sec=SECTIONS[secIndex];
+  if(sec==='writing'){ exam.writing.tasks.forEach(t=>{ const el=$(t.id); if(el) answers[t.id]=el.value; }); }
+  else { document.querySelectorAll('#questions input[type=radio]:checked').forEach(i=>answers[i.name]=i.value); }
+}
+function handleNextSection(){
+  saveCurrent();
+  if(secIndex<SECTIONS.length-1) loadSection(secIndex+1);
+  else { clearInterval(timerInt); submitExam(); }
+}
+
+/* ===== envío y calificación — TODO ocurre en el servidor (Edge Function) ===== */
+function sectionIds(){
+  return {
+    reading: exam.reading.passages.flatMap(p=>p.questions.map(q=>q.id)),
+    listening: exam.listening.clips.flatMap(c=>c.questions.map(q=>q.id)),
+    grammar: exam.grammar.questions.map(q=>q.id),
+    vocabulary: exam.vocabulary.questions.map(q=>q.id)
+  };
+}
+
+async function submitExam(){
+  examActive=false;
+  $('exam-layout').classList.add('hidden'); $('loading-screen').classList.remove('hidden');
+
+  const tasks=exam.writing.tasks;
+  const t1=tasks[0]?(answers[tasks[0].id]||''):'';
+  const t2=tasks[1]?(answers[tasks[1].id]||''):'';
+  const wc=s=>((s||'').trim().match(/\S+/g)||[]).length;
+
+  const payload={
+    student,
+    sections: sectionIds(),
+    answers,                       // { id: opción marcada }  (sin saber cuál es la correcta)
+    writing:{ t1, t2,
+      p1:tasks[0]?tasks[0].prompt:'', min1:tasks[0]?tasks[0].min:0,
+      p2:tasks[1]?tasks[1].prompt:'', min2:tasks[1]?tasks[1].min:0,
+      w1:wc(t1), w2:wc(t2) },
+    meta:{ started_at:new Date(examStart).toISOString(),
+      duracion_seg:Math.round((Date.now()-examStart)/1000),
+      telemetria:telemetry, navegador:navigator.userAgent }
+  };
+
+  const res=await gradeExam(payload);
+  if(!res){ // error ya notificado; permitir reintentar
+    $('loading-screen').classList.add('hidden'); $('exam-layout').classList.remove('hidden');
+    examActive=true; toast('Vuelve a pulsar "Finalizar y enviar" para reintentar.',true); return;
+  }
+  showResults(Object.assign({}, res, { nombre:student.nombre, ficha:student.ficha }),
+    { r:res.score_reading, l:res.score_listening, g:res.score_grammar, v:res.score_vocabulary, w:res.score_writing });
+}
+
+function equiv(c){ return ({
+  C2:'Equivale a IELTS 8.5–9.0 / TOEFL 114–120', C1:'Equivale a IELTS 7.0–8.0 / TOEFL 95–113',
+  B2:'Equivale a IELTS 5.5–6.5 / TOEFL 72–94', B1:'Equivale a IELTS 4.0–5.0 / TOEFL 42–71',
+  A2:'Equivale a IELTS 3.0–3.5 / TOEFL 19–41', A1:'Nivel inicial (A1)' })[c]; }
+
+function showResults(p,sk){
+  $('loading-screen').classList.add('hidden'); $('results-screen').classList.remove('hidden');
+  $('r-cefr').textContent=p.nivel_cefr;
+  $('ring').style.setProperty('--p',`${p.score_total}%`);
+  $('r-total').textContent=`${p.score_total}%`;
+  $('r-name').textContent=`${p.nombre}${p.ficha?' · Ficha '+p.ficha:''}`;
+  const set=(pct,lab,bar)=>{ $(lab).textContent=`${Math.round(pct)}%`; setTimeout(()=>$(bar).style.width=`${Math.round(pct)}%`,80); };
+  set(sk.r,'r-read','b-read'); set(sk.l,'r-lis','b-lis'); set(sk.g,'r-gram','b-gram'); set(sk.v,'r-voc','b-voc'); set(sk.w,'r-wri','b-wri');
+  $('r-feedback').textContent=p.writing_feedback||'—';
+  $('r-equiv').textContent=equiv(p.nivel_cefr);
+}
+
+/* ===== Calificación + guardado en el servidor =====
+   El navegador NO conoce las respuestas correctas ni guarda en la tabla:
+   manda las opciones marcadas a la Edge Function 'grade-exam', que tiene la
+   clave de respuestas, califica todo (incl. Writing con Kimi), calcula nivel
+   CEFR e INSERTA el resultado con la llave de servicio. Devuelve solo la nota. */
+async function gradeExam(payload){
+  try{
+    const res=await fetch(SUPABASE_URL+GRADE_FN_PATH,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${SUPABASE_ANON_KEY}`,'apikey':SUPABASE_ANON_KEY},
+      body:JSON.stringify(payload)
+    });
+    const j=await res.json();
+    if(!res.ok||j.error) throw new Error(j.error||('HTTP '+res.status));
+    toast('✅ Examen calificado y guardado.');
+    return j;
+  }catch(e){
+    console.error('grade-exam error:',e);
+    toast('❌ No se pudo calificar/guardar: '+e.message,true);
+    return null;
+  }
+}
+</script>
+</body>
+</html>
