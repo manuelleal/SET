@@ -1,0 +1,1867 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulacro tipo Saber 11° · Inglés</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Mulish:wght@400;600;700;800&family=IBM+Plex+Mono:wght@500;600&family=Oswald:wght@500;700&family=Caveat:wght@700&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F2EA; --paper:#FFFEF9; --surface:#FFFFFF;
+  --ink:#1F2933; --muted:#6E6A5E; --line:#E0DACB;
+  --navy:#1E3A5F; --navy-d:#152C4A; --navy-soft:#E8EEF5;
+  --sello:#B3382E; --sello-bg:#F9E7E4;
+  --gold:#C99235; --gold-ink:#8A6215;
+  --ok:#2E7D5B; --ok-bg:#E7F4EC;
+  --shadow:0 10px 30px -12px rgba(31,41,51,.22); --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px}
+body{font-family:'Mulish',sans-serif;background:var(--bg);color:var(--ink);line-height:1.55;min-height:100dvh}
+h1,h2,h3{font-family:'Fraunces',serif;line-height:1.2}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--navy);outline-offset:2px}
+.wrap{max-width:760px;margin:0 auto;padding:16px}
+.screen{display:none}.screen.on{display:block}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
+.eyebrow{display:inline-block;font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--navy);background:var(--navy-soft);border-radius:999px;padding:4px 12px}
+.center{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100dvh;padding:16px}
+.sello11{width:64px;height:64px;border-radius:50%;border:2px solid var(--navy);box-shadow:0 0 0 5px var(--paper),0 0 0 6px var(--line);display:grid;place-items:center;font-family:'Fraunces',serif;font-weight:700;font-size:1.15rem;color:var(--navy);background:var(--paper);margin-bottom:14px}
+.btn{display:block;width:100%;min-height:48px;border:none;border-radius:12px;font-weight:800;font-size:1rem;padding:12px 18px}
+.btn-p{background:var(--navy);color:#fff}.btn-p:active{background:var(--navy-d)}
+.btn-p[disabled]{opacity:.55;cursor:wait}
+.btn-g{background:transparent;color:var(--navy);border:1.5px solid var(--navy)}
+.help{color:var(--muted);font-size:.9rem}
+.err{color:var(--sello);font-weight:700;font-size:.9rem;margin-top:8px;display:none}
+input,select{font-size:1rem;font-family:inherit;padding:12px;border:2px solid #C9CFD8;border-radius:12px;background:var(--paper);width:100%;min-height:48px;color:var(--ink)}
+input:focus,select:focus{border-color:var(--navy);box-shadow:0 0 0 4px var(--navy-soft);outline:none}
+label{font-weight:700;font-size:.9rem;display:block;margin:12px 0 4px}
+#in-codigo{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:1.5rem;letter-spacing:.32em;text-align:center;text-transform:uppercase}
+.shake{animation:shk .3s}
+@keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-6px)}}
+.ticket{border:2px dashed var(--navy);border-radius:12px;padding:16px;margin:16px 0;background:var(--navy-soft)}
+.ticket b{font-family:'IBM Plex Mono',monospace}
+.chip{display:inline-block;font-size:.78rem;font-weight:800;border-radius:999px;padding:3px 12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.grid2{grid-template-columns:1fr}}
+/* header examen */
+.hdr{position:sticky;top:0;z-index:40;background:var(--paper);border-bottom:1px solid var(--line);padding:8px 12px}
+.hdr-row{max-width:760px;margin:0 auto;display:flex;align-items:center;gap:10px;justify-content:space-between}
+.stepper{display:flex;gap:4px;flex:1}
+.seg{height:6px;border-radius:999px;flex:1;background:#E3DFD2;position:relative;overflow:hidden}
+.seg.done{background:var(--navy)}
+.seg.cur::after{content:'';position:absolute;inset:0;width:var(--fill,10%);background:var(--gold);border-radius:999px}
+.hdr-lbl{font-size:.82rem;font-weight:700;color:var(--muted);max-width:760px;margin:4px auto 0}
+.timer{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:1rem;background:var(--paper);border:1.5px solid var(--line);border-radius:999px;padding:6px 12px;min-height:44px;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.timer.warn{color:var(--gold-ink);border-color:var(--gold)}
+.timer.crit{color:var(--sello);border-color:var(--sello);animation:pulse 1s 2}
+@keyframes pulse{50%{transform:scale(1.06)}}
+/* interstitial */
+.inter-num{font-family:'Fraunces',serif;font-size:3.2rem;font-weight:700;color:var(--navy)}
+.instr{background:var(--navy-soft);border-left:4px solid var(--navy);border-radius:0 10px 10px 0;padding:12px 14px;font-size:.95rem;margin:14px 0}
+/* preguntas */
+.q{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;margin:14px 0}
+.qnum{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--navy);font-size:.9rem}
+.opt{display:flex;align-items:flex-start;gap:10px;width:100%;text-align:left;background:var(--paper);border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;margin-top:8px;min-height:44px;font-size:.98rem;color:var(--ink)}
+.opt .lt{font-weight:800;color:var(--navy);font-family:'IBM Plex Mono',monospace}
+.opt.sel{border-color:var(--navy);background:var(--navy-soft);font-weight:700}
+.ejq{border:1px dashed var(--muted);background:#F4F1E8;border-radius:10px;padding:10px 12px;margin:10px 0;font-size:.92rem}
+.ejq .tag{font-size:.7rem;font-weight:800;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+.ejq .okopt{color:var(--ok);font-weight:800}
+.lectura{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px;margin:12px 0;line-height:1.7}
+.lectura h3{text-align:center;font-size:1.05rem;letter-spacing:.06em;margin-bottom:10px}
+.gapnum{display:inline-block;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:.85rem;color:var(--navy);background:var(--navy-soft);border-radius:6px;padding:0 6px;border-bottom:2px solid var(--navy)}
+.gapej{border-bottom:2px solid var(--ok);font-weight:700;color:var(--ok)}
+.gapej sup{font-family:'IBM Plex Mono',monospace}
+/* parte 1 matching */
+.m-item{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:12px;margin:10px 0}
+.m-item.active{border-color:var(--navy);background:var(--navy-soft)}
+.m-slot{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:130px;border:2px dashed #C9CFD8;border-radius:999px;padding:6px 16px;margin-top:8px;color:var(--muted);font-size:.9rem}
+.m-slot.full{border-style:solid;border-color:var(--navy);background:#fff;color:var(--navy-d);font-weight:800}
+.wbank{position:sticky;bottom:0;z-index:30;background:var(--paper);border-top:2px solid var(--line);padding:10px;margin:14px -16px -16px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.wchip{min-height:44px;padding:10px 16px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font-weight:700;font-size:.95rem}
+.wchip.used{opacity:.35;pointer-events:none}
+.wchip.ej{opacity:.45;pointer-events:none;position:relative}
+.wchip.ej::after{content:'0';font-family:'IBM Plex Mono',monospace;font-size:.7rem;color:var(--ok);margin-left:6px}
+/* avisos (Parte 2) — CSS puro */
+.aviso{max-width:340px;margin:0 auto 14px;display:grid;place-items:center;text-align:center;min-height:110px;padding:20px 24px}
+.av-oferta{background:#C8342A;color:#fff;font-family:'Oswald',sans-serif;font-weight:700;text-transform:uppercase;font-size:1.5rem;letter-spacing:.05em;border:3px solid #fff;box-shadow:0 0 0 4px #C8342A,5px 7px 0 rgba(0,0,0,.18);border-radius:8px}
+.av-oferta .sub{font-family:'Mulish',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:.08em}
+.av-advertencia{background:#F7C948;color:#1F2933;font-family:'Oswald',sans-serif;font-weight:700;text-transform:uppercase;font-size:1.3rem;border:3px solid #1F2933;border-radius:8px;position:relative;padding:26px 24px}
+.av-advertencia::before,.av-advertencia::after{content:'';position:absolute;left:0;right:0;height:12px;background:repeating-linear-gradient(45deg,#1F2933 0 12px,#F7C948 12px 24px)}
+.av-advertencia::before{top:0;border-radius:5px 5px 0 0}.av-advertencia::after{bottom:0;border-radius:0 0 5px 5px}
+.av-advertencia .sub{font-size:.85rem;text-transform:none;font-family:'Mulish',sans-serif;font-weight:700}
+.av-nota{background:#FFF9C4;color:#3B3325;font-family:'Caveat',cursive;font-weight:700;font-size:1.45rem;transform:rotate(-1.5deg);box-shadow:0 8px 16px -8px rgba(0,0,0,.3);position:relative;line-height:1.35}
+.av-nota::before{content:'';position:absolute;width:90px;height:26px;top:-13px;left:50%;transform:translateX(-50%) rotate(2deg);background:rgba(255,255,255,.55);border:1px solid rgba(0,0,0,.06)}
+.av-nota .sub{font-size:1.2rem}
+.av-digital{background:#101418;color:#FFB627;font-family:'VT323',monospace;font-size:1.5rem;letter-spacing:.08em;text-shadow:0 0 8px currentColor;border:5px solid #2A2F36;border-radius:10px;box-shadow:inset 0 0 20px rgba(0,0,0,.85);background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px);background-size:100% 3px}
+.av-digital .sub{font-size:1.1rem;color:#34D399}
+.av-etiqueta{background:var(--paper);border:1.5px solid #C9BFA8;font-family:'Oswald',sans-serif;font-weight:500;text-transform:uppercase;font-size:1rem;letter-spacing:.06em;border-radius:6px;position:relative;padding-left:34px}
+.av-etiqueta::before{content:'';position:absolute;width:12px;height:12px;border-radius:50%;background:var(--bg);box-shadow:inset 0 1px 2px rgba(0,0,0,.3);left:12px;top:50%;transform:translateY(-50%)}
+.av-etiqueta .sub{font-family:'Mulish',sans-serif;font-weight:800;font-size:1.3rem;text-transform:none}
+.av-placa{background:linear-gradient(180deg,#F4F5F7,#D8DBE0);border:1px solid #B9BEC7;border-radius:6px;font-family:'Oswald',sans-serif;font-weight:600;text-transform:uppercase;font-size:1.15rem;letter-spacing:.2em;color:#3E4653;text-shadow:0 1px 0 rgba(255,255,255,.85);position:relative}
+.av-placa i{position:absolute;width:8px;height:8px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#FDFDFE,#9AA1AB)}
+.av-placa i:nth-child(1){top:6px;left:6px}.av-placa i:nth-child(2){top:6px;right:6px}.av-placa i:nth-child(3){bottom:6px;left:6px}.av-placa i:nth-child(4){bottom:6px;right:6px}
+.av-placa .sub{letter-spacing:.05em;font-size:.85rem;font-family:'Mulish',sans-serif;font-weight:700;text-transform:none}
+/* diálogo (Parte 3) */
+.bocadillo{background:var(--navy-soft);border-radius:14px 14px 14px 4px;padding:12px 14px;font-size:1rem;margin-bottom:4px;position:relative}
+.bocadillo::before{content:'💬';margin-right:6px}
+/* resultados */
+.res-hero{text-align:center;padding:10px 0}
+.res-score{font-family:'Fraunces',serif;font-weight:700;font-size:4.2rem;color:var(--navy);line-height:1}
+.gauge{width:220px;height:110px;margin:14px auto 4px;position:relative;overflow:hidden}
+.gauge .arc{width:220px;height:220px;border-radius:50%;background:conic-gradient(from 270deg,#8E2A21 0deg 66.6deg,#9A5A14 66.6deg 102.6deg,#8A6D1A 102.6deg 126deg,#2E6B4F 126deg 180deg,transparent 180deg);-webkit-mask:radial-gradient(circle,transparent 62px,#000 63px);mask:radial-gradient(circle,transparent 62px,#000 63px)}
+.gauge .needle{position:absolute;left:50%;bottom:0;width:3px;height:96px;background:var(--ink);transform-origin:bottom center;border-radius:3px}
+.nivel-chip{font-size:1.15rem;font-weight:800;border-radius:999px;padding:8px 22px;display:inline-block;margin-top:10px}
+.bar-row{margin:10px 0}
+.bar-lbl{display:flex;justify-content:space-between;font-size:.88rem;font-weight:700}
+.bar-lbl span:last-child{font-family:'IBM Plex Mono',monospace}
+.bar{height:10px;background:#E3DFD2;border-radius:999px;overflow:hidden;margin-top:4px}
+.bar i{display:block;height:100%;background:var(--navy);border-radius:999px}
+.informe{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px;margin-top:14px;white-space:pre-wrap}
+.toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:10px;padding:12px 18px;font-weight:700;font-size:.92rem;z-index:99;display:none;max-width:92vw}
+.toast.red{background:var(--sello)}
+.overlay{position:fixed;inset:0;background:rgba(245,242,234,.94);z-index:80;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:20px}
+.spin{width:38px;height:38px;border:4px solid var(--line);border-top-color:var(--navy);border-radius:50%;animation:rot 1s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.footer-note{font-size:.75rem;color:var(--muted);text-align:center;margin:18px 0}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media print{.hdr,.wbank,.btn,.toast,.overlay,.no-print{display:none!important}body{background:#fff}.card{box-shadow:none;border:none}}
+</style>
+</head>
+<body>
+
+<!-- ===== Pantalla 1: código ===== -->
+<div id="scr-code" class="screen on">
+  <div class="center">
+    <div class="sello11">S11</div>
+    <div class="card" style="max-width:420px;width:100%">
+      <span class="eyebrow">Simulacro tipo Saber 11° · Inglés</span>
+      <h1 style="font-size:1.55rem;margin:12px 0 6px">Ingresa el código de tu examen</h1>
+      <p class="help">Tu docente te dictará un código como <b style="font-family:'IBM Plex Mono',monospace">ICF-7K2M</b>.</p>
+      <label for="in-codigo">Código del examen</label>
+      <input id="in-codigo" maxlength="8" autocomplete="off" inputmode="latin" placeholder="•••-••••">
+      <p id="code-err" class="err" role="alert"></p>
+      <button id="btn-code" class="btn btn-p" style="margin-top:14px">Ingresar al simulacro</button>
+      <p class="help" style="margin-top:12px">¿No tienes código? Pídeselo a tu docente.</p>
+      <p class="footer-note">Al continuar aceptas que tu nombre, documento y resultados se guarden para uso académico de tu institución (Ley 1581 de 2012 — datos personales).</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Pantalla 2: boleta + datos ===== -->
+<div id="scr-datos" class="screen">
+  <div class="center">
+    <div class="card" style="max-width:480px;width:100%">
+      <span class="eyebrow">Boleta de ingreso</span>
+      <div class="ticket">
+        <h2 id="bt-titulo" style="font-size:1.2rem"></h2>
+        <p style="margin-top:6px"><span id="bt-etapa" class="chip" style="background:var(--gold);color:#fff"></span>
+        <span id="bt-grupo" class="chip" style="background:var(--paper);border:1px solid var(--line)"></span></p>
+        <p class="help" style="margin-top:8px"><b id="bt-n"></b> preguntas · <b id="bt-min"></b> minutos · código <b id="bt-cod"></b></p>
+      </div>
+      <div class="grid2">
+        <div><label for="in-nombre">Nombre completo</label><input id="in-nombre" maxlength="120" autocomplete="name"></div>
+        <div><label for="in-tipodoc">Tipo de documento</label>
+          <select id="in-tipodoc"><option value="TI">T.I.</option><option value="CC">C.C.</option><option value="CE">C.E.</option><option value="OTRO">Otro</option></select></div>
+      </div>
+      <label for="in-doc">Número de documento (sin puntos)</label>
+      <input id="in-doc" maxlength="15" inputmode="numeric" autocomplete="off">
+      <label for="in-colegio">Colegio (opcional)</label>
+      <input id="in-colegio" maxlength="120">
+      <p id="datos-err" class="err" role="alert"></p>
+      <button id="btn-comenzar" class="btn btn-p" style="margin-top:16px">Comenzar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Header del examen ===== -->
+<div id="hdr" class="hdr" style="display:none">
+  <div class="hdr-row">
+    <div class="stepper" id="stepper"></div>
+    <button class="timer" id="timer" aria-label="Tiempo restante">⏱ <span id="t-txt">--:--</span></button>
+  </div>
+  <div class="hdr-lbl" id="hdr-lbl"></div>
+</div>
+
+<!-- ===== Interstitial de parte ===== -->
+<div id="scr-inter" class="screen">
+  <div class="center" style="min-height:calc(100dvh - 70px)">
+    <div class="card" style="max-width:480px;width:100%;text-align:center">
+      <div class="inter-num" id="it-num"></div>
+      <h2 id="it-nombre" style="margin:4px 0"></h2>
+      <p class="help" id="it-info"></p>
+      <div class="instr" id="it-instr" style="text-align:left"></div>
+      <button id="btn-startpart" class="btn btn-p"></button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Preguntas de la parte ===== -->
+<div id="scr-parte" class="screen">
+  <div class="wrap">
+    <div class="card" id="parte-body" style="position:relative;padding:16px"></div>
+    <button id="btn-nextpart" class="btn btn-p" style="margin:16px 0"></button>
+  </div>
+</div>
+
+<!-- ===== Resultados ===== -->
+<div id="scr-result" class="screen">
+  <div class="wrap">
+    <div class="card">
+      <div class="res-hero">
+        <span class="eyebrow" style="background:var(--sello-bg);color:var(--sello)">Puntaje estimado · No oficial</span>
+        <div class="res-score" id="r-score">0</div>
+        <div class="gauge"><div class="arc"></div><div class="needle" id="r-needle"></div></div>
+        <div class="nivel-chip" id="r-nivel"></div>
+        <p class="help" id="r-desc" style="margin-top:8px"></p>
+        <p class="help" id="r-legacy" style="font-size:.78rem"></p>
+      </div>
+      <h3 style="margin:16px 0 4px">Tu desglose por parte</h3>
+      <div id="r-bars"></div>
+      <div id="r-prev" style="margin-top:10px"></div>
+      <div id="r-feed" class="instr" style="display:none"></div>
+      <div id="r-informe" class="informe" style="display:none"></div>
+      <div class="grid2 no-print" style="margin-top:16px">
+        <button class="btn btn-g" onclick="window.print()">Imprimir / Guardar</button>
+        <button class="btn btn-p" onclick="location.reload()">Finalizar</button>
+      </div>
+      <p class="footer-note">El puntaje real de Saber 11° se calcula con métodos estadísticos del ICFES sobre datos nacionales; este resultado es una estimación pedagógica para orientar tu preparación.</p>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay"><div class="spin"></div><h3 id="ov-txt">Calculando tu puntaje…</h3><p class="help">No cierres esta página.</p></div>
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+/* ================== CONFIGURACIÓN (la pega el docente una vez) ================== */
+const SUPABASE_URL      = 'https://sacugfirjijrizcpsihn.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhY3VnZmlyamlqcml6Y3BzaWhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxNjUwMDMsImV4cCI6MjA5Nzc0MTAwM30.amTi6bZ350kAML-UQgMlghCz7ZoQD6esfpfZa7DRSlE';
+const GRADE_FN_PATH     = '/functions/v1/bright-handler';
+
+/* ================== BANCO (SIN respuestas — lo regenera tools/build_secure.js) == */
+const BANK_ICFES = {
+  "p1": [
+    {
+      "id": "p1_a",
+      "titulo": "In the kitchen",
+      "nivel": "PreA1",
+      "dificultad": 1,
+      "ejemplo": {
+        "desc": "You use this to drink water or juice.",
+        "palabra": "glass"
+      },
+      "items": [
+        {
+          "id": "p1_a_1",
+          "desc": "You cook soup or rice in this on the stove."
+        },
+        {
+          "id": "p1_a_2",
+          "desc": "You use this to cut bread or meat."
+        },
+        {
+          "id": "p1_a_3",
+          "desc": "You use this to eat soup."
+        },
+        {
+          "id": "p1_a_4",
+          "desc": "This big machine keeps your food and drinks cold."
+        },
+        {
+          "id": "p1_a_5",
+          "desc": "You put your food on this before you eat."
+        },
+        {
+          "id": "p1_a_6",
+          "desc": "You use this to fry eggs for breakfast."
+        }
+      ],
+      "palabras": [
+        "fork",
+        "fridge",
+        "glass",
+        "knife",
+        "oven",
+        "pan",
+        "plate",
+        "pot",
+        "spoon"
+      ]
+    },
+    {
+      "id": "p1_b",
+      "titulo": "Clothes",
+      "nivel": "PreA1",
+      "dificultad": 2,
+      "ejemplo": {
+        "desc": "You wear this on your head on sunny days.",
+        "palabra": "cap"
+      },
+      "items": [
+        {
+          "id": "p1_b_1",
+          "desc": "You put these on your feet before your shoes."
+        },
+        {
+          "id": "p1_b_2",
+          "desc": "You wear this around your neck when it is cold."
+        },
+        {
+          "id": "p1_b_3",
+          "desc": "You wear these on your hands in cold weather."
+        },
+        {
+          "id": "p1_b_4",
+          "desc": "You wear this over your clothes on rainy days."
+        },
+        {
+          "id": "p1_b_5",
+          "desc": "You wear this to hold your trousers up."
+        },
+        {
+          "id": "p1_b_6",
+          "desc": "Men often wear this with a tie to work."
+        }
+      ],
+      "palabras": [
+        "belt",
+        "cap",
+        "dress",
+        "gloves",
+        "raincoat",
+        "scarf",
+        "shirt",
+        "socks",
+        "tie"
+      ]
+    }
+  ],
+  "p2": {
+    "ejemplo": {
+      "estilo": "placa",
+      "aviso": "STAFF ONLY",
+      "sub": "",
+      "options": [
+        "in an office",
+        "on a farm",
+        "in a river"
+      ],
+      "answer": 0
+    },
+    "items": [
+      {
+        "id": "p2_01",
+        "estilo": "advertencia",
+        "aviso": "CAREFUL! WET FLOOR. PLEASE WALK SLOWLY.",
+        "sub": "",
+        "options": [
+          "in a garden",
+          "in a supermarket",
+          "on a beach"
+        ],
+        "nivel": "PreA1",
+        "dificultad": 1
+      },
+      {
+        "id": "p2_02",
+        "estilo": "nota",
+        "aviso": "Mum, I am at Diego's house. Back home at six for dinner. Carlos.",
+        "sub": "",
+        "options": [
+          "in a kitchen",
+          "in a classroom",
+          "at a cinema"
+        ],
+        "nivel": "PreA1",
+        "dificultad": 1
+      },
+      {
+        "id": "p2_03",
+        "estilo": "oferta",
+        "aviso": "Fresh bread every morning! Today only: two loaves for the price of one.",
+        "sub": "Open from 6:00 a.m.",
+        "options": [
+          "in a bank",
+          "at a bakery",
+          "at a hairdresser's"
+        ],
+        "nivel": "PreA1",
+        "dificultad": 1
+      },
+      {
+        "id": "p2_04",
+        "estilo": "placa",
+        "aviso": "Please be quiet. Return your books to the front desk before you leave.",
+        "sub": "",
+        "options": [
+          "at a swimming pool",
+          "in a gym",
+          "in a library"
+        ],
+        "nivel": "PreA1",
+        "dificultad": 1
+      },
+      {
+        "id": "p2_05",
+        "estilo": "digital",
+        "aviso": "Next stop: Central Station. Please have your ticket ready.",
+        "sub": "",
+        "options": [
+          "in a museum",
+          "on a train",
+          "at a doctor's office"
+        ],
+        "nivel": "PreA1",
+        "dificultad": 1
+      },
+      {
+        "id": "p2_06",
+        "estilo": "etiqueta",
+        "aviso": "Keep in a cold place. Shake well before you drink.",
+        "sub": "Best before: 12 May",
+        "options": [
+          "on a box of pencils",
+          "on a bag of rice",
+          "on a bottle of juice"
+        ],
+        "nivel": "A1",
+        "dificultad": 2
+      },
+      {
+        "id": "p2_07",
+        "estilo": "advertencia",
+        "aviso": "DANGER! DEEP WATER. NO DIVING IN THIS AREA.",
+        "sub": "",
+        "options": [
+          "at a swimming pool",
+          "in a car park",
+          "at a football field"
+        ],
+        "nivel": "PreA1",
+        "dificultad": 1
+      },
+      {
+        "id": "p2_08",
+        "estilo": "nota",
+        "aviso": "Ana, please feed the cat at seven. The food is under the sink.",
+        "sub": "",
+        "options": [
+          "at a zoo",
+          "in a pet shop",
+          "in a house"
+        ],
+        "nivel": "A1",
+        "dificultad": 2
+      },
+      {
+        "id": "p2_09",
+        "estilo": "oferta",
+        "aviso": "School uniforms: 20% off this week. All sizes for boys and girls.",
+        "sub": "Tel: 312 555 0148",
+        "options": [
+          "in a clothes shop",
+          "in a school",
+          "at a sports centre"
+        ],
+        "nivel": "A1",
+        "dificultad": 2
+      },
+      {
+        "id": "p2_10",
+        "estilo": "placa",
+        "aviso": "Please do not walk on the grass. Keep dogs on a lead.",
+        "sub": "",
+        "options": [
+          "at a bus station",
+          "in a park",
+          "in a shopping centre"
+        ],
+        "nivel": "PreA1",
+        "dificultad": 1
+      },
+      {
+        "id": "p2_11",
+        "estilo": "digital",
+        "aviso": "Flight 205 to Cartagena is now boarding at gate 4.",
+        "sub": "",
+        "options": [
+          "at a train station",
+          "at a bus terminal",
+          "at an airport"
+        ],
+        "nivel": "A1",
+        "dificultad": 2
+      },
+      {
+        "id": "p2_12",
+        "estilo": "etiqueta",
+        "aviso": "Wash in cold water. Do not iron the picture on the front.",
+        "sub": "",
+        "options": [
+          "on a T-shirt",
+          "on a bottle of milk",
+          "on a box of eggs"
+        ],
+        "nivel": "PreA1",
+        "dificultad": 1
+      }
+    ]
+  },
+  "p3": {
+    "ejemplo": {
+      "linea": "Hi! How are you today?",
+      "options": [
+        "I'm fine, thanks.",
+        "It's on the table.",
+        "Yes, he does."
+      ],
+      "answer": 0
+    },
+    "items": [
+      {
+        "id": "p3_01",
+        "linea": "What time does the football practice start?",
+        "options": [
+          "In the park.",
+          "At four o'clock.",
+          "With my cousin."
+        ],
+        "nivel": "A1",
+        "dificultad": 1
+      },
+      {
+        "id": "p3_02",
+        "linea": "Would you like some more soup?",
+        "options": [
+          "Yes, please. It's delicious.",
+          "Yes, I cooked it yesterday.",
+          "Yes, she likes it a lot."
+        ],
+        "nivel": "A1",
+        "dificultad": 1
+      },
+      {
+        "id": "p3_03",
+        "linea": "Whose notebook is this?",
+        "options": [
+          "It's on Monday.",
+          "Yes, it is.",
+          "It's Laura's."
+        ],
+        "nivel": "A1",
+        "dificultad": 1
+      },
+      {
+        "id": "p3_04",
+        "linea": "How much are these oranges?",
+        "options": [
+          "Two thousand pesos a kilo.",
+          "There are ten of them.",
+          "They open at nine."
+        ],
+        "nivel": "A1",
+        "dificultad": 1
+      },
+      {
+        "id": "p3_05",
+        "linea": "Can you help me carry these bags to the kitchen?",
+        "options": [
+          "Yes, I carried them yesterday.",
+          "Sure, give me the heavy one.",
+          "The kitchen is very big."
+        ],
+        "nivel": "A1",
+        "dificultad": 2
+      },
+      {
+        "id": "p3_06",
+        "linea": "Why didn't you come to practice yesterday?",
+        "options": [
+          "Because I like practice.",
+          "Yes, I did.",
+          "Because I was sick."
+        ],
+        "nivel": "A1",
+        "dificultad": 2
+      },
+      {
+        "id": "p3_07",
+        "linea": "Let's play basketball after school.",
+        "options": [
+          "Good idea! I'll bring the ball.",
+          "Yes, we played very well.",
+          "It's next to the library."
+        ],
+        "nivel": "A1",
+        "dificultad": 2
+      },
+      {
+        "id": "p3_08",
+        "linea": "How do you get to school every morning?",
+        "options": [
+          "At seven o'clock.",
+          "I walk with my sister.",
+          "Yes, every morning."
+        ],
+        "nivel": "A1",
+        "dificultad": 1
+      },
+      {
+        "id": "p3_09",
+        "linea": "I'm sorry, we don't have any milk left today.",
+        "options": [
+          "That's OK. I'll come back tomorrow.",
+          "Great! I'll take two bottles, please.",
+          "You're welcome."
+        ],
+        "nivel": "A1",
+        "dificultad": 3
+      },
+      {
+        "id": "p3_10",
+        "linea": "Who is that tall man next to your mother?",
+        "options": [
+          "She's fine, thanks.",
+          "At my grandmother's house.",
+          "He's my uncle from Cali."
+        ],
+        "nivel": "A1",
+        "dificultad": 2
+      },
+      {
+        "id": "p3_11",
+        "linea": "Excuse me, where is the bus stop?",
+        "options": [
+          "The bus leaves at ten.",
+          "It's in front of the bakery.",
+          "It costs two thousand pesos."
+        ],
+        "nivel": "A1",
+        "dificultad": 1
+      },
+      {
+        "id": "p3_12",
+        "linea": "Did you finish your math homework?",
+        "options": [
+          "Not yet. I'll do it tonight.",
+          "Yes, math is on Tuesdays.",
+          "No, she doesn't like math."
+        ],
+        "nivel": "A1",
+        "dificultad": 2
+      }
+    ]
+  },
+  "p4": [
+    {
+      "id": "p4_a",
+      "titulo": "The Andean Condor",
+      "nivel": "A2",
+      "dificultad": 2,
+      "ejemplo": {
+        "options": [
+          "from",
+          "of",
+          "by"
+        ],
+        "answer": 1
+      },
+      "texto": "The Andean condor is one {0} the largest flying birds in the world. It lives {1} the high mountains of South America, especially in Colombia, Ecuador, and Peru. This bird is much {2} than most other birds: its wings measure about three meters. Condors do not hunt other animals. {3} usually eat animals that are already dead. A condor {4} live for more than fifty years, {5} is a very long time for a bird. A young condor stays close to its parents for almost two years. Every year, {6} tourists visit the mountains {7} they want to see this amazing animal. Sadly, today there {8} only a few thousand condors in the wild. {9} this reason, people are working hard {10} protect this special bird for future generations.",
+      "gaps": [
+        {
+          "id": "p4_a_1",
+          "options": [
+            "on",
+            "in",
+            "at"
+          ]
+        },
+        {
+          "id": "p4_a_2",
+          "options": [
+            "bigger",
+            "biggest",
+            "big"
+          ]
+        },
+        {
+          "id": "p4_a_3",
+          "options": [
+            "Their",
+            "Them",
+            "They"
+          ]
+        },
+        {
+          "id": "p4_a_4",
+          "options": [
+            "can",
+            "must",
+            "should"
+          ]
+        },
+        {
+          "id": "p4_a_5",
+          "options": [
+            "who",
+            "which",
+            "where"
+          ]
+        },
+        {
+          "id": "p4_a_6",
+          "options": [
+            "much",
+            "any",
+            "many"
+          ]
+        },
+        {
+          "id": "p4_a_7",
+          "options": [
+            "because",
+            "but",
+            "so"
+          ]
+        },
+        {
+          "id": "p4_a_8",
+          "options": [
+            "is",
+            "are",
+            "be"
+          ]
+        },
+        {
+          "id": "p4_a_9",
+          "options": [
+            "By",
+            "With",
+            "For"
+          ]
+        },
+        {
+          "id": "p4_a_10",
+          "options": [
+            "to",
+            "for",
+            "at"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p4_b",
+      "titulo": "The Flower Festival",
+      "nivel": "A2",
+      "dificultad": 2,
+      "ejemplo": {
+        "options": [
+          "more",
+          "most",
+          "much"
+        ],
+        "answer": 1
+      },
+      "texto": "Every August, Medellín celebrates its {0} famous tradition: the Flower Festival. The celebration {1} in 1957, and today it is one of the biggest events in Colombia. Farmers called silleteros walk through the streets carrying beautiful flower designs {2} their backs. Some designs are so heavy that the farmers {3} rest several times. Families usually arrive early {4} they can find a good place to watch. The streets are full of music, food, and happy people {5} the whole week. Visitors from {6} countries come to enjoy the parade. My grandmother says the festival is {7} now than it was in the past because there are more activities for young people. If you visit Medellín in August, you {8} see thousands of flowers of every color. It is {9} unforgettable experience for tourists, and many of {10} return every year.",
+      "gaps": [
+        {
+          "id": "p4_b_1",
+          "options": [
+            "began",
+            "begins",
+            "will begin"
+          ]
+        },
+        {
+          "id": "p4_b_2",
+          "options": [
+            "in",
+            "on",
+            "at"
+          ]
+        },
+        {
+          "id": "p4_b_3",
+          "options": [
+            "has to",
+            "having to",
+            "have to"
+          ]
+        },
+        {
+          "id": "p4_b_4",
+          "options": [
+            "so that",
+            "because",
+            "although"
+          ]
+        },
+        {
+          "id": "p4_b_5",
+          "options": [
+            "while",
+            "during",
+            "since"
+          ]
+        },
+        {
+          "id": "p4_b_6",
+          "options": [
+            "another",
+            "others",
+            "other"
+          ]
+        },
+        {
+          "id": "p4_b_7",
+          "options": [
+            "better",
+            "best",
+            "good"
+          ]
+        },
+        {
+          "id": "p4_b_8",
+          "options": [
+            "would",
+            "will",
+            "won't"
+          ]
+        },
+        {
+          "id": "p4_b_9",
+          "options": [
+            "a",
+            "the",
+            "an"
+          ]
+        },
+        {
+          "id": "p4_b_10",
+          "options": [
+            "them",
+            "they",
+            "their"
+          ]
+        }
+      ]
+    }
+  ],
+  "p5": [
+    {
+      "id": "p5_a",
+      "titulo": "MY FIRST SWIMMING COMPETITION",
+      "nivel": "A2",
+      "dificultad": 2,
+      "texto": "My name is Andrés, and last year I joined the swimming club at my school in Ibagué. I was eleven years old and I could not swim very well, but my teacher, Mr. Cardona, said I had strong arms and good energy. We practiced every Tuesday and Thursday, from four to six in the afternoon, at the public pool near the bus station.\n\nIn November, our club traveled to Neiva for a regional competition. It was my first trip to another city without my parents, so I was nervous. My mother packed sandwiches and fruit for the journey, and my older sister lent me her blue towel because she said it brought good luck.\n\nThe competition started at nine in the morning. My race was the fifty-meter freestyle. When I jumped into the water, I forgot my fear and swam as fast as possible. I finished third and won a small bronze medal. Mr. Cardona was very happy and took a photo of the whole team.\n\nNow I practice four days a week because I want to win a gold medal next year. My sister says I can keep her towel until then.",
+      "ejemplo": {
+        "q": "Andrés joined the swimming club…",
+        "options": [
+          "last year",
+          "in November",
+          "next year"
+        ],
+        "answer": 0
+      },
+      "questions": [
+        {
+          "id": "p5_a_1",
+          "q": "How old was Andrés when he joined the swimming club?",
+          "options": [
+            "nine years old",
+            "four years old",
+            "eleven years old"
+          ]
+        },
+        {
+          "id": "p5_a_2",
+          "q": "Mr. Cardona said that Andrés had…",
+          "options": [
+            "good luck",
+            "strong arms and good energy",
+            "a blue towel"
+          ]
+        },
+        {
+          "id": "p5_a_3",
+          "q": "The club practiced…",
+          "options": [
+            "two days a week",
+            "every day of the week",
+            "four days a week"
+          ]
+        },
+        {
+          "id": "p5_a_4",
+          "q": "Where was the public pool?",
+          "options": [
+            "near the bus station",
+            "at Andrés's school",
+            "in Neiva"
+          ]
+        },
+        {
+          "id": "p5_a_5",
+          "q": "Why was Andrés nervous?",
+          "options": [
+            "Because the race started very early in the morning",
+            "Because he could not swim fast",
+            "Because it was his first trip to another city without his parents"
+          ]
+        },
+        {
+          "id": "p5_a_6",
+          "q": "Who lent Andrés the blue towel?",
+          "options": [
+            "his mother",
+            "his older sister",
+            "Mr. Cardona"
+          ]
+        },
+        {
+          "id": "p5_a_7",
+          "q": "Andrés's race was…",
+          "options": [
+            "a relay race with his team",
+            "the fifty-meter freestyle",
+            "a race in the evening"
+          ]
+        },
+        {
+          "id": "p5_a_8",
+          "q": "What did Andrés win at the competition?",
+          "options": [
+            "a small bronze medal",
+            "a gold medal",
+            "a photo of the team"
+          ]
+        },
+        {
+          "id": "p5_a_9",
+          "q": "What does Andrés want to do next year?",
+          "options": [
+            "return the towel to his sister",
+            "swim at the public pool in Neiva",
+            "win a gold medal"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p5_b",
+      "titulo": "THE PAINTER OF BIRDS",
+      "nivel": "A2",
+      "dificultad": 2,
+      "texto": "Rosa Valdés was born in 1952 in a small town near the Magdalena River. Her father was a fisherman and her mother sold fruit at the local market. As a child, Rosa spent hours watching the birds that lived near the water, and she drew them with charcoal on old newspapers.\n\nWhen Rosa was eighteen, she moved to Bogotá to study art. Life in the capital was difficult at first because she had very little money, so in the evenings she worked as a waitress in a small café. During the day, she studied painting and visited the city's museums.\n\nRosa's first exhibition opened in 1979 in a small gallery. She showed twenty paintings of river birds, and a newspaper called her 'the painter of birds'. The name stayed with her for the rest of her career. Her most famous work, 'Morning on the River', now hangs in a museum in Medellín.\n\nIn 1995, Rosa returned to her home town and opened a free art school for children. Today, at more than seventy years old, she still paints every morning and teaches classes three times a week. Her students simply call her 'Teacher Rosa'.",
+      "ejemplo": {
+        "q": "Rosa Valdés was born…",
+        "options": [
+          "in 1979",
+          "in 1952",
+          "in 1995"
+        ],
+        "answer": 1
+      },
+      "questions": [
+        {
+          "id": "p5_b_1",
+          "q": "What was the job of Rosa's father?",
+          "options": [
+            "He was a painter",
+            "He sold fruit at the market",
+            "He was a fisherman"
+          ]
+        },
+        {
+          "id": "p5_b_2",
+          "q": "As a child, Rosa drew birds…",
+          "options": [
+            "at the local market",
+            "on old newspapers",
+            "in the city's museums"
+          ]
+        },
+        {
+          "id": "p5_b_3",
+          "q": "Why did Rosa move to Bogotá?",
+          "options": [
+            "to open an art school",
+            "to study art",
+            "to sell paintings in a gallery"
+          ]
+        },
+        {
+          "id": "p5_b_4",
+          "q": "In the evenings, young Rosa worked…",
+          "options": [
+            "in a gallery",
+            "at the local market",
+            "as a waitress in a small café"
+          ]
+        },
+        {
+          "id": "p5_b_5",
+          "q": "How many paintings did Rosa show in her first exhibition?",
+          "options": [
+            "twenty",
+            "eighteen",
+            "seventy"
+          ]
+        },
+        {
+          "id": "p5_b_6",
+          "q": "Who called Rosa 'the painter of birds'?",
+          "options": [
+            "a newspaper",
+            "her students",
+            "her mother"
+          ]
+        },
+        {
+          "id": "p5_b_7",
+          "q": "Where is 'Morning on the River' today?",
+          "options": [
+            "in a gallery in Bogotá",
+            "in a museum in Medellín",
+            "in Rosa's home town"
+          ]
+        },
+        {
+          "id": "p5_b_8",
+          "q": "In 1995, Rosa…",
+          "options": [
+            "returned to her home town",
+            "had her first exhibition",
+            "moved to Bogotá"
+          ]
+        },
+        {
+          "id": "p5_b_9",
+          "q": "How often does Rosa teach classes now?",
+          "options": [
+            "every morning",
+            "only in the evenings",
+            "three times a week"
+          ]
+        }
+      ]
+    }
+  ],
+  "p6": [
+    {
+      "id": "p6_a",
+      "titulo": "A NEW PLACE FOR COFFEE LOVERS",
+      "nivel": "B1",
+      "dificultad": 3,
+      "texto": "Last Saturday I finally visited La Colina, the new café that everyone in town has been talking about since it opened two months ago. It sits at the top of a steep street, in an old house with a red door, and from its terrace you can see the whole valley. Getting there, however, is another story: there is nowhere to park, and the sign is so small that I walked past the entrance twice.\n\nInside, the owners have kept the original wooden floors and filled the rooms with plants and family photographs. The effect is warm and personal, more like visiting a relative than entering a business. The menu is short — coffee, hot chocolate, and a few cakes — and everything comes from local farms. My almond cake was fresh and generous, although my friend found her hot chocolate too sweet to finish.\n\nService is where La Colina still has homework to do. Our waiter was friendly but clearly new to the job: he forgot my order once and brought us the bill for another table. To be fair, the place was completely full, and only two people were serving more than forty customers.\n\nWould I return? Absolutely — but on a weekday morning, when I can enjoy that view in peace. La Colina is not perfect yet, but it has something that many polished places lack: a heart. Give it time, and it may become the best café in the region.",
+      "ejemplo": {
+        "q": "What is the writer trying to do in this text?",
+        "options": [
+          "complain about the service in local cafés",
+          "teach readers how to prepare hot chocolate",
+          "give a balanced opinion about a new café",
+          "invite people to work as waiters at La Colina"
+        ],
+        "answer": 2
+      },
+      "questions": [
+        {
+          "id": "p6_a_1",
+          "q": "What can be inferred about La Colina before the writer's visit?",
+          "options": [
+            "It had been open for many years",
+            "It moved to a new house two months ago",
+            "It was already popular in the town",
+            "It was famous for its parking area"
+          ]
+        },
+        {
+          "id": "p6_a_2",
+          "q": "The writer mentions walking past the entrance twice in order to show that…",
+          "options": [
+            "the café is not easy to find",
+            "the view from the terrace is disappointing",
+            "the writer arrived after the café had closed",
+            "the red door of the house was locked"
+          ]
+        },
+        {
+          "id": "p6_a_3",
+          "q": "What does the writer suggest about the café's decoration?",
+          "options": [
+            "It needs more family photographs",
+            "It looks too old to attract customers",
+            "It copies other businesses in town",
+            "It makes customers feel welcome, like in a home"
+          ]
+        },
+        {
+          "id": "p6_a_4",
+          "q": "What can be inferred about the food and drinks at La Colina?",
+          "options": [
+            "The menu offers too many choices",
+            "Not everything pleased the writer's group",
+            "The cakes come from a factory far away",
+            "The hot chocolate was the best item on the menu"
+          ]
+        },
+        {
+          "id": "p6_a_5",
+          "q": "The writer mentions that only two people were serving to suggest that…",
+          "options": [
+            "the café should accept fewer customers",
+            "the waiter had worked there for many years",
+            "the service problems were not only the waiter's fault",
+            "the bill was too expensive for the writer"
+          ]
+        },
+        {
+          "id": "p6_a_6",
+          "q": "Which sentence best describes the writer's final opinion of La Colina?",
+          "options": [
+            "It is already the best café in the region",
+            "It has problems now but a promising future",
+            "It should move to a street with more parking",
+            "It is only worth visiting on Saturdays"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p6_b",
+      "titulo": "WHY EVERY TEENAGER SHOULD LEARN TO COOK",
+      "nivel": "B1",
+      "dificultad": 3,
+      "texto": "When I tell people that my fourteen-year-old son prepares dinner for our family twice a week, they usually react in one of two ways: they congratulate me, or they look at me as if I had asked him to fly a plane. Both reactions, I believe, say a lot about how little we expect from teenagers today.\n\nCooking is often presented as a boring chore, something adults do because they must. But watch a teenager who has just served a plate of rice that came out exactly right, and you will see something different: quiet pride. In a world where young people are constantly told to wait — wait to work, wait to decide, wait to be taken seriously — the kitchen is one of the few places where they can be responsible for a complete task, from the market to the table.\n\nSome parents tell me they have no time to teach, that it is faster to do everything themselves. Of course it is. It is also faster to tie a child's shoes forever. Speed is a poor argument when the goal is independence.\n\nAs his mother, I am not suggesting that every teenager must become a chef. My son still burns the beans from time to time, and his soups are, let us say, experimental. But he plans meals, manages a small budget, and understands that feeding people is a form of caring. Those lessons will last longer than anything he memorizes for an exam. And on Tuesdays and Fridays, dinner is his.",
+      "ejemplo": {
+        "q": "What is the writer trying to do in this text?",
+        "options": [
+          "teach readers how to cook rice and beans",
+          "convince readers that teenagers should learn to cook",
+          "describe her son's favorite recipes in detail",
+          "explain why chefs need to start cooking young"
+        ],
+        "answer": 1
+      },
+      "questions": [
+        {
+          "id": "p6_b_1",
+          "q": "Why does the writer mention the two ways people react to her son's cooking?",
+          "options": [
+            "to prove that cooking is as dangerous as flying a plane",
+            "to explain why her son cooks only twice a week",
+            "to complain that people never congratulate parents",
+            "to show that society expects very little from teenagers"
+          ]
+        },
+        {
+          "id": "p6_b_2",
+          "q": "It can be inferred that, in the writer's opinion, teenagers today…",
+          "options": [
+            "are given few chances to show real responsibility",
+            "prefer to wait instead of working",
+            "enjoy serving rice more than eating it",
+            "spend too much time at the market"
+          ]
+        },
+        {
+          "id": "p6_b_3",
+          "q": "The writer mentions tying a child's shoes to suggest that…",
+          "options": [
+            "parents should teach shoe-tying before cooking",
+            "teenagers today cannot tie their own shoes",
+            "doing everything for children keeps them dependent",
+            "some kitchen tasks are dangerous for children"
+          ]
+        },
+        {
+          "id": "p6_b_4",
+          "q": "What is the writer's attitude toward her son's cooking mistakes?",
+          "options": [
+            "She is worried that he will never improve",
+            "She accepts them with good humor",
+            "She thinks it is faster to cook everything herself",
+            "She believes they show he needs a chef's course"
+          ]
+        },
+        {
+          "id": "p6_b_5",
+          "q": "When the writer says her son's soups are 'experimental', she implies that…",
+          "options": [
+            "the soups follow traditional recipes carefully",
+            "the family refuses to eat dinner on Fridays",
+            "the soups do not always turn out well",
+            "her son memorizes new recipes for exams"
+          ]
+        },
+        {
+          "id": "p6_b_6",
+          "q": "It can be inferred that the writer believes school exams…",
+          "options": [
+            "are the most important part of a teenager's education",
+            "teach lessons that last longer than cooking",
+            "should include questions about family budgets",
+            "matter less than lessons learned through real experience"
+          ]
+        }
+      ]
+    }
+  ],
+  "p7": [
+    {
+      "id": "p7_a",
+      "titulo": "The Island My Grandmother Loved",
+      "nivel": "B1",
+      "dificultad": 3,
+      "ejemplo": {
+        "options": [
+          "told",
+          "said",
+          "spoke",
+          "talked"
+        ],
+        "answer": 0
+      },
+      "texto": "My grandmother often {0} me stories about the tiny island where she grew up. Her father was the lighthouse keeper, and the family lived alone. A small boat {1} supplies from the mainland once a week, but when storms hit, the crossing had to be {2} for days. Because of this, they always {3} extra food in the cellar. My grandmother {4} ever saw other children, yet she never felt lonely. She {5} hours exploring the rocks and {6} friends with the seabirds that nested on the cliffs. Every evening, she climbed the narrow stairs to help her father light the lamp, a task {7} made her feel grown-up. {8} the work was tiring, her father never complained. Years later, when electric systems {9}, the family finally moved to the mainland. My grandmother often said that leaving the island was the hardest {10} of her life. Last summer, I travelled there to see the lighthouse, which has been {11} into a museum. Standing at the top, I {12} why she loved that lonely place so much.",
+      "gaps": [
+        {
+          "id": "p7_a_1",
+          "options": [
+            "arrived",
+            "delivered",
+            "travelled",
+            "reached"
+          ]
+        },
+        {
+          "id": "p7_a_2",
+          "options": [
+            "set off",
+            "taken off",
+            "put off",
+            "turned off"
+          ]
+        },
+        {
+          "id": "p7_a_3",
+          "options": [
+            "held",
+            "kept",
+            "stayed",
+            "remained"
+          ]
+        },
+        {
+          "id": "p7_a_4",
+          "options": [
+            "almost",
+            "nearly",
+            "closely",
+            "hardly"
+          ]
+        },
+        {
+          "id": "p7_a_5",
+          "options": [
+            "spent",
+            "paid",
+            "used",
+            "counted"
+          ]
+        },
+        {
+          "id": "p7_a_6",
+          "options": [
+            "did",
+            "got",
+            "made",
+            "took"
+          ]
+        },
+        {
+          "id": "p7_a_7",
+          "options": [
+            "who",
+            "which",
+            "what",
+            "whose"
+          ]
+        },
+        {
+          "id": "p7_a_8",
+          "options": [
+            "Despite",
+            "However",
+            "Unless",
+            "Although"
+          ]
+        },
+        {
+          "id": "p7_a_9",
+          "options": [
+            "turned up",
+            "took over",
+            "set out",
+            "got by"
+          ]
+        },
+        {
+          "id": "p7_a_10",
+          "options": [
+            "election",
+            "conclusion",
+            "decision",
+            "opinion"
+          ]
+        },
+        {
+          "id": "p7_a_11",
+          "options": [
+            "translated",
+            "exchanged",
+            "converted",
+            "reformed"
+          ]
+        },
+        {
+          "id": "p7_a_12",
+          "options": [
+            "noticed",
+            "remarked",
+            "supposed",
+            "realised"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "p7_b",
+      "titulo": "Back on Stage",
+      "nivel": "B1",
+      "dificultad": 2,
+      "ejemplo": {
+        "options": [
+          "started",
+          "opened",
+          "entered",
+          "joined"
+        ],
+        "answer": 0
+      },
+      "texto": "Elena {0} playing the violin at six, and by twenty she was performing with a famous orchestra. Then, one winter morning, she slipped on the ice and broke her left wrist. The doctors warned her that she might never perform again. At first, she refused to accept this and {1} practising in secret, but the pain {2} got worse, so she had to stop completely. Her doctor told her to {3} a long break from music. During her recovery, Elena {4} as a music teacher at a local school. {5} she missed performing, helping her students gave her a new sense of {6}. Slowly, her wrist began to heal, and she did gentle exercises to {7} its strength, practising for a {8} minutes every morning. After nearly a year, she {9} that her old orchestra needed a violinist. At the audition, she played {10} well that she was offered the position. Last spring, Elena {11} on stage again to warm applause. She says her injury {12} her an important lesson: with patience, almost anything is possible.",
+      "gaps": [
+        {
+          "id": "p7_b_1",
+          "options": [
+            "gave up",
+            "carried on",
+            "took after",
+            "got over"
+          ]
+        },
+        {
+          "id": "p7_b_2",
+          "options": [
+            "hardly",
+            "nearly",
+            "properly",
+            "only"
+          ]
+        },
+        {
+          "id": "p7_b_3",
+          "options": [
+            "make",
+            "do",
+            "take",
+            "put"
+          ]
+        },
+        {
+          "id": "p7_b_4",
+          "options": [
+            "employed",
+            "occupied",
+            "earned",
+            "worked"
+          ]
+        },
+        {
+          "id": "p7_b_5",
+          "options": [
+            "In spite of",
+            "However",
+            "Instead of",
+            "Even though"
+          ]
+        },
+        {
+          "id": "p7_b_6",
+          "options": [
+            "purpose",
+            "aim",
+            "goal",
+            "target"
+          ]
+        },
+        {
+          "id": "p7_b_7",
+          "options": [
+            "bring up",
+            "grow up",
+            "build up",
+            "get up"
+          ]
+        },
+        {
+          "id": "p7_b_8",
+          "options": [
+            "little",
+            "lot",
+            "few",
+            "bit"
+          ]
+        },
+        {
+          "id": "p7_b_9",
+          "options": [
+            "found out",
+            "gave away",
+            "looked after",
+            "set out"
+          ]
+        },
+        {
+          "id": "p7_b_10",
+          "options": [
+            "such",
+            "so",
+            "too",
+            "very"
+          ]
+        },
+        {
+          "id": "p7_b_11",
+          "options": [
+            "attended",
+            "assisted",
+            "appeared",
+            "presented"
+          ]
+        },
+        {
+          "id": "p7_b_12",
+          "options": [
+            "learned",
+            "explained",
+            "taught",
+            "informed"
+          ]
+        }
+      ]
+    }
+  ]
+};
+
+/* ================== Metadatos de las 7 partes ================== */
+const PARTES_META = {
+  p1:{n:'Parte 1 · Vocabulario', comp:'Léxica', per:6,
+      instr:'Lea las descripciones de la columna de la izquierda. ¿Cuál palabra concuerda con cada descripción? Una palabra se usa como ejemplo y sobran dos palabras más. Toque una descripción y luego la palabra que le corresponde.'},
+  p2:{n:'Parte 2 · Avisos', comp:'Pragmática', per:1,
+      instr:'¿Dónde puede ver estos avisos? Marque A, B o C.'},
+  p3:{n:'Parte 3 · Conversaciones', comp:'Comunicativa', per:1,
+      instr:'Complete las conversaciones. Marque A, B o C.'},
+  p4:{n:'Parte 4 · Texto con espacios', comp:'Gramatical', per:10,
+      instr:'Lea el texto y seleccione la palabra correcta para cada espacio. Marque A, B o C.'},
+  p5:{n:'Parte 5 · Lectura', comp:'Lectura literal', per:9,
+      instr:'Lea el artículo y luego responda las preguntas. Marque A, B o C.'},
+  p6:{n:'Parte 6 · Lectura', comp:'Lectura inferencial', per:6,
+      instr:'Lea el artículo y luego responda las preguntas. Marque A, B, C o D.'},
+  p7:{n:'Parte 7 · Texto con espacios', comp:'Léxico-gramatical', per:12,
+      instr:'Lea el texto y seleccione la palabra que tenga el significado o la estructura correcta para cada espacio. Marque A, B, C o D.'}
+};
+const NIVEL_DESC = {
+  'Pre A1':'Reconoces vocabulario básico y frases muy sencillas de tu entorno. ¡Este es el punto de partida!',
+  'A1':'Comprendes enunciados simples de situaciones cotidianas: saludos, indicaciones y avisos según el contexto.',
+  'A2':'Comprendes información específica en textos informativos y descriptivos sencillos.',
+  'B1':'Posees vocabulario y estructuras que te permiten inferir y comprender un rango amplio de textos.'
+};
+const NIVEL_COLOR = {'Pre A1':['#F9E7E4','#8E2A21'],'A1':['#FBEFDD','#9A5A14'],'A2':['#F7F0D8','#8A6D1A'],'B1':['#E4F2EA','#2E6B4F']};
+const LETRAS = ['A','B','C','D'];
+
+/* ================== Utilidades puras (testeables sin DOM) ================== */
+function pickN(arr, n){
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random()*(i+1)); const t = a[i]; a[i]=a[j]; a[j]=t; }
+  return a.slice(0, Math.max(0, Math.min(n, a.length)));
+}
+// Construye el examen del estudiante a partir del banco y la config del docente.
+// cfgPartes = {p1:6, p2:6, p3:6, p4:10, p5:9, p6:6, p7:12} (cantidad de PREGUNTAS por parte; 0 = no incluir)
+function buildExam(bank, cfgPartes){
+  const parts = [];
+  const want = p => Math.max(0, Math.floor((cfgPartes||{})[p] || 0));
+  if (want('p1') > 0 && bank.p1 && bank.p1.length){
+    const nb = Math.min(bank.p1.length, Math.max(1, Math.round(want('p1')/6)));
+    parts.push({ p:'p1', blocks: pickN(bank.p1, nb) });
+  }
+  ['p2','p3'].forEach(p => {
+    if (want(p) > 0 && bank[p] && bank[p].items && bank[p].items.length)
+      parts.push({ p, ejemplo: bank[p].ejemplo, items: pickN(bank[p].items, want(p)) });
+  });
+  [['p4',10],['p5',9],['p6',6],['p7',12]].forEach(pair => {
+    const p = pair[0], per = pair[1];
+    if (want(p) > 0 && bank[p] && bank[p].length){
+      const nt = Math.min(bank[p].length, Math.max(1, Math.round(want(p)/per)));
+      parts.push({ p, texts: pickN(bank[p], nt) });
+    }
+  });
+  return parts;
+}
+// Lista de ids calificables de una parte ya construida (en orden de presentación)
+function idsDePart(part){
+  if (part.p === 'p1') return part.blocks.reduce((a,b)=>a.concat(b.items.map(i=>i.id)), []);
+  if (part.p === 'p2' || part.p === 'p3') return part.items.map(i=>i.id);
+  if (part.p === 'p4' || part.p === 'p7') return part.texts.reduce((a,t)=>a.concat(t.gaps.map(g=>g.id)), []);
+  return part.texts.reduce((a,t)=>a.concat(t.questions.map(q=>q.id)), []);
+}
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+/* ================== Estado ================== */
+const ST = {
+  exam:null, parts:[], partIdx:-1, answers:{}, numById:{},
+  cfg:null, student:{}, startedAt:null, t0:0, totalSec:0, tLeft:0, tInt:0, tCollapsed:false,
+  tm:{tab_switch:0,blur:0,copy:0,cut:0,paste:0,contextmenu:0,devtools:0,shortcut:0},
+  p1active:null, enviado:false
+};
+
+/* ================== Arranque ================== */
+document.addEventListener('DOMContentLoaded', function(){
+  const $ = id => document.getElementById(id);
+
+  function toast(msg, red){
+    const t = $('toast'); t.textContent = msg; t.className = 'toast' + (red?' red':''); t.style.display='block';
+    clearTimeout(t._h); t._h = setTimeout(()=>{ t.style.display='none'; }, 4200);
+  }
+  function show(id){
+    ['scr-code','scr-datos','scr-inter','scr-parte','scr-result'].forEach(s=>$(s).classList.remove('on'));
+    $(id).classList.add('on'); window.scrollTo(0,0);
+  }
+
+  /* ---------- Pantalla 1: código ---------- */
+  const inCod = $('in-codigo');
+  inCod.addEventListener('input', () => {
+    let v = inCod.value.toUpperCase().replace(/[^A-Z0-9]/g,'');
+    if (v.length > 3) v = v.slice(0,3) + '-' + v.slice(3,7);
+    inCod.value = v;
+  });
+  async function pedirConfig(){
+    const codigo = inCod.value.trim();
+    const err = $('code-err'); err.style.display='none';
+    if (codigo.length < 4){ err.textContent='Escribe el código completo.'; err.style.display='block'; return; }
+    const btn = $('btn-code'); btn.disabled = true; btn.textContent = 'Verificando código…';
+    try{
+      const r = await fetch(SUPABASE_URL + GRADE_FN_PATH, {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_ANON_KEY,'apikey':SUPABASE_ANON_KEY},
+        body: JSON.stringify({ action:'get_config', codigo })
+      });
+      const j = await r.json();
+      if (!r.ok || !j.ok){ throw new Error(j.error || 'No se pudo verificar el código.'); }
+      ST.cfg = j;
+      // Boleta
+      $('bt-titulo').textContent = j.titulo || 'Simulacro tipo Saber 11° · Inglés';
+      $('bt-etapa').textContent = ({diagnostico:'Diagnóstico',intermedio:'Intermedio',final:'Final',demo:'Demostración'})[j.etapa] || j.etapa;
+      $('bt-grupo').textContent = j.grupo || 'Sin grupo'; $('bt-cod').textContent = j.codigo;
+      const partes = (j.config && j.config.partes) || {p1:6,p2:6,p3:6,p4:10,p5:9,p6:6,p7:12};
+      ST.exam = buildExam(BANK_ICFES, partes);
+      let n = 0; ST.exam.forEach(pt => { n += idsDePart(pt).length; });
+      if (!n){ throw new Error('Este examen no tiene preguntas configuradas. Avísale a tu docente.'); }
+      ST.totalSec = Math.max(5, Math.round(((j.config && j.config.minutos) || Math.ceil(n*1.25)) )) * 60;
+      $('bt-n').textContent = n; $('bt-min').textContent = Math.round(ST.totalSec/60);
+      show('scr-datos');
+    }catch(e){
+      inCod.classList.add('shake'); setTimeout(()=>inCod.classList.remove('shake'), 350);
+      err.textContent = /Failed to fetch|NetworkError/i.test(String(e.message)) ? 'No hay conexión. Verifica tu internet e intenta de nuevo.' : e.message;
+      err.style.display='block';
+    }finally{ btn.disabled = false; btn.textContent = 'Ingresar al simulacro'; }
+  }
+  $('btn-code').addEventListener('click', pedirConfig);
+  inCod.addEventListener('keydown', e => { if (e.key === 'Enter') pedirConfig(); });
+
+  /* ---------- Pantalla 2: datos ---------- */
+  $('in-doc').addEventListener('input', () => { $('in-doc').value = $('in-doc').value.replace(/\D/g,''); });
+  $('btn-comenzar').addEventListener('click', () => {
+    const nombre = $('in-nombre').value.trim(), doc = $('in-doc').value.trim();
+    const err = $('datos-err'); err.style.display = 'none';
+    if (nombre.length < 5){ err.textContent = 'Escribe tu nombre completo.'; err.style.display='block'; return; }
+    if (doc.length < 5){ err.textContent = 'Revisa tu número de documento (solo números, sin puntos).'; err.style.display='block'; return; }
+    ST.student = { nombre, documento: doc, tipo_documento: $('in-tipodoc').value, colegio: $('in-colegio').value.trim() };
+    ST.startedAt = new Date().toISOString(); ST.t0 = Date.now();
+    armarStepper(); iniciarTimer(); activarAntitrampa();
+    $('hdr').style.display = 'block';
+    ST.partIdx = -1; siguienteParte();
+  });
+
+  /* ---------- Stepper + timer ---------- */
+  function armarStepper(){
+    $('stepper').innerHTML = ST.exam.map(()=>'<div class="seg"></div>').join('');
+  }
+  function pintarStepper(fill){
+    const segs = $('stepper').children;
+    for (let i = 0; i < segs.length; i++){
+      segs[i].className = 'seg' + (i < ST.partIdx ? ' done' : i === ST.partIdx ? ' cur' : '');
+      if (i === ST.partIdx) segs[i].style.setProperty('--fill', Math.round(fill*100) + '%');
+    }
+    const pt = ST.exam[ST.partIdx];
+    $('hdr-lbl').textContent = pt ? ('Parte ' + pt.p.slice(1) + ' de 7 · ' + PARTES_META[pt.p].comp) : '';
+  }
+  function iniciarTimer(){
+    ST.tLeft = ST.totalSec;
+    const el = $('timer'), tx = $('t-txt');
+    el.addEventListener('click', () => { ST.tCollapsed = !ST.tCollapsed; pinta(); });
+    function pinta(){
+      const m = Math.floor(ST.tLeft/60), s = ST.tLeft % 60;
+      tx.textContent = ST.tCollapsed ? '' : (m + ':' + String(s).padStart(2,'0'));
+      el.className = 'timer' + (ST.tLeft <= 120 ? ' crit' : ST.tLeft <= ST.totalSec*0.25 ? ' warn' : '');
+    }
+    pinta();
+    ST.tInt = setInterval(() => {
+      ST.tLeft--; pinta();
+      if (ST.tLeft === 120) toast('⏱ Quedan 2 minutos.');
+      if (ST.tLeft <= 0){ clearInterval(ST.tInt); toast('Se acabó el tiempo. Enviando…'); enviar(); }
+    }, 1000);
+  }
+
+  /* ---------- Antitrampa (disuasiva + telemetría) ---------- */
+  function activarAntitrampa(){
+    document.addEventListener('visibilitychange', () => { if (document.hidden) ST.tm.tab_switch++; });
+    window.addEventListener('blur', () => { ST.tm.blur++; });
+    ['copy','cut','paste'].forEach(ev => document.addEventListener(ev, e => { e.preventDefault(); ST.tm[ev]++; toast('Esa acción no está permitida durante el examen.', true); }));
+    document.addEventListener('contextmenu', e => { e.preventDefault(); ST.tm.contextmenu++; });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'F12'){ e.preventDefault(); ST.tm.devtools++; }
+      if ((e.ctrlKey||e.metaKey) && /^[cvxpsu]$/i.test(e.key)){ e.preventDefault(); ST.tm.shortcut++; }
+    });
+  }
+
+  /* ---------- Navegación de partes ---------- */
+  function siguienteParte(){
+    ST.partIdx++;
+    if (ST.partIdx >= ST.exam.length){ enviar(); return; }
+    const pt = ST.exam[ST.partIdx], meta = PARTES_META[pt.p], n = idsDePart(pt).length;
+    $('it-num').textContent = pt.p.slice(1);
+    $('it-nombre').textContent = meta.n;
+    $('it-info').textContent = n + (n===1?' pregunta':' preguntas') + ' · ' + meta.comp;
+    $('it-instr').textContent = meta.instr;
+    $('btn-startpart').textContent = 'Comenzar ' + meta.n.split(' · ')[0];
+    pintarStepper(0); show('scr-inter');
+  }
+  $('btn-startpart').addEventListener('click', () => { renderParte(); show('scr-parte'); });
+  $('btn-nextpart').addEventListener('click', () => {
+    const pt = ST.exam[ST.partIdx];
+    const faltan = idsDePart(pt).filter(id => !(id in ST.answers)).length;
+    if (faltan > 0 && !confirm('Te ' + (faltan===1?'falta 1 pregunta':'faltan '+faltan+' preguntas') + ' de esta parte y no podrás volver. ¿Continuar?')) return;
+    siguienteParte();
+  });
+
+  /* ---------- Numeración global ---------- */
+  function numerar(){
+    let n = 1; ST.numById = {};
+    ST.exam.forEach(pt => idsDePart(pt).forEach(id => { ST.numById[id] = n++; }));
+  }
+
+  /* ---------- Render de cada parte ---------- */
+  function optsHtml(id, options){
+    return options.map((o,i) =>
+      '<button class="opt' + (ST.answers[id]===i?' sel':'') + '" data-id="' + esc(id) + '" data-i="' + i + '"><span class="lt">' + LETRAS[i] + '</span><span>' + esc(o) + '</span></button>'
+    ).join('');
+  }
+  function avisoHtml(av){
+    const cls = { nota:'av-nota', placa:'av-placa', oferta:'av-oferta', advertencia:'av-advertencia', digital:'av-digital', etiqueta:'av-etiqueta' }[av.estilo] || 'av-placa';
+    const tornillos = cls === 'av-placa' ? '<i></i><i></i><i></i><i></i>' : '';
+    return '<div class="aviso ' + cls + '">' + tornillos + '<div>' + esc(av.aviso) + (av.sub ? '<div class="sub">' + esc(av.sub) + '</div>' : '') + '</div></div>';
+  }
+  function clozeTexto(t){
+    let html = esc(t.texto);
+    const ejWord = t.ejemplo ? t.ejemplo.options[t.ejemplo.answer] : '';
+    html = html.replace('{0}', '<span class="gapej"><u>' + esc(ejWord) + '</u><sup>0</sup></span>');
+    t.gaps.forEach((g,i) => { html = html.replace('{' + (i+1) + '}', '<span class="gapnum">' + ST.numById[g.id] + '</span>'); });
+    return html;
+  }
+  function renderParte(){
+    numerar();
+    const pt = ST.exam[ST.partIdx], meta = PARTES_META[pt.p];
+    let h = '<div class="instr">' + esc(meta.instr) + '</div>';
+
+    if (pt.p === 'p1'){
+      pt.blocks.forEach(blk => {
+        h += '<h3 style="margin:12px 0 2px">' + esc(blk.titulo) + '</h3>';
+        h += '<div class="ejq"><span class="tag">Ejemplo 0</span><br>' + esc(blk.ejemplo.desc) + ' → <span class="okopt">' + esc(blk.ejemplo.palabra) + '</span></div>';
+        blk.items.forEach(it => {
+          h += '<div class="m-item" data-mid="' + esc(it.id) + '"><span class="qnum">' + ST.numById[it.id] + '.</span> ' + esc(it.desc) +
+               '<br><span class="m-slot' + (ST.answers[it.id]?' full':'') + '" data-mid="' + esc(it.id) + '">' + esc(ST.answers[it.id] || 'Toca una palabra abajo') + '</span></div>';
+        });
+        h += '<p class="help" style="text-align:center">Sobran dos palabras. <b id="m-count-' + esc(blk.id) + '"></b></p>';
+        h += '<div class="wbank" data-blk="' + esc(blk.id) + '">' + (blk.palabras||[]).map(w =>
+              w === String(blk.ejemplo.palabra).toLowerCase()
+              ? '<button class="wchip ej">' + esc(w) + '</button>'
+              : '<button class="wchip" data-blk="' + esc(blk.id) + '" data-w="' + esc(w) + '">' + esc(w) + '</button>').join('') + '</div>';
+      });
+    } else if (pt.p === 'p2' || pt.p === 'p3'){
+      const ej = pt.ejemplo;
+      if (ej){
+        h += '<div class="ejq"><span class="tag">Ejemplo 0</span><br>' +
+             (pt.p==='p2' ? avisoHtml(ej) : '<div class="bocadillo">' + esc(ej.linea) + '</div>') +
+             ej.options.map((o,i)=>'<div>' + LETRAS[i] + '. ' + (i===ej.answer?'<span class="okopt">'+esc(o)+' ✓</span>':esc(o)) + '</div>').join('') + '</div>';
+      }
+      pt.items.forEach(it => {
+        h += '<div class="q"><span class="qnum">' + ST.numById[it.id] + '.</span>' +
+             (pt.p==='p2' ? avisoHtml(it) : '<div class="bocadillo" style="margin-top:8px">' + esc(it.linea) + '</div>') +
+             optsHtml(it.id, it.options) + '</div>';
+      });
+    } else if (pt.p === 'p4' || pt.p === 'p7'){
+      pt.texts.forEach(t => {
+        h += '<div class="lectura"><h3>' + esc((t.titulo||'').toUpperCase()) + '</h3><p>' + clozeTexto(t) + '</p></div>';
+        if (t.ejemplo) h += '<div class="ejq"><span class="tag">Ejemplo 0</span> ' + t.ejemplo.options.map((o,i)=> LETRAS[i] + '. ' + (i===t.ejemplo.answer?'<span class="okopt">'+esc(o)+' ✓</span>':esc(o))).join(' · ') + '</div>';
+        t.gaps.forEach(g => { h += '<div class="q"><span class="qnum">' + ST.numById[g.id] + '.</span>' + optsHtml(g.id, g.options) + '</div>'; });
+      });
+    } else { // p5 / p6
+      pt.texts.forEach(t => {
+        h += '<div class="lectura"><h3>' + esc((t.titulo||'').toUpperCase()) + '</h3><p>' + esc(t.texto) + '</p></div>';
+        if (t.ejemplo) h += '<div class="ejq"><span class="tag">Ejemplo 0</span><br>' + esc(t.ejemplo.q) + '<br>' + t.ejemplo.options.map((o,i)=> LETRAS[i] + '. ' + (i===t.ejemplo.answer?'<span class="okopt">'+esc(o)+' ✓</span>':esc(o))).join('<br>') + '</div>';
+        t.questions.forEach(q => { h += '<div class="q"><span class="qnum">' + ST.numById[q.id] + '.</span> ' + esc(q.q) + optsHtml(q.id, q.options) + '</div>'; });
+      });
+    }
+    $('parte-body').innerHTML = h;
+    $('btn-nextpart').textContent = ST.partIdx === ST.exam.length - 1 ? 'Finalizar y calificar' : 'Continuar a la siguiente parte';
+    if (pt.p === 'p1'){ ST.p1active = null; actualizarP1(); }
+    actualizarProgreso();
+  }
+
+  /* ---------- Interacciones ---------- */
+  document.addEventListener('click', e => {
+    const opt = e.target.closest('.opt');
+    if (opt && opt.dataset.id){
+      ST.answers[opt.dataset.id] = Number(opt.dataset.i);
+      opt.parentElement.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));
+      opt.classList.add('sel'); actualizarProgreso(); return;
+    }
+    const slot = e.target.closest('.m-slot');
+    if (slot){ // quitar palabra asignada o activar item
+      const id = slot.dataset.mid;
+      if (ST.answers[id]){ delete ST.answers[id]; }
+      ST.p1active = id; actualizarP1(); return;
+    }
+    const mitem = e.target.closest('.m-item');
+    if (mitem){ ST.p1active = mitem.dataset.mid; actualizarP1(); return; }
+    const chip = e.target.closest('.wchip');
+    if (chip && chip.dataset.w){
+      const pt = ST.exam[ST.partIdx];
+      const blk = pt.blocks.find(b => b.id === chip.dataset.blk);
+      const ids = blk.items.map(i=>i.id);
+      let target = ST.p1active && ids.includes(ST.p1active) && !ST.answers[ST.p1active] ? ST.p1active : ids.find(id => !ST.answers[id]);
+      if (!target){ toast('Ya asignaste todas las descripciones de este bloque. Toca una palabra asignada para cambiarla.'); return; }
+      // si la palabra ya estaba en otro slot del bloque, liberarla
+      ids.forEach(id => { if (ST.answers[id] === chip.dataset.w) delete ST.answers[id]; });
+      ST.answers[target] = chip.dataset.w;
+      ST.p1active = ids.find(id => !ST.answers[id]) || null;
+      actualizarP1();
+    }
+  });
+  function actualizarP1(){
+    const pt = ST.exam[ST.partIdx]; if (!pt || pt.p !== 'p1') return;
+    pt.blocks.forEach(blk => {
+      const usadas = blk.items.map(i => ST.answers[i.id]).filter(Boolean);
+      blk.items.forEach(it => {
+        const item = document.querySelector('.m-item[data-mid="' + it.id + '"]');
+        const slot = document.querySelector('.m-slot[data-mid="' + it.id + '"]');
+        if (!item || !slot) return;
+        item.classList.toggle('active', ST.p1active === it.id && !ST.answers[it.id]);
+        slot.classList.toggle('full', !!ST.answers[it.id]);
+        slot.textContent = ST.answers[it.id] || 'Toca una palabra abajo';
+      });
+      document.querySelectorAll('.wchip[data-blk="' + blk.id + '"]').forEach(ch => ch.classList.toggle('used', usadas.includes(ch.dataset.w)));
+      const c = document.getElementById('m-count-' + blk.id);
+      if (c) c.textContent = usadas.length + ' de ' + blk.items.length + ' asignadas.';
+    });
+    actualizarProgreso();
+  }
+  function actualizarProgreso(){
+    const pt = ST.exam[ST.partIdx]; if (!pt) return;
+    const ids = idsDePart(pt);
+    pintarStepper(ids.filter(id => id in ST.answers).length / Math.max(1, ids.length));
+  }
+
+  /* ---------- Envío y resultados ---------- */
+  async function enviar(){
+    if (ST.enviado) return; ST.enviado = true;
+    clearInterval(ST.tInt);
+    $('overlay').style.display = 'flex';
+    const partes = {};
+    ST.exam.forEach(pt => { partes[pt.p] = idsDePart(pt); });
+    const payload = {
+      action:'grade', tipo:'icfes_en', codigo: ST.cfg.codigo,
+      student: ST.student, partes, answers: ST.answers,
+      meta:{ started_at: ST.startedAt, duracion_seg: Math.round((Date.now()-ST.t0)/1000),
+             telemetria: ST.tm, navegador: navigator.userAgent.slice(0,380) }
+    };
+    const t0 = Date.now();
+    try{
+      const r = await fetch(SUPABASE_URL + GRADE_FN_PATH, {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_ANON_KEY,'apikey':SUPABASE_ANON_KEY},
+        body: JSON.stringify(payload)
+      });
+      const j = await r.json();
+      if (!r.ok || !j.ok) throw new Error(j.error || 'No se pudo calificar el examen.');
+      const wait = Math.max(0, 800 - (Date.now()-t0));
+      setTimeout(() => { $('overlay').style.display='none'; $('hdr').style.display='none'; pintarResultados(j); show('scr-result'); }, wait);
+    }catch(e){
+      ST.enviado = false;
+      $('overlay').style.display = 'none';
+      toast('Error al enviar: ' + e.message + ' — Se intentará de nuevo.', true);
+      setTimeout(() => { if (!ST.enviado) enviar(); }, 4000);
+    }
+  }
+  function pintarResultados(j){
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const score = Number(j.score)||0;
+    const el = $('r-score');
+    if (reduce){ el.textContent = score; }
+    else {
+      let cur = 0; const step = Math.max(1, Math.round(score/45));
+      const iv = setInterval(()=>{ cur = Math.min(score, cur+step); el.textContent = cur; if (cur>=score) clearInterval(iv); }, 20);
+    }
+    $('r-needle').style.transform = 'rotate(' + ((score/100)*180 - 90) + 'deg)';
+    const col = NIVEL_COLOR[j.nivel] || ['#EEE','#333'];
+    const nv = $('r-nivel'); nv.textContent = j.nivel; nv.style.background = col[0]; nv.style.color = col[1];
+    $('r-desc').textContent = NIVEL_DESC[j.nivel] || '';
+    $('r-legacy').textContent = 'Equivalencia con la escala anterior del ICFES: ' + (j.nivel_anterior || '—');
+    let bars = '';
+    Object.keys(PARTES_META).forEach(p => {
+      const d = j.partes && j.partes[p]; if (!d) return;
+      bars += '<div class="bar-row"><div class="bar-lbl"><span>' + PARTES_META[p].n + ' · ' + PARTES_META[p].comp + '</span><span>' + d.c + '/' + d.t + ' · ' + d.pct + '%</span></div><div class="bar"><i style="width:' + d.pct + '%"></i></div></div>';
+    });
+    $('r-bars').innerHTML = bars;
+    if (j.previos && j.previos.length){
+      $('r-prev').innerHTML = '<h3 style="margin:10px 0 4px">Tus aplicaciones anteriores</h3>' +
+        j.previos.map(pv => '<span class="chip" style="background:var(--navy-soft);color:var(--navy-d);margin-right:6px">' + esc(pv.etapa) + ': ' + esc(pv.score) + '/100 (' + esc(pv.fecha) + ')</span>').join('');
+    }
+    if (j.feedback){ const f = $('r-feed'); f.style.display='block'; f.textContent = j.feedback; }
+    if (j.informe){ const inf = $('r-informe'); inf.style.display='block'; inf.textContent = j.informe; }
+    if (!j.saved) toast('⚠️ El resultado se calculó pero no se pudo guardar. Muéstrale esta pantalla a tu docente.', true);
+  }
+
+  // Aviso si faltan las llaves
+  if (SUPABASE_URL.includes('TU-PROYECTO') || SUPABASE_ANON_KEY.includes('PEGA_AQUI'))
+    toast('⚠️ Falta configurar SUPABASE_URL / SUPABASE_ANON_KEY en el código.', true);
+});
+</script>
+</body>
+</html>
