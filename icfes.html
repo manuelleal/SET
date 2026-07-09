@@ -120,7 +120,14 @@ label{font-weight:700;font-size:.9rem;display:block;margin:12px 0 4px}
 .bar-lbl span:last-child{font-family:'IBM Plex Mono',monospace}
 .bar{height:10px;background:#E3DFD2;border-radius:999px;overflow:hidden;margin-top:4px}
 .bar i{display:block;height:100%;background:var(--navy);border-radius:999px}
-.informe{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px;margin-top:14px;white-space:pre-wrap}
+.informe{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px;margin-top:14px;overflow-wrap:break-word}
+.informe h3{margin:14px 0 6px;font-size:1.05rem;color:var(--navy)}
+.informe h3:first-child{margin-top:0}
+.informe h4{margin:10px 0 4px;font-size:.95rem;color:var(--navy-d)}
+.informe p{margin:6px 0}
+.informe ul{margin:6px 0 6px 20px}
+.informe li{margin:5px 0}
+.inf-row{background:var(--navy-soft);border-radius:8px;padding:6px 10px;margin:6px 0}
 .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:10px;padding:12px 18px;font-weight:700;font-size:.92rem;z-index:99;display:none;max-width:92vw}
 .toast.red{background:var(--sello)}
 .overlay{position:fixed;inset:0;background:rgba(245,242,234,.94);z-index:80;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:20px}
@@ -213,6 +220,7 @@ label{font-weight:700;font-size:.9rem;display:block;margin:12px 0 4px}
     <div class="card">
       <div class="res-hero">
         <span class="eyebrow" style="background:var(--sello-bg);color:var(--sello)">Puntaje estimado · No oficial</span>
+        <p class="help" id="r-quien" style="margin-top:8px"></p>
         <div class="res-score" id="r-score">0</div>
         <div class="gauge"><div class="arc"></div><div class="needle" id="r-needle"></div></div>
         <div class="nivel-chip" id="r-nivel"></div>
@@ -223,6 +231,7 @@ label{font-weight:700;font-size:.9rem;display:block;margin:12px 0 4px}
       <div id="r-bars"></div>
       <div id="r-prev" style="margin-top:10px"></div>
       <div id="r-feed" class="instr" style="display:none"></div>
+      <h3 id="r-inf-titulo" style="margin:16px 0 4px;display:none">📋 Tu informe personalizado</h3>
       <div id="r-informe" class="informe" style="display:none"></div>
       <div class="grid2 no-print" style="margin-top:16px">
         <button class="btn btn-g" onclick="window.print()">Imprimir / Guardar</button>
@@ -1531,6 +1540,28 @@ function idsDePart(part){
   return part.texts.reduce((a,t)=>a.concat(t.questions.map(q=>q.id)), []);
 }
 function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+// Convierte el markdown del informe IA a HTML seguro (escapa primero, formatea después)
+function mdHtml(md){
+  const lines = esc(md).split(/\r?\n/);
+  let out = '', inList = false;
+  const cerrar = () => { if (inList){ out += '</ul>'; inList = false; } };
+  for (let ln of lines){
+    ln = ln.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/^\s*---+\s*$/, '');
+    if (/^\s*\|/.test(ln)){                       // fila de tabla markdown → renglón simple
+      if (/^\s*\|[\s\-:|]+\|?\s*$/.test(ln)) continue;
+      const celdas = ln.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map(c => c.trim()).filter(Boolean);
+      cerrar(); out += '<p class="inf-row">' + celdas.join(' — ') + '</p>'; continue;
+    }
+    const h = ln.match(/^\s*(#{1,4})\s+(.*)$/);
+    if (h){ cerrar(); out += (h[1].length <= 2 ? '<h3>' : '<h4>') + h[2] + (h[1].length <= 2 ? '</h3>' : '</h4>'); continue; }
+    const li = ln.match(/^\s*[-*•]\s+(.*)$/);
+    if (li){ if (!inList){ out += '<ul>'; inList = true; } out += '<li>' + li[1] + '</li>'; continue; }
+    if (!ln.trim()) { cerrar(); continue; }
+    cerrar(); out += '<p>' + ln + '</p>';
+  }
+  cerrar();
+  return out;
+}
 
 /* ================== Estado ================== */
 const ST = {
@@ -1853,8 +1884,10 @@ document.addEventListener('DOMContentLoaded', function(){
       $('r-prev').innerHTML = '<h3 style="margin:10px 0 4px">Tus aplicaciones anteriores</h3>' +
         j.previos.map(pv => '<span class="chip" style="background:var(--navy-soft);color:var(--navy-d);margin-right:6px">' + esc(pv.etapa) + ': ' + esc(pv.score) + '/100 (' + esc(pv.fecha) + ')</span>').join('');
     }
+    const etapaLbl = ({diagnostico:'Diagnóstico',intermedio:'Intermedio',final:'Final',demo:'Demostración'})[j.etapa] || j.etapa || '';
+    $('r-quien').textContent = (ST.student.nombre || '') + ' · ' + etapaLbl + ' · ' + new Date().toLocaleDateString('es-CO', {day:'numeric', month:'long', year:'numeric'});
     if (j.feedback){ const f = $('r-feed'); f.style.display='block'; f.textContent = j.feedback; }
-    if (j.informe){ const inf = $('r-informe'); inf.style.display='block'; inf.textContent = j.informe; }
+    if (j.informe){ $('r-inf-titulo').style.display='block'; const inf = $('r-informe'); inf.style.display='block'; inf.innerHTML = mdHtml(j.informe); }
     if (!j.saved) toast('⚠️ El resultado se calculó pero no se pudo guardar. Muéstrale esta pantalla a tu docente.', true);
   }
 
