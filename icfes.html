@@ -1891,6 +1891,10 @@ document.addEventListener('DOMContentLoaded', function(){
     if (!j.saved) toast('⚠️ El resultado se calculó pero no se pudo guardar. Muéstrale esta pantalla a tu docente.', true);
   }
 
+  // Enlace profundo: icfes.html#ICF-XXXX (el QR del docente) → prellenar y verificar
+  const hashCod = (location.hash || '').replace('#', '').trim().toUpperCase();
+  if (/^[A-Z0-9-]{4,8}$/.test(hashCod)){ inCod.value = hashCod; pedirConfig(); }
+
   // Aviso si faltan las llaves
   if (SUPABASE_URL.includes('TU-PROYECTO') || SUPABASE_ANON_KEY.includes('PEGA_AQUI'))
     toast('⚠️ Falta configurar SUPABASE_URL / SUPABASE_ANON_KEY en el código.', true);

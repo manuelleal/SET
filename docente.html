@@ -3,16 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel Docente — English Placement Exam</title>
+<title>Panel Docente — Evaluaciones</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Mulish:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Mulish:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
   :root{
     --bg:#F4EEE2; --paper:#FFFDF8; --surface:#FFFFFF; --ink:#26252B; --muted:#736E63; --line:#E7DECB;
     --primary:#15756E; --primary-d:#0F5B55; --primary-soft:#E2F0EE; --accent:#E1A33B;
     --ok:#2E7D5B; --ok-bg:#E7F4EC; --err:#C2553F; --err-bg:#FBEAE5;
+    --navy:#1E3A5F; --navy-soft:#E8EEF5;
     --shadow:0 10px 30px -12px rgba(40,35,20,.25); --radius:16px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
@@ -39,7 +42,6 @@
   button:hover{transform:translateY(-1px)}
   .btn-ghost{background:transparent;color:var(--muted);box-shadow:none;border:1.5px solid var(--line)}
   .btn-block{width:100%;margin-top:10px}
-
   .top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:6px}
   .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
   @media(max-width:760px){.kpis{grid-template-columns:repeat(2,1fr)}}
@@ -48,13 +50,11 @@
   .kpi .l{font-size:.82rem;color:var(--muted);margin-top:4px}
   .cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
   @media(max-width:760px){.cols{grid-template-columns:1fr}}
-
   .barline{margin:10px 0}
   .barline .lab{display:flex;justify-content:space-between;font-size:.86rem;font-weight:600;margin-bottom:5px}
   .barline .lab .v{font-family:'Fraunces',serif;color:var(--primary-d)}
   .bar{height:12px;background:var(--line);border-radius:999px;overflow:hidden}
   .bar>span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--primary))}
-
   .filters{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px}
   .filters > div{flex:1;min-width:160px}
   table{width:100%;border-collapse:collapse;font-size:.9rem}
@@ -65,22 +65,48 @@
   .chip{display:inline-block;font-weight:700;font-size:.78rem;padding:3px 10px;border-radius:999px;background:var(--primary-soft);color:var(--primary-d)}
   .flag{color:var(--err);font-weight:700}
   .scroll{overflow-x:auto}
-
   .modal{position:fixed;inset:0;background:rgba(30,26,15,.45);display:none;place-items:center;padding:20px;z-index:60}
   .modal.show{display:grid}
-  .modal .box{background:var(--surface);border-radius:var(--radius);max-width:640px;width:100%;max-height:88vh;overflow:auto;padding:24px;box-shadow:var(--shadow)}
+  .modal .box{background:var(--surface);border-radius:var(--radius);max-width:680px;width:100%;max-height:88vh;overflow:auto;padding:24px;box-shadow:var(--shadow)}
   .pill{display:inline-block;background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:4px 11px;font-size:.8rem;margin:3px 4px 3px 0}
   .wbox{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:6px;white-space:pre-wrap;font-size:.9rem}
   .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(120%);background:var(--ink);color:#fff;
     padding:12px 18px;border-radius:12px;font-weight:600;font-size:.9rem;transition:.35s;z-index:80}
   .toast.show{transform:translateX(-50%) translateY(0)} .toast.warn{background:var(--err)}
+  /* pestañas */
+  .tabs{display:flex;gap:2px;border-bottom:2px solid var(--line);margin-bottom:18px;flex-wrap:wrap}
+  .tab{background:none;border:none;box-shadow:none;color:var(--muted);font-weight:700;font-size:.95rem;padding:10px 16px;border-radius:10px 10px 0 0;border-bottom:3px solid transparent;margin-bottom:-2px}
+  .tab:hover{transform:none;background:var(--paper)}
+  .tab.on{color:var(--primary-d);border-bottom-color:var(--primary);background:var(--paper)}
+  /* niveles ICFES */
+  .nv{display:inline-block;font-weight:800;font-size:.78rem;padding:3px 10px;border-radius:999px}
+  .nv-pre{background:#F9E7E4;color:#8E2A21}.nv-a1{background:#FBEFDD;color:#9A5A14}
+  .nv-a2{background:#F7F0D8;color:#8A6D1A}.nv-b1{background:#E4F2EA;color:#2E6B4F}
+  .mono{font-family:'IBM Plex Mono',monospace}
+  .codebig{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:2rem;letter-spacing:.28em;color:var(--navy);text-align:center;
+    border:2px dashed var(--navy);border-radius:12px;padding:16px;background:var(--navy-soft);margin:14px 0}
+  .estado-on{background:var(--ok-bg);color:var(--ok)} .estado-off{background:var(--err-bg);color:var(--err)}
+  .pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:12px 0}
+  @media(max-width:640px){.pgrid{grid-template-columns:1fr}}
+  .pcol{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+  .pcol .pn{font-family:'Fraunces',serif;font-weight:700;font-size:1.9rem;color:var(--navy)}
+  .pcol .pl{font-size:.78rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+  .stackbar{display:flex;height:12px;border-radius:999px;overflow:hidden;margin-top:8px}
+  .delta{font-weight:800;font-size:.8rem;border-radius:999px;padding:2px 9px}
+  .delta.up{background:var(--ok-bg);color:var(--ok)} .delta.eq{background:var(--paper);color:var(--muted);border:1px solid var(--line)} .delta.dn{background:var(--err-bg);color:var(--err)}
+  .informe{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px;margin-top:6px;font-size:.92rem;overflow-wrap:break-word}
+  .informe h3{font-size:1rem;color:var(--navy);margin:12px 0 4px}.informe h3:first-child{margin-top:0}
+  .informe h4{font-size:.9rem;margin:8px 0 3px}.informe p{margin:5px 0}.informe ul{margin:5px 0 5px 18px}.informe li{margin:3px 0}
+  .inf-row{background:var(--navy-soft);border-radius:8px;padding:5px 9px;margin:5px 0}
+  .partegrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 14px}
+  @media(max-width:560px){.partegrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="brand">
     <div class="logo">D</div>
-    <div><div class="t">Panel Docente</div><div class="s">English Placement Exam</div></div>
+    <div><div class="t">Panel Docente</div><div class="s">Inglés CEFR · Simulacro tipo Saber 11°</div></div>
   </div>
 
   <!-- LOGIN -->
@@ -96,70 +122,155 @@
   <!-- DASHBOARD -->
   <div id="dash" class="hidden">
     <div class="top">
-      <h2>Resultados</h2>
+      <div class="tabs">
+        <button class="tab on" id="tabbtn-icfes" onclick="verTab('icfes')">Simulacro ICFES</button>
+        <button class="tab" id="tabbtn-examenes" onclick="verTab('examenes')">Exámenes y códigos</button>
+        <button class="tab" id="tabbtn-progreso" onclick="verTab('progreso')">Progreso</button>
+        <button class="tab" id="tabbtn-cefr" onclick="verTab('cefr')">Inglés CEFR</button>
+      </div>
       <div style="display:flex;gap:8px">
-        <button class="btn-ghost" onclick="exportCSV()">⬇️ Exportar CSV</button>
         <button class="btn-ghost" onclick="loadData()">↻ Actualizar</button>
         <button class="btn-ghost" onclick="logout()">Salir</button>
       </div>
     </div>
 
-    <div class="kpis" id="kpis"></div>
-
-    <div class="cols">
-      <div class="card"><span class="eyebrow">Distribución por nivel CEFR</span><div id="cefr-dist"></div></div>
-      <div class="card"><span class="eyebrow">Promedio por destreza</span><div id="skill-avg"></div></div>
+    <!-- ============ TAB: SIMULACRO ICFES ============ -->
+    <div id="tab-icfes">
+      <div class="top"><h2>Simulacro tipo Saber 11° — Inglés</h2>
+        <button class="btn-ghost" onclick="exportXlsx()">⬇️ Descargar Excel</button></div>
+      <div class="kpis" id="i-kpis"></div>
+      <div class="card">
+        <div class="filters">
+          <div><label>Filtrar por examen</label><select id="i-f-exam" onchange="renderIcfes()"><option value="">Todos</option></select></div>
+          <div><label>Filtrar por etapa</label><select id="i-f-etapa" onchange="renderIcfes()">
+            <option value="">Todas</option><option value="diagnostico">Diagnóstico</option><option value="intermedio">Intermedio</option><option value="final">Final</option></select></div>
+          <div><label>Buscar nombre / documento</label><input id="i-f-q" oninput="renderIcfes()" placeholder="Escribe para buscar..."></div>
+        </div>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Estudiante</th><th>Examen</th><th>Etapa</th><th>Puntaje</th><th>Nivel</th><th>Tiempo</th><th>Fecha</th><th>⚠️</th></tr></thead>
+            <tbody id="i-tbody"></tbody>
+          </table>
+        </div>
+        <p class="muted" id="i-count" style="font-size:.82rem;margin-top:10px"></p>
+      </div>
     </div>
 
-    <div class="card">
-      <div class="filters">
-        <div><label>Filtrar por ficha</label><select id="f-ficha" onchange="render()"><option value="">Todas</option></select></div>
-        <div><label>Filtrar por nivel</label><select id="f-cefr" onchange="render()">
-          <option value="">Todos</option><option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option></select></div>
-        <div><label>Buscar nombre / documento</label><input id="f-q" oninput="render()" placeholder="Escribe para buscar..."></div>
+    <!-- ============ TAB: EXÁMENES Y CÓDIGOS ============ -->
+    <div id="tab-examenes" class="hidden">
+      <div class="top"><h2>Exámenes y códigos</h2>
+        <button onclick="abrirCrear()">➕ Crear examen</button></div>
+      <div class="card">
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Código</th><th>Título</th><th>Tipo</th><th>Etapa</th><th>Grupo</th><th>Presentados</th><th>Estado</th><th>Fecha</th><th></th></tr></thead>
+            <tbody id="e-tbody"></tbody>
+          </table>
+        </div>
+        <p class="muted" style="font-size:.82rem;margin-top:10px">Toca un examen para ver su código en grande (para dictarlo o proyectarlo con QR).</p>
       </div>
-      <div class="scroll">
-        <table id="tbl">
-          <thead><tr>
-            <th data-k="nombre">Estudiante</th>
-            <th data-k="ficha">Ficha</th>
-            <th data-k="nivel_cefr">CEFR</th>
-            <th data-k="score_total">Total</th>
-            <th data-k="score_reading">Read</th>
-            <th data-k="score_listening">List</th>
-            <th data-k="score_grammar">Gram</th>
-            <th data-k="score_vocabulary">Voc</th>
-            <th data-k="score_writing">Writ</th>
-            <th data-k="duracion_seg">Tiempo</th>
-            <th data-k="created_at">Fecha</th>
-            <th>⚠️</th>
-          </tr></thead>
-          <tbody id="tbody"></tbody>
-        </table>
+    </div>
+
+    <!-- ============ TAB: PROGRESO ============ -->
+    <div id="tab-progreso" class="hidden">
+      <div class="top"><h2>Progreso por estudiante</h2></div>
+      <div class="card">
+        <div class="filters">
+          <div><label>Grupo</label><select id="p-f-grupo" onchange="renderProgreso()"><option value="">Todos</option></select></div>
+          <div><label>Buscar nombre / documento</label><input id="p-f-q" oninput="renderProgreso()" placeholder="Cédula o nombre..."></div>
+        </div>
+        <div class="pgrid" id="p-cohorte"></div>
+        <div class="scroll">
+          <table>
+            <thead><tr><th>Estudiante</th><th>Trayectoria</th><th>Puntajes</th><th>Avance</th><th>Nivel actual</th></tr></thead>
+            <tbody id="p-tbody"></tbody>
+          </table>
+        </div>
+        <p class="muted" id="p-nota" style="font-size:.82rem;margin-top:10px"></p>
       </div>
-      <p class="muted" id="count" style="font-size:.82rem;margin-top:10px"></p>
+    </div>
+
+    <!-- ============ TAB: CEFR (original) ============ -->
+    <div id="tab-cefr" class="hidden">
+      <div class="top"><h2>Inglés CEFR — Evaluación de nivel</h2>
+        <button class="btn-ghost" onclick="exportCSV()">⬇️ Exportar CSV</button></div>
+      <div class="kpis" id="kpis"></div>
+      <div class="cols">
+        <div class="card"><span class="eyebrow">Distribución por nivel CEFR</span><div id="cefr-dist"></div></div>
+        <div class="card"><span class="eyebrow">Promedio por destreza</span><div id="skill-avg"></div></div>
+      </div>
+      <div class="card">
+        <div class="filters">
+          <div><label>Filtrar por ficha</label><select id="f-ficha" onchange="render()"><option value="">Todas</option></select></div>
+          <div><label>Filtrar por nivel</label><select id="f-cefr" onchange="render()">
+            <option value="">Todos</option><option>A1</option><option>A2</option><option>B1</option><option>B2</option><option>C1</option><option>C2</option></select></div>
+          <div><label>Buscar nombre / documento</label><input id="f-q" oninput="render()" placeholder="Escribe para buscar..."></div>
+        </div>
+        <div class="scroll">
+          <table id="tbl">
+            <thead><tr>
+              <th data-k="nombre">Estudiante</th>
+              <th data-k="ficha">Ficha</th>
+              <th data-k="nivel_cefr">CEFR</th>
+              <th data-k="score_total">Total</th>
+              <th data-k="score_reading">Read</th>
+              <th data-k="score_listening">List</th>
+              <th data-k="score_grammar">Gram</th>
+              <th data-k="score_vocabulary">Voc</th>
+              <th data-k="score_writing">Writ</th>
+              <th data-k="duracion_seg">Tiempo</th>
+              <th data-k="created_at">Fecha</th>
+              <th>⚠️</th>
+            </tr></thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <p class="muted" id="count" style="font-size:.82rem;margin-top:10px"></p>
+      </div>
     </div>
   </div>
 </div>
 
-<!-- detail modal -->
+<!-- modal genérico -->
 <div class="modal" id="modal" onclick="if(event.target.id==='modal')closeModal()">
   <div class="box" id="modal-box"></div>
 </div>
 <div class="toast" id="toast"></div>
 
 <script>
-let sb=null, rows=[], sortKey='score_total', sortDir=-1;
+let sb=null, rows=[], icfesRows=[], exams=[], sortKey='score_total', sortDir=-1;
 /* Llaves PÚBLICAS fijas: el docente solo escribe correo y contraseña.
    El anon key es seguro (RLS: el público no puede leer; solo un usuario autenticado lee). */
 const SUPABASE_URL = 'https://sacugfirjijrizcpsihn.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNhY3VnZmlyamlqcml6Y3BzaWhuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxNjUwMDMsImV4cCI6MjA5Nzc0MTAwM30.amTi6bZ350kAML-UQgMlghCz7ZoQD6esfpfZa7DRSlE';
 const $=id=>document.getElementById(id);
 const CEFRS=['A1','A2','B1','B2','C1','C2'];
+const ETAPAS=['diagnostico','intermedio','final'];
+const ETAPA_LBL={diagnostico:'Diagnóstico',intermedio:'Intermedio',final:'Final',demo:'Demo'};
+const NIVEL_CLS={'Pre A1':'nv-pre','A1':'nv-a1','A2':'nv-a2','B1':'nv-b1'};
+const NIVEL_HEX={'Pre A1':'#8E2A21','A1':'#9A5A14','A2':'#8A6D1A','B1':'#2E6B4F'};
+const PARTES_LBL={p1:'P1 Vocabulario',p2:'P2 Avisos',p3:'P3 Conversaciones',p4:'P4 Gramática',p5:'P5 Lectura literal',p6:'P6 Lectura inferencial',p7:'P7 Léxico-gramatical'};
 function toast(m,w){const t=$('toast');t.textContent=m;t.className='toast show'+(w?' warn':'');setTimeout(()=>t.className='toast'+(w?' warn':''),3000);}
 function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function fmtTime(sec){ if(sec==null) return '—'; const m=Math.floor(sec/60), s=sec%60; return `${m}m ${String(s).padStart(2,'0')}s`; }
 function fmtDate(d){ if(!d) return '—'; const x=new Date(d); return x.toLocaleDateString()+' '+x.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); }
+function mdHtml(md){
+  const lines=esc(md).split(/\r?\n/); let out='',inList=false;
+  const cerrar=()=>{ if(inList){out+='</ul>';inList=false;} };
+  for(let ln of lines){
+    ln=ln.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/^\s*---+\s*$/,'');
+    if(/^\s*\|/.test(ln)){ if(/^\s*\|[\s\-:|]+\|?\s*$/.test(ln)) continue;
+      const c=ln.replace(/^\s*\|/,'').replace(/\|\s*$/,'').split('|').map(x=>x.trim()).filter(Boolean);
+      cerrar(); out+='<p class="inf-row">'+c.join(' — ')+'</p>'; continue; }
+    const h=ln.match(/^\s*(#{1,4})\s+(.*)$/);
+    if(h){ cerrar(); out+=(h[1].length<=2?'<h3>':'<h4>')+h[2]+(h[1].length<=2?'</h3>':'</h4>'); continue; }
+    const li=ln.match(/^\s*[-*•]\s+(.*)$/);
+    if(li){ if(!inList){out+='<ul>';inList=true;} out+='<li>'+li[1]+'</li>'; continue; }
+    if(!ln.trim()){ cerrar(); continue; }
+    cerrar(); out+='<p>'+ln+'</p>';
+  }
+  cerrar(); return out;
+}
 const TLAB={tab_switch:'Cambios de pestaña',blur:'Cambio de app (foco)',copy:'Copiar',cut:'Cortar',paste:'Pegar',contextmenu:'Clic derecho / traducir',devtools:'Herram. de desarrollador',shortcut:'Atajos de teclado',print:'Imprimir'};
 function telemetryHTML(r){
   const tm=r.telemetria||{};
@@ -186,19 +297,322 @@ async function login(){
 }
 async function logout(){ if(sb) await sb.auth.signOut(); location.reload(); }
 
-async function loadData(){
-  const { data, error }=await sb.from('exam_results').select('*').order('created_at',{ascending:false});
-  if(error){ toast('❌ '+error.message,true); return; }
-  rows=data||[];
-  // poblar fichas
-  const fichas=[...new Set(rows.map(r=>r.ficha).filter(Boolean))].sort();
-  $('f-ficha').innerHTML='<option value="">Todas</option>'+fichas.map(f=>`<option>${esc(f)}</option>`).join('');
-  kpis(); distributions(); render();
-  toast(`✅ ${rows.length} resultados cargados.`);
+function verTab(t){
+  ['icfes','examenes','progreso','cefr'].forEach(x=>{
+    $('tab-'+x).classList.toggle('hidden', x!==t);
+    $('tabbtn-'+x).classList.toggle('on', x===t);
+  });
 }
 
-function passed(r){ return ['B1','B2','C1','C2'].includes(r.nivel_cefr); }
+async function loadData(){
+  const [r1, r2]=await Promise.all([
+    sb.from('exam_results').select('*').order('created_at',{ascending:false}),
+    sb.from('exams').select('*').order('created_at',{ascending:false})
+  ]);
+  if(r1.error){ toast('❌ '+r1.error.message,true); return; }
+  const all=r1.data||[];
+  rows=all.filter(r=>r.exam_tipo!=='icfes_en');
+  icfesRows=all.filter(r=>r.exam_tipo==='icfes_en');
+  exams=(r2.error?[]:(r2.data||[]));
+  if(r2.error) toast('⚠️ No pude leer la tabla exams: '+r2.error.message,true);
+  // CEFR: fichas
+  const fichas=[...new Set(rows.map(r=>r.ficha).filter(Boolean))].sort();
+  $('f-ficha').innerHTML='<option value="">Todas</option>'+fichas.map(f=>`<option>${esc(f)}</option>`).join('');
+  // ICFES: exámenes y grupos
+  const cods=[...new Set(icfesRows.map(r=>r.exam_codigo).filter(Boolean))];
+  $('i-f-exam').innerHTML='<option value="">Todos</option>'+cods.map(c=>`<option>${esc(c)}</option>`).join('');
+  const grupos=[...new Set(icfesRows.map(r=>r.ficha).filter(Boolean))].sort();
+  $('p-f-grupo').innerHTML='<option value="">Todos</option>'+grupos.map(g=>`<option>${esc(g)}</option>`).join('');
+  kpis(); distributions(); render();
+  kpisIcfes(); renderIcfes(); renderExams(); renderProgreso();
+  toast(`✅ ${all.length} resultados cargados (${icfesRows.length} del simulacro).`);
+}
 
+/* ==================== TAB ICFES ==================== */
+function nivelChip(nv){ return `<span class="nv ${NIVEL_CLS[nv]||''}">${esc(nv||'—')}</span>`; }
+function iFiltered(){
+  const fe=$('i-f-exam').value, fs=$('i-f-etapa').value, q=$('i-f-q').value.trim().toLowerCase();
+  return icfesRows.filter(r=>(!fe||r.exam_codigo===fe)&&(!fs||r.etapa===fs)&&
+    (!q||(`${r.nombre} ${r.documento}`).toLowerCase().includes(q)));
+}
+function kpisIcfes(){
+  const d=icfesRows, n=d.length;
+  const avg=n?Math.round(d.reduce((a,r)=>a+(r.score_icfes||0),0)/n):0;
+  const b1=n?Math.round(100*d.filter(r=>r.nivel_icfes==='B1').length/n):0;
+  const susp=d.filter(r=>r.sospechoso).length;
+  $('i-kpis').innerHTML=`
+    <div class="kpi"><div class="n">${n}</div><div class="l">Simulacros presentados</div></div>
+    <div class="kpi"><div class="n">${avg}</div><div class="l">Puntaje promedio (nacional 2024: 52)</div></div>
+    <div class="kpi"><div class="n">${b1}%</div><div class="l">En B1 (nacional: ~13% B1 o más)</div></div>
+    <div class="kpi"><div class="n">${susp}</div><div class="l">Con alerta de trampa</div></div>`;
+}
+function renderIcfes(){
+  const data=iFiltered();
+  $('i-tbody').innerHTML=data.map(r=>`
+    <tr onclick="detailIcfes(${icfesRows.indexOf(r)})">
+      <td><b>${esc(r.nombre)}</b><br><span class="muted" style="font-size:.8rem">${esc(r.tipo_documento||'')} ${esc(r.documento)}</span></td>
+      <td><span class="mono" style="font-size:.82rem">${esc(r.exam_codigo||'—')}</span><br><span class="muted" style="font-size:.78rem">${esc(r.ficha||'')}</span></td>
+      <td>${esc(ETAPA_LBL[r.etapa]||r.etapa||'—')}</td>
+      <td><b>${r.score_icfes??'—'}</b>/100</td>
+      <td>${nivelChip(r.nivel_icfes)}</td>
+      <td>${fmtTime(r.duracion_seg)}</td>
+      <td class="muted" style="font-size:.8rem">${fmtDate(r.created_at)}</td>
+      <td>${r.sospechoso?`<span class="flag">⚠️ ${r.alertas||''}</span>`:(r.alertas?`<span class="muted">${r.alertas}</span>`:'')}</td>
+    </tr>`).join('') || `<tr><td colspan="8" class="muted" style="text-align:center;padding:24px">Sin resultados del simulacro todavía.</td></tr>`;
+  $('i-count').textContent=`Mostrando ${data.length} de ${icfesRows.length} simulacros.`;
+}
+function partesHTML(sp){
+  if(!sp) return '<span class="muted">—</span>';
+  return '<div class="partegrid">'+Object.keys(PARTES_LBL).filter(p=>sp[p]).map(p=>`
+    <div><div style="display:flex;justify-content:space-between;font-size:.83rem;font-weight:600"><span>${PARTES_LBL[p]}</span><span class="mono">${sp[p].c}/${sp[p].t} · ${sp[p].pct}%</span></div>
+    <div class="bar" style="height:8px"><span style="width:${sp[p].pct}%"></span></div></div>`).join('')+'</div>';
+}
+function detailIcfes(i){
+  const r=icfesRows[i]; if(!r) return;
+  $('modal-box').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:start;gap:10px">
+      <div><h2 style="font-size:1.3rem">${esc(r.nombre)}</h2>
+        <div class="muted" style="font-size:.85rem">${esc(r.tipo_documento||'')} ${esc(r.documento)} · ${esc(ETAPA_LBL[r.etapa]||'')} · ${esc(r.exam_codigo||'')}</div></div>
+      <button class="btn-ghost" onclick="closeModal()" style="padding:6px 12px">✕</button>
+    </div>
+    <div style="margin:12px 0">
+      <span class="pill">Puntaje: <b>${r.score_icfes}/100</b></span>
+      ${nivelChip(r.nivel_icfes)}
+      <span class="pill">⏱️ ${fmtTime(r.duracion_seg)}</span>
+      <span class="pill">${fmtDate(r.created_at)}</span>
+    </div>
+    ${telemetryHTML(r)}
+    <h3 class="serif" style="font-size:1rem;margin:10px 0 4px">Desglose por parte</h3>
+    ${partesHTML(r.score_partes)}
+    ${r.writing_feedback?`<h3 class="serif" style="font-size:1rem;margin:12px 0 2px">Feedback breve</h3><div class="wbox">${esc(r.writing_feedback)}</div>`:''}
+    ${r.informe_full?`<h3 class="serif" style="font-size:1rem;margin:12px 0 2px">📋 Informe completo</h3><div class="informe">${mdHtml(r.informe_full)}</div>
+      <button class="btn-ghost btn-block" onclick="imprimirInforme(${i})">🖨️ Imprimir informe del estudiante</button>`:''}`;
+  $('modal').classList.add('show');
+}
+function imprimirInforme(i){
+  const r=icfesRows[i]; if(!r||!r.informe_full) return;
+  const w=window.open('','_blank');
+  w.document.write(`<html><head><title>Informe — ${esc(r.nombre)}</title>
+    <style>body{font-family:Georgia,serif;max-width:720px;margin:30px auto;padding:0 20px;color:#1F2933;line-height:1.6}
+    h1{font-size:1.3rem}h3{color:#1E3A5F;margin:16px 0 4px}.meta{color:#666;font-size:.9rem;border-bottom:2px solid #1E3A5F;padding-bottom:10px;margin-bottom:14px}
+    ul{margin:6px 0 6px 22px}.foot{margin-top:24px;font-size:.75rem;color:#888;border-top:1px solid #ddd;padding-top:8px}</style></head><body>
+    <h1>Simulacro tipo Saber 11° — Informe de inglés</h1>
+    <div class="meta"><b>${esc(r.nombre)}</b> · ${esc(r.tipo_documento||'')} ${esc(r.documento)} · ${esc(ETAPA_LBL[r.etapa]||'')} · ${fmtDate(r.created_at)}<br>
+    Puntaje estimado: <b>${r.score_icfes}/100</b> · Nivel: <b>${esc(r.nivel_icfes)}</b> (escala vigente ICFES)</div>
+    ${mdHtml(r.informe_full)}
+    <div class="foot">Puntaje estimado con fines pedagógicos — no es un resultado oficial del ICFES.</div>
+    <script>window.print()<\/script></body></html>`);
+  w.document.close();
+}
+
+/* ==================== TAB EXÁMENES ==================== */
+function urlEstudiante(){ return location.href.replace(/[^\/]*$/,'') + 'icfes.html'; }
+function genCodigo(){
+  const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789'; let s='';
+  for(let i=0;i<4;i++) s+=A[Math.floor(Math.random()*A.length)];
+  return 'ICF-'+s;
+}
+function cuentaPresentados(cod){ return icfesRows.filter(r=>r.exam_codigo===cod).length; }
+function renderExams(){
+  $('e-tbody').innerHTML=exams.map((e,i)=>`
+    <tr onclick="verExamen(${i})">
+      <td><b class="mono">${esc(e.codigo)}</b></td>
+      <td>${esc(e.titulo||'—')}</td>
+      <td>${e.tipo==='icfes_en'?'Saber 11°':'CEFR'}</td>
+      <td>${esc(ETAPA_LBL[e.etapa]||e.etapa)}</td>
+      <td>${esc(e.grupo||'—')}</td>
+      <td>${cuentaPresentados(e.codigo)}</td>
+      <td><span class="nv ${e.estado==='activo'?'estado-on':'estado-off'}">${e.estado==='activo'?'Activo':'Cerrado'}</span></td>
+      <td class="muted" style="font-size:.8rem">${fmtDate(e.created_at)}</td>
+      <td onclick="event.stopPropagation()"><button class="btn-ghost" style="padding:6px 10px;font-size:.8rem" onclick="toggleExamen(${i})">${e.estado==='activo'?'Cerrar':'Reabrir'}</button></td>
+    </tr>`).join('') || `<tr><td colspan="9" class="muted" style="text-align:center;padding:24px">Aún no has creado exámenes. Usa "➕ Crear examen".</td></tr>`;
+}
+async function toggleExamen(i){
+  const e=exams[i]; const nuevo=e.estado==='activo'?'cerrado':'activo';
+  const { error }=await sb.from('exams').update({estado:nuevo}).eq('id',e.id);
+  if(error){ toast('❌ '+error.message,true); return; }
+  e.estado=nuevo; renderExams(); toast(nuevo==='activo'?'✅ Examen reabierto.':'🔒 Examen cerrado: los estudiantes ya no pueden entrar con ese código.');
+}
+function verExamen(i){
+  const e=exams[i];
+  const msg=`📝 *${e.titulo||'Simulacro tipo Saber 11° — Inglés'}*\n\n1. Abre: ${urlEstudiante()}\n2. Escribe el código: *${e.codigo}*\n3. Llena tus datos con tu documento real y presenta el examen.\n\n⏱ Tienes ${(e.config&&e.config.minutos)||70} minutos. ¡Éxitos!`;
+  $('modal-box').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:start">
+      <h2 style="font-size:1.25rem">${esc(e.titulo||'Examen')}</h2>
+      <button class="btn-ghost" onclick="closeModal()" style="padding:6px 12px">✕</button></div>
+    <p class="muted" style="font-size:.88rem">${esc(ETAPA_LBL[e.etapa]||e.etapa)} · ${esc(e.grupo||'sin grupo')} · ${e.tipo==='icfes_en'?'Saber 11°':'CEFR'} · ${cuentaPresentados(e.codigo)} presentados</p>
+    <div class="codebig">${esc(e.codigo)}</div>
+    <div id="qrbox" style="display:grid;place-items:center;margin:10px 0"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button style="flex:1" onclick="navigator.clipboard.writeText('${esc(e.codigo)}').then(()=>toast('Código copiado.'))">📋 Copiar código</button>
+      <button class="btn-ghost" style="flex:1" onclick='navigator.clipboard.writeText(${JSON.stringify(msg)}).then(()=>toast("Mensaje copiado: pégalo en WhatsApp."))'>💬 Copiar mensaje para estudiantes</button>
+    </div>`;
+  $('modal').classList.add('show');
+  try{ new QRCode(document.getElementById('qrbox'),{text:urlEstudiante()+'#'+e.codigo,width:170,height:170,colorDark:'#1E3A5F'}); }catch(_){}
+}
+function abrirCrear(){
+  $('modal-box').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:start">
+      <h2 style="font-size:1.25rem">Crear examen</h2>
+      <button class="btn-ghost" onclick="closeModal()" style="padding:6px 12px">✕</button></div>
+    <label>Título</label><input id="c-titulo" value="Simulacro tipo Saber 11° — Inglés" maxlength="120">
+    <div class="cols">
+      <div><label>Etapa</label><select id="c-etapa">
+        <option value="diagnostico">Diagnóstico (inicio)</option>
+        <option value="intermedio">Intermedio (mitad)</option>
+        <option value="final">Final (cierre)</option></select></div>
+      <div><label>Grupo / colegio</label><input id="c-grupo" placeholder="Ej: 11A - Colegio San José" maxlength="60"></div>
+    </div>
+    <label>Partes y cantidad de preguntas</label>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <button class="btn-ghost" style="flex:1;padding:8px" onclick="presetPartes(55)">Completo (55) · como el ICFES</button>
+      <button class="btn-ghost" style="flex:1;padding:8px" onclick="presetPartes(25)">Rápido (25)</button>
+    </div>
+    <div class="partegrid" id="c-partes">${[['p1','P1 Vocabulario',6],['p2','P2 Avisos',6],['p3','P3 Conversaciones',6],['p4','P4 Gramática (bloques de 10)',10],['p5','P5 Lectura literal (bloques de 9)',9],['p6','P6 Lectura inferencial (bloques de 6)',6],['p7','P7 Léxico-gramatical (bloques de 12)',12]].map(([p,l,v])=>`
+      <div style="display:flex;align-items:center;gap:8px"><input type="checkbox" id="c-on-${p}" checked style="width:22px;height:22px" onchange="calcTotal()">
+      <span style="flex:1;font-size:.88rem">${l}</span>
+      <input type="number" id="c-n-${p}" value="${v}" min="1" max="24" style="width:74px;padding:8px" onchange="calcTotal()" oninput="calcTotal()"></div>`).join('')}
+    </div>
+    <div class="cols">
+      <div><label>Tiempo (minutos)</label><input type="number" id="c-min" value="70" min="5" max="240"></div>
+      <div><label>Informe IA con estrategias</label><select id="c-informe"><option value="true">Sí — informe completo por estudiante</option><option value="false">No — solo puntaje y nivel</option></select></div>
+    </div>
+    <p class="muted" id="c-total" style="margin-top:10px;font-weight:700"></p>
+    <button class="btn-block" onclick="crearExamen()">Crear examen y generar código</button>`;
+  $('modal').classList.add('show'); calcTotal();
+}
+function presetPartes(n){
+  const full={p1:6,p2:6,p3:6,p4:10,p5:9,p6:6,p7:12};
+  const quick={p1:6,p2:5,p3:5,p5:9};
+  const cfg=n===55?full:quick;
+  Object.keys(PARTES_LBL).forEach(p=>{
+    $('c-on-'+p).checked=!!cfg[p];
+    if(cfg[p]) $('c-n-'+p).value=cfg[p];
+  });
+  $('c-min').value=n===55?70:32;
+  calcTotal();
+}
+function calcTotal(){
+  let n=0;
+  Object.keys(PARTES_LBL).forEach(p=>{ if($('c-on-'+p)&&$('c-on-'+p).checked) n+=Math.max(0,parseInt($('c-n-'+p).value)||0); });
+  const sug=Math.max(5,Math.round(n*1.25/5)*5);
+  if($('c-total')) $('c-total').textContent=`Total: ${n} preguntas · tiempo sugerido: ${sug} min`;
+  return n;
+}
+async function crearExamen(){
+  const partes={};
+  Object.keys(PARTES_LBL).forEach(p=>{ if($('c-on-'+p).checked){ const v=Math.max(1,parseInt($('c-n-'+p).value)||0); if(v) partes[p]=v; } });
+  if(!Object.keys(partes).length){ toast('Activa al menos una parte.',true); return; }
+  const row={
+    codigo:genCodigo(), tipo:'icfes_en',
+    etapa:$('c-etapa').value,
+    forma:{diagnostico:'A',intermedio:'B',final:'C'}[$('c-etapa').value]||'A',
+    grupo:$('c-grupo').value.trim()||null,
+    titulo:$('c-titulo').value.trim()||'Simulacro tipo Saber 11° — Inglés',
+    config:{partes, minutos:Math.max(5,parseInt($('c-min').value)||70)},
+    informe_completo:$('c-informe').value==='true'
+  };
+  const { data:me }=await sb.auth.getUser();
+  if(me&&me.user) row.docente_email=me.user.email;
+  for(let intento=0;intento<3;intento++){
+    const { error }=await sb.from('exams').insert(row);
+    if(!error){ exams.unshift({...row,estado:'activo',created_at:new Date().toISOString(),id:null});
+      const { data:fresh }=await sb.from('exams').select('*').eq('codigo',row.codigo).limit(1);
+      if(fresh&&fresh[0]) exams[0]=fresh[0];
+      renderExams(); verExamen(0); toast('✅ Examen creado. Dicta o proyecta el código.'); return; }
+    if(/duplicate|unique/i.test(error.message)){ row.codigo=genCodigo(); continue; }
+    toast('❌ '+error.message,true); return;
+  }
+  toast('❌ No pude generar un código único, intenta de nuevo.',true);
+}
+
+/* ==================== TAB PROGRESO ==================== */
+function progresoData(){
+  const fg=$('p-f-grupo').value, q=$('p-f-q').value.trim().toLowerCase();
+  const d=icfesRows.filter(r=>(!fg||r.ficha===fg)&&(!q||(`${r.nombre} ${r.documento}`).toLowerCase().includes(q)));
+  const porDoc={};
+  d.forEach(r=>{
+    const doc=(r.documento||'').replace(/\D/g,''); if(!doc) return;
+    if(!porDoc[doc]) porDoc[doc]={documento:doc,nombre:r.nombre,etapas:{}};
+    const e=r.etapa||'diagnostico';
+    const prev=porDoc[doc].etapas[e];
+    if(!prev||new Date(r.created_at)>new Date(prev.created_at)) porDoc[doc].etapas[e]=r;
+    if(new Date(r.created_at)>new Date(porDoc[doc].ultimo||0)){ porDoc[doc].nombre=r.nombre; porDoc[doc].ultimo=r.created_at; }
+  });
+  return Object.values(porDoc).sort((a,b)=>a.nombre.localeCompare(b.nombre));
+}
+function sendero(st){
+  const xs=[14,60,106];
+  let html='<svg width="120" height="30" viewBox="0 0 120 30">';
+  const pts=ETAPAS.map((e,i)=>{ const r=st.etapas[e]; return r?{x:xs[i],y:26-(r.score_icfes||0)/100*20,c:NIVEL_HEX[r.nivel_icfes]||'#888'}:null; });
+  for(let i=0;i<2;i++) if(pts[i]&&pts[i+1]) html+=`<line x1="${pts[i].x}" y1="${pts[i].y}" x2="${pts[i+1].x}" y2="${pts[i+1].y}" stroke="#B8C4D2" stroke-width="2"/>`;
+  ETAPAS.forEach((e,i)=>{ const p=pts[i];
+    html+=p?`<circle cx="${xs[i]}" cy="${p.y}" r="5" fill="${p.c}"/>`:`<circle cx="${xs[i]}" cy="16" r="5" fill="none" stroke="#C9CFD8" stroke-width="1.5" stroke-dasharray="2,2"/>`; });
+  return html+'</svg>';
+}
+function renderProgreso(){
+  const data=progresoData();
+  // cohorte
+  $('p-cohorte').innerHTML=ETAPAS.map((e,i)=>{
+    const vals=data.map(s=>s.etapas[e]).filter(Boolean).map(r=>r.score_icfes||0);
+    const avg=vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length):null;
+    const prevE=i>0?ETAPAS[i-1]:null;
+    let deltaHtml='';
+    if(prevE&&avg!=null){
+      const prevVals=data.map(s=>s.etapas[prevE]).filter(Boolean).map(r=>r.score_icfes||0);
+      if(prevVals.length){ const dd=avg-Math.round(prevVals.reduce((a,b)=>a+b,0)/prevVals.length);
+        deltaHtml=`<span class="delta ${dd>=5?'up':dd<=-5?'dn':'eq'}">${dd>=0?'+':''}${dd} pts</span>`; }
+    }
+    return `<div class="pcol"><div class="pl">${ETAPA_LBL[e]}</div>
+      <div class="pn">${avg!=null?avg:'—'}</div>
+      <div class="muted" style="font-size:.8rem">${vals.length} presentados</div>${deltaHtml}</div>`;
+  }).join('');
+  // tabla
+  $('p-tbody').innerHTML=data.map(s=>{
+    const sc=ETAPAS.map(e=>s.etapas[e]?s.etapas[e].score_icfes:null);
+    const presentes=sc.filter(v=>v!=null);
+    const delta=presentes.length>=2?presentes[presentes.length-1]-presentes[0]:null;
+    const ult=[...ETAPAS].reverse().map(e=>s.etapas[e]).find(Boolean);
+    return `<tr>
+      <td><b>${esc(s.nombre)}</b><br><span class="muted" style="font-size:.8rem">${esc(s.documento)}</span></td>
+      <td>${sendero(s)}</td>
+      <td class="mono">${sc.map(v=>v==null?'·':v).join(' → ')}</td>
+      <td>${delta==null?'<span class="muted">—</span>':`<span class="delta ${delta>=5?'up':delta<=-5?'dn':'eq'}">${delta>=0?'+':''}${delta}</span>`}</td>
+      <td>${nivelChip(ult?ult.nivel_icfes:null)}</td>
+    </tr>`;
+  }).join('') || `<tr><td colspan="5" class="muted" style="text-align:center;padding:24px">Sin datos. El progreso aparece cuando los estudiantes presentan el simulacro.</td></tr>`;
+  $('p-nota').textContent=data.length?`${data.length} estudiantes. El avance se calcula entre la primera y la última etapa presentada (mismo documento).`:'';
+}
+
+/* ==================== EXCEL (ICFES) ==================== */
+function exportXlsx(){
+  if(typeof XLSX==='undefined'){ toast('La librería de Excel no cargó; revisa tu internet.',true); return; }
+  const d=iFiltered();
+  const resumen=d.map(r=>({ 'Estudiante':r.nombre,'Tipo doc':r.tipo_documento||'','Documento':r.documento,
+    'Grupo':r.ficha||'','Examen':r.exam_codigo||'','Etapa':ETAPA_LBL[r.etapa]||r.etapa||'',
+    'Puntaje (0-100)':r.score_icfes,'Nivel':r.nivel_icfes,
+    'P1 Vocab %':r.score_partes&&r.score_partes.p1?r.score_partes.p1.pct:'','P2 Avisos %':r.score_partes&&r.score_partes.p2?r.score_partes.p2.pct:'',
+    'P3 Conver %':r.score_partes&&r.score_partes.p3?r.score_partes.p3.pct:'','P4 Gram %':r.score_partes&&r.score_partes.p4?r.score_partes.p4.pct:'',
+    'P5 Lect lit %':r.score_partes&&r.score_partes.p5?r.score_partes.p5.pct:'','P6 Lect inf %':r.score_partes&&r.score_partes.p6?r.score_partes.p6.pct:'',
+    'P7 Léx-gram %':r.score_partes&&r.score_partes.p7?r.score_partes.p7.pct:'',
+    'Tiempo (min)':r.duracion_seg!=null?Math.round(r.duracion_seg/60):'','Alertas':r.alertas||0,'Sospechoso':r.sospechoso?'SÍ':'no',
+    'Fecha':fmtDate(r.created_at) }));
+  const prog=progresoData().map(s=>{
+    const g=e=>s.etapas[e]?s.etapas[e].score_icfes:'';
+    const sc=ETAPAS.map(e=>s.etapas[e]?s.etapas[e].score_icfes:null).filter(v=>v!=null);
+    const ult=[...ETAPAS].reverse().map(e=>s.etapas[e]).find(Boolean);
+    return { 'Estudiante':s.nombre,'Documento':s.documento,
+      'Diagnóstico':g('diagnostico'),'Intermedio':g('intermedio'),'Final':g('final'),
+      'Avance (pts)':sc.length>=2?sc[sc.length-1]-sc[0]:'','Nivel actual':ult?ult.nivel_icfes:'' };
+  });
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(resumen),'Resumen');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.json_to_sheet(prog),'Progreso');
+  XLSX.writeFile(wb,'simulacro_saber11_resultados.xlsx');
+}
+
+/* ==================== TAB CEFR (original, intacto) ==================== */
+function passed(r){ return ['B1','B2','C1','C2'].includes(r.nivel_cefr); }
 function kpis(){
   const n=rows.length;
   const avg=n? Math.round(rows.reduce((a,r)=>a+(r.score_total||0),0)/n):0;
@@ -210,7 +624,6 @@ function kpis(){
     <div class="kpi"><div class="n">${passRate}%</div><div class="l">Nivel B1 o superior</div></div>
     <div class="kpi"><div class="n">${susp}</div><div class="l">Con alerta de trampa</div></div>`;
 }
-
 function distributions(){
   const n=rows.length||1;
   const counts=Object.fromEntries(CEFRS.map(c=>[c,0]));
@@ -219,7 +632,6 @@ function distributions(){
   $('cefr-dist').innerHTML=CEFRS.map(c=>`
     <div class="barline"><div class="lab"><span>${c}</span><span class="v">${counts[c]} (${Math.round(100*counts[c]/n)}%)</span></div>
     <div class="bar"><span style="width:${Math.round(100*counts[c]/max)}%"></span></div></div>`).join('');
-
   const skills=[['Reading','score_reading'],['Listening','score_listening'],['Grammar','score_grammar'],['Vocabulary','score_vocabulary'],['Writing','score_writing']];
   $('skill-avg').innerHTML=skills.map(([lab,k])=>{
     const avg=rows.length? Math.round(rows.reduce((a,r)=>a+(r[k]||0),0)/rows.length):0;
@@ -227,7 +639,6 @@ function distributions(){
       <div class="bar"><span style="width:${avg}%"></span></div></div>`;
   }).join('');
 }
-
 function filtered(){
   const ff=$('f-ficha').value, fc=$('f-cefr').value, q=$('f-q').value.trim().toLowerCase();
   let out=rows.filter(r=>(!ff||r.ficha===ff)&&(!fc||r.nivel_cefr===fc)&&
@@ -254,7 +665,6 @@ function render(){
     </tr>`).join('') || `<tr><td colspan="12" class="muted" style="text-align:center;padding:24px">Sin resultados.</td></tr>`;
   $('count').textContent=`Mostrando ${data.length} de ${rows.length} resultados.`;
 }
-
 function detail(i){
   const r=rows[i]; if(!r) return;
   $('modal-box').innerHTML=`
