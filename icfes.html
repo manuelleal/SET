@@ -144,7 +144,14 @@ label{font-weight:700;font-size:.9rem;display:block;margin:12px 0 4px}
 <div id="scr-code" class="screen on">
   <div class="center">
     <div class="sello11">S11</div>
-    <div class="card" style="max-width:420px;width:100%">
+    <div class="card" id="resume-box" style="max-width:420px;width:100%;display:none">
+      <span class="eyebrow">Examen en curso</span>
+      <h1 style="font-size:1.35rem;margin:12px 0 6px">Tenías un examen sin terminar</h1>
+      <p class="help" id="resume-info"></p>
+      <button id="btn-resume" class="btn btn-p" style="margin-top:14px">Continuar mi examen</button>
+      <button id="btn-resume-no" class="btn btn-g" style="margin-top:8px">Descartar y empezar de cero</button>
+    </div>
+    <div class="card" id="code-card" style="max-width:420px;width:100%">
       <span class="eyebrow">Simulacro tipo Saber 11° · Inglés</span>
       <h1 style="font-size:1.55rem;margin:12px 0 6px">Ingresa el código de tu examen</h1>
       <p class="help">Tu docente te dictará un código como <b style="font-family:'IBM Plex Mono',monospace">ICF-7K2M</b>.</p>
@@ -1540,6 +1547,11 @@ function idsDePart(part){
   return part.texts.reduce((a,t)=>a.concat(t.questions.map(q=>q.id)), []);
 }
 function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+// ¿Son el mismo nombre? (sin tildes, mayúsculas ni espacios dobles)
+function mismoNombre(a, b){
+  const n = s => String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim();
+  return n(a) === n(b);
+}
 // Convierte el markdown del informe IA a HTML seguro (escapa primero, formatea después)
 function mdHtml(md){
   const lines = esc(md).split(/\r?\n/);
@@ -1566,9 +1578,9 @@ function mdHtml(md){
 /* ================== Estado ================== */
 const ST = {
   exam:null, parts:[], partIdx:-1, answers:{}, numById:{},
-  cfg:null, student:{}, startedAt:null, t0:0, totalSec:0, tLeft:0, tInt:0, tCollapsed:false,
-  tm:{tab_switch:0,blur:0,copy:0,cut:0,paste:0,contextmenu:0,devtools:0,shortcut:0},
-  p1active:null, enviado:false
+  cfg:null, student:{}, startedAt:null, t0:0, totalSec:0, deadline:0, tLeft:0, tInt:0, tCollapsed:false, warn2m:false,
+  tm:{tab_switch:0,blur:0,copy:0,cut:0,paste:0,contextmenu:0,devtools:0,shortcut:0,reload:0},
+  p1active:null, enParte:false, enviado:false
 };
 
 /* ================== Arranque ================== */
@@ -1583,6 +1595,46 @@ document.addEventListener('DOMContentLoaded', function(){
     ['scr-code','scr-datos','scr-inter','scr-parte','scr-result'].forEach(s=>$(s).classList.remove('on'));
     $(id).classList.add('on'); window.scrollTo(0,0);
   }
+
+  /* ---------- Autoguardado: recargar la página NO expulsa del examen ---------- */
+  const SAVE_KEY = 's11_examen_en_curso';
+  function guardar(){
+    if (ST.enviado || !ST.exam || ST.partIdx < 0) return;
+    try{
+      localStorage.setItem(SAVE_KEY, JSON.stringify({
+        v:1, codigo: ST.cfg.codigo, cfg: ST.cfg, exam: ST.exam, student: ST.student,
+        startedAt: ST.startedAt, t0: ST.t0, totalSec: ST.totalSec, deadline: ST.deadline,
+        partIdx: ST.partIdx, enParte: ST.enParte, answers: ST.answers, tm: ST.tm, savedAt: Date.now()
+      }));
+    }catch(e){ /* almacenamiento lleno o bloqueado: el examen sigue, solo sin respaldo */ }
+  }
+  function borrarGuardado(){ try{ localStorage.removeItem(SAVE_KEY); }catch(e){} }
+  function leerGuardado(){
+    try{
+      const s = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
+      if (s && s.v === 1 && s.exam && s.cfg && s.student && s.deadline) return s;
+    }catch(e){}
+    return null;
+  }
+  function reanudar(save){
+    ST.cfg = save.cfg; ST.exam = save.exam; ST.student = save.student;
+    ST.startedAt = save.startedAt; ST.t0 = save.t0 || Date.now();
+    ST.totalSec = save.totalSec || 0; ST.deadline = save.deadline || 0;
+    ST.answers = save.answers || {};
+    if (save.tm) ST.tm = save.tm;
+    ST.tm.reload = (ST.tm.reload || 0) + 1;   // queda en la telemetría del docente
+    ST.partIdx = Math.max(0, Number(save.partIdx) || 0);
+    ST.enParte = !!save.enParte;
+    armarStepper(); activarAntitrampa(); $('hdr').style.display = 'block';
+    iniciarTimer();
+    if (ST.tLeft <= 0){ enviar(); return; }              // el tiempo terminó mientras estaba fuera
+    if (ST.partIdx >= ST.exam.length){ enviar(); return; }  // ya había terminado: solo faltaba enviar
+    if (ST.enParte){ renderParte(); show('scr-parte'); }
+    else { ST.partIdx--; siguienteParte(); }
+    toast('Continuamos donde ibas: ' + Object.keys(ST.answers).length + ' respuestas recuperadas.');
+  }
+  window.addEventListener('pagehide', guardar);
+  document.addEventListener('visibilitychange', () => { if (document.hidden) guardar(); });
 
   /* ---------- Pantalla 1: código ---------- */
   const inCod = $('in-codigo');
@@ -1627,11 +1679,40 @@ document.addEventListener('DOMContentLoaded', function(){
 
   /* ---------- Pantalla 2: datos ---------- */
   $('in-doc').addEventListener('input', () => { $('in-doc').value = $('in-doc').value.replace(/\D/g,''); });
-  $('btn-comenzar').addEventListener('click', () => {
+  $('btn-comenzar').addEventListener('click', async () => {
     const nombre = $('in-nombre').value.trim(), doc = $('in-doc').value.trim();
     const err = $('datos-err'); err.style.display = 'none';
     if (nombre.length < 5){ err.textContent = 'Escribe tu nombre completo.'; err.style.display='block'; return; }
     if (doc.length < 5){ err.textContent = 'Revisa tu número de documento (solo números, sin puntos).'; err.style.display='block'; return; }
+
+    // Verificación previa en el servidor: ¿ya presentó? ¿con qué nombre presentó antes?
+    // Si la función aún no soporta check_student o no hay conexión, se sigue sin bloquear.
+    const btn = $('btn-comenzar'); btn.disabled = true; btn.textContent = 'Verificando…';
+    let chk = null;
+    try{
+      const r = await fetch(SUPABASE_URL + GRADE_FN_PATH, {
+        method:'POST',
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+SUPABASE_ANON_KEY,'apikey':SUPABASE_ANON_KEY},
+        body: JSON.stringify({ action:'check_student', tipo:'icfes_en', codigo: ST.cfg.codigo, documento: doc })
+      });
+      const j = await r.json();
+      if (r.ok && j.ok) chk = j;
+    }catch(e){ /* sin verificación: no se bloquea el inicio */ }
+    btn.disabled = false; btn.textContent = 'Comenzar';
+    if (chk){
+      if (chk.ya_presento){
+        err.textContent = 'Este documento ya presentó este examen' + (chk.fecha ? ' el ' + chk.fecha : '') +
+          ' y su resultado quedó guardado. Solo se permite un intento; si crees que es un error, avísale a tu docente.';
+        err.style.display = 'block'; return;
+      }
+      if (chk.nombre_previo && !mismoNombre(chk.nombre_previo, nombre)){
+        const et = ({diagnostico:'el diagnóstico',intermedio:'la etapa intermedia',final:'la etapa final',demo:'una demostración'})[chk.etapa_previa] || 'una etapa anterior';
+        if (!confirm('Este documento ya presentó ' + et + ' a nombre de:\n\n«' + chk.nombre_previo + '»\n\n¿Eres tú?\n\nSi NO eres tú, dale Cancelar y revisa tu número de documento: un dígito errado rompe tu historial de progreso.')){
+          $('in-doc').focus(); return;
+        }
+      }
+    }
+
     ST.student = { nombre, documento: doc, tipo_documento: $('in-tipodoc').value, colegio: $('in-colegio').value.trim() };
     ST.startedAt = new Date().toISOString(); ST.t0 = Date.now();
     armarStepper(); iniciarTimer(); activarAntitrampa();
@@ -1653,7 +1734,9 @@ document.addEventListener('DOMContentLoaded', function(){
     $('hdr-lbl').textContent = pt ? ('Parte ' + pt.p.slice(1) + ' de 7 · ' + PARTES_META[pt.p].comp) : '';
   }
   function iniciarTimer(){
-    ST.tLeft = ST.totalSec;
+    // El reloj corre contra una HORA LÍMITE fija: recargar la página no lo detiene ni lo reinicia.
+    if (!ST.deadline) ST.deadline = Date.now() + ST.totalSec * 1000;
+    ST.tLeft = Math.max(0, Math.round((ST.deadline - Date.now()) / 1000));
     const el = $('timer'), tx = $('t-txt');
     el.addEventListener('click', () => { ST.tCollapsed = !ST.tCollapsed; pinta(); });
     function pinta(){
@@ -1663,8 +1746,8 @@ document.addEventListener('DOMContentLoaded', function(){
     }
     pinta();
     ST.tInt = setInterval(() => {
-      ST.tLeft--; pinta();
-      if (ST.tLeft === 120) toast('⏱ Quedan 2 minutos.');
+      ST.tLeft = Math.max(0, Math.round((ST.deadline - Date.now()) / 1000)); pinta();
+      if (ST.tLeft <= 120 && !ST.warn2m && ST.tLeft > 0){ ST.warn2m = true; toast('⏱ Quedan 2 minutos.'); }
       if (ST.tLeft <= 0){ clearInterval(ST.tInt); toast('Se acabó el tiempo. Enviando…'); enviar(); }
     }, 1000);
   }
@@ -1685,15 +1768,16 @@ document.addEventListener('DOMContentLoaded', function(){
   function siguienteParte(){
     ST.partIdx++;
     if (ST.partIdx >= ST.exam.length){ enviar(); return; }
+    ST.enParte = false;
     const pt = ST.exam[ST.partIdx], meta = PARTES_META[pt.p], n = idsDePart(pt).length;
     $('it-num').textContent = pt.p.slice(1);
     $('it-nombre').textContent = meta.n;
     $('it-info').textContent = n + (n===1?' pregunta':' preguntas') + ' · ' + meta.comp;
     $('it-instr').textContent = meta.instr;
     $('btn-startpart').textContent = 'Comenzar ' + meta.n.split(' · ')[0];
-    pintarStepper(0); show('scr-inter');
+    pintarStepper(0); show('scr-inter'); guardar();
   }
-  $('btn-startpart').addEventListener('click', () => { renderParte(); show('scr-parte'); });
+  $('btn-startpart').addEventListener('click', () => { ST.enParte = true; renderParte(); show('scr-parte'); guardar(); });
   $('btn-nextpart').addEventListener('click', () => {
     const pt = ST.exam[ST.partIdx];
     const faltan = idsDePart(pt).filter(id => !(id in ST.answers)).length;
@@ -1827,6 +1911,7 @@ document.addEventListener('DOMContentLoaded', function(){
     const pt = ST.exam[ST.partIdx]; if (!pt) return;
     const ids = idsDePart(pt);
     pintarStepper(ids.filter(id => id in ST.answers).length / Math.max(1, ids.length));
+    guardar();   // cada respuesta queda respaldada al instante
   }
 
   /* ---------- Envío y resultados ---------- */
@@ -1850,12 +1935,27 @@ document.addEventListener('DOMContentLoaded', function(){
         body: JSON.stringify(payload)
       });
       const j = await r.json();
-      if (!r.ok || !j.ok) throw new Error(j.error || 'No se pudo calificar el examen.');
+      if (r.status === 409 || (j && j.ya_presento)){
+        // Ya había un resultado guardado (p. ej. el envío anterior sí llegó y la respuesta se perdió).
+        borrarGuardado();
+        $('overlay').style.display='none'; $('hdr').style.display='none';
+        alert(j.error || 'Este examen ya había sido enviado y tu resultado quedó guardado. Pídele el resultado a tu docente.');
+        show('scr-code'); return;
+      }
+      if (!r.ok || !j.ok){
+        const e2 = new Error(j.error || 'No se pudo calificar el examen.');
+        // Errores de aplicación (código cerrado, datos inválidos…): reintentar no ayuda.
+        e2.noRetry = r.status >= 400 && r.status < 500 && r.status !== 408 && r.status !== 429;
+        throw e2;
+      }
+      borrarGuardado();
       const wait = Math.max(0, 800 - (Date.now()-t0));
       setTimeout(() => { $('overlay').style.display='none'; $('hdr').style.display='none'; pintarResultados(j); show('scr-result'); }, wait);
     }catch(e){
       ST.enviado = false;
+      guardar();   // las respuestas siguen respaldadas mientras se logra enviar
       $('overlay').style.display = 'none';
+      if (e.noRetry){ toast('No se pudo calificar: ' + e.message, true); return; }
       toast('Error al enviar: ' + e.message + ' — Se intentará de nuevo.', true);
       setTimeout(() => { if (!ST.enviado) enviar(); }, 4000);
     }
@@ -1891,9 +1991,28 @@ document.addEventListener('DOMContentLoaded', function(){
     if (!j.saved) toast('⚠️ El resultado se calculó pero no se pudo guardar. Muéstrale esta pantalla a tu docente.', true);
   }
 
-  // Enlace profundo: icfes.html#ICF-XXXX (el QR del docente) → prellenar y verificar
-  const hashCod = (location.hash || '').replace('#', '').trim().toUpperCase();
-  if (/^[A-Z0-9-]{4,8}$/.test(hashCod)){ inCod.value = hashCod; pedirConfig(); }
+  // ¿Quedó un examen sin terminar en este dispositivo? → ofrecer continuarlo
+  const save = leerGuardado();
+  if (save){
+    $('code-card').style.display = 'none';
+    const box = $('resume-box'); box.style.display = 'block';
+    const vencido = Date.now() >= save.deadline;
+    const n = Object.keys(save.answers || {}).length;
+    $('resume-info').textContent = (save.student.nombre || 'Estudiante') + ' · código ' + save.codigo + ' · ' +
+      n + (n===1?' respuesta guardada':' respuestas guardadas') + '. ' +
+      (vencido ? 'El tiempo ya terminó: solo falta enviar lo que respondiste.'
+               : 'Puedes seguir donde ibas; el tiempo corre desde que comenzaste.');
+    $('btn-resume').textContent = vencido ? 'Enviar mis respuestas' : 'Continuar mi examen';
+    $('btn-resume').addEventListener('click', () => { box.style.display='none'; reanudar(save); });
+    $('btn-resume-no').addEventListener('click', () => {
+      if (!confirm('Se descartarán ' + n + ' respuestas guardadas y tendrás que empezar desde cero. ¿Seguro?')) return;
+      borrarGuardado(); box.style.display='none'; $('code-card').style.display='block';
+    });
+  } else {
+    // Enlace profundo: icfes.html#ICF-XXXX (el QR del docente) → prellenar y verificar
+    const hashCod = (location.hash || '').replace('#', '').trim().toUpperCase();
+    if (/^[A-Z0-9-]{4,8}$/.test(hashCod)){ inCod.value = hashCod; pedirConfig(); }
+  }
 
   // Aviso si faltan las llaves
   if (SUPABASE_URL.includes('TU-PROYECTO') || SUPABASE_ANON_KEY.includes('PEGA_AQUI'))
