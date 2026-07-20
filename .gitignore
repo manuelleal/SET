@@ -1,0 +1,15 @@
+# Private portfolio prep — never publish to the public repo
+PORTFOLIO_KIT.md
+
+# Safety net: never publish answer keys, source item banks, tooling, or planning docs
+# even if one is accidentally copied into this folder.
+tools/
+supabase/
+*.master.json
+bank.icfes.json
+*.sql
+PLAN_*.md
+ARQUITECTURA_*.md
+ANEXO_*.md
+DISENO_*.md
+PENDIENTE_*.md
