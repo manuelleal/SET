@@ -185,9 +185,26 @@
     </div>
   </div>
 
+  <!-- ===== CÓDIGO DEL EXAMEN ===== -->
+  <div id="code-screen" class="card">
+    <span class="eyebrow">Acceso</span>
+    <h2>Ingresa el código de tu examen</h2>
+    <p class="muted" style="margin-bottom:6px">Tu docente te dictará un código como
+      <b style="font-family:'Consolas','SF Mono',ui-monospace,monospace">CEF-7K2M</b>.</p>
+    <label>Código del examen</label>
+    <input type="text" id="exam-code" maxlength="8" placeholder="•••-••••" autocomplete="off" inputmode="latin">
+    <p id="code-err" style="display:none;color:#8a3b2a;font-weight:600;margin-top:10px"></p>
+    <button class="btn-block" id="code-btn" onclick="pedirConfig()">Ingresar al examen</button>
+    <p class="muted" style="margin-top:12px;font-size:.9rem">¿No tienes código? Pídeselo a tu docente.</p>
+  </div>
+
   <!-- ===== HOME ===== -->
-  <div id="home-screen" class="card">
+  <div id="home-screen" class="card hidden">
     <span class="eyebrow">Bienvenido / Welcome</span>
+    <div class="note" id="exam-ticket" style="background:var(--primary-soft);border-style:solid;border-color:#bfe0db;margin-bottom:14px">
+      <span>🎟️</span>
+      <div><b id="tk-titulo"></b><br><span id="tk-meta"></span></div>
+    </div>
     <h2>Antes de empezar</h2>
     <p class="muted" style="margin-bottom:6px">Completa tus datos. Asegúrate de tener buena conexión.</p>
     <div class="grid2">
@@ -243,7 +260,7 @@
         Cualquier intento queda guardado y será revisado por tu docente.
       </div>
     </div>
-    <button class="btn-block" onclick="startExam()">Comenzar examen</button>
+    <button class="btn-block" id="start-btn" onclick="startExam()">Comenzar examen</button>
   </div>
 
   <!-- ===== EXAM ===== -->
@@ -2912,6 +2929,56 @@ const SEC_INTRO = {
   writing:'🖊️ Tu reporte como auditor: redacta con tus propias palabras.'
 };
 
+/* ===== Examen por código =====
+   El docente crea el examen en docente.html (etapa + grupo) y reparte un código
+   CEF-XXXX. El código es lo que enlaza el resultado con la etapa y el grupo, y lo
+   que hace posible el intento único. El cliente NUNCA decide nada de esto: solo
+   pregunta por el código y respeta lo que responde el servidor. */
+let CFG=null;
+const ETAPA_LBL={diagnostico:'Diagnóstico',intermedio:'Intermedio',final:'Final',demo:'Demostración'};
+
+// ¿Son el mismo nombre? (sin tildes, mayúsculas ni espacios dobles)
+function mismoNombre(a,b){
+  const n=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim();
+  return n(a)===n(b);
+}
+
+async function fnPost(body){
+  const res=await fetch(SUPABASE_URL+GRADE_FN_PATH,{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':`Bearer ${SUPABASE_ANON_KEY}`,'apikey':SUPABASE_ANON_KEY},
+    body:JSON.stringify(body)
+  });
+  let j={}; try{ j=await res.json()||{}; }catch(_){}
+  return { status:res.status, ok:res.ok, j };
+}
+
+async function pedirConfig(){
+  const inp=$('exam-code'), err=$('code-err'), btn=$('code-btn');
+  const codigo=inp.value.trim().toUpperCase();
+  err.style.display='none';
+  if(codigo.length<4){ err.textContent='Escribe el código completo.'; err.style.display='block'; return; }
+  btn.disabled=true; btn.textContent='Verificando código…';
+  try{
+    const r=await fnPost({action:'get_config', codigo});
+    if(!r.ok||!r.j.ok) throw new Error(r.j.error||'No se pudo verificar el código.');
+    // Guarda: un código del simulacro NO puede presentarse aquí (otra prueba, otra clave).
+    if(r.j.tipo==='icfes_en')
+      throw new Error('Ese código es del Simulacro tipo Saber 11°. Ese examen se presenta en la página icfes.html, no en esta.');
+    CFG=r.j;
+    $('tk-titulo').textContent=CFG.titulo||'Examen de inglés — Nivel CEFR';
+    $('tk-meta').textContent=[ETAPA_LBL[CFG.etapa]||CFG.etapa, CFG.grupo||'sin grupo', 'código '+CFG.codigo].join(' · ');
+    if(CFG.grupo && !$('student-ficha').value) $('student-ficha').value=CFG.grupo;
+    $('code-screen').classList.add('hidden');
+    $('home-screen').classList.remove('hidden');
+    window.scrollTo(0,0);
+  }catch(e){
+    err.textContent=/Failed to fetch|NetworkError/i.test(String(e.message))
+      ? 'No hay conexión. Verifica tu internet e intenta de nuevo.' : e.message;
+    err.style.display='block';
+  }finally{ btn.disabled=false; btn.textContent='Ingresar al examen'; }
+}
+
 /* state */
 let exam=null, answers={};
 let secIndex=0, timerInt=null, timeLeft=0, secStart=0, examStart=0;
@@ -2985,11 +3052,58 @@ window.onload=()=>{
   if(SUPABASE_URL.includes('TU-PROYECTO')||SUPABASE_ANON_KEY.includes('PEGA_AQUI'))
     toast('⚠️ Falta configurar SUPABASE_URL / SUPABASE_ANON_KEY en el código.',true);
   setupAntiCheat();
+
+  // Código: se escribe como CEF-XXXX y se acepta con Enter
+  const inCod=$('exam-code');
+  inCod.addEventListener('input',()=>{
+    let v=inCod.value.toUpperCase().replace(/[^A-Z0-9]/g,'');
+    if(v.length>3) v=v.slice(0,3)+'-'+v.slice(3,7);
+    inCod.value=v;
+  });
+  inCod.addEventListener('keydown',e=>{ if(e.key==='Enter') pedirConfig(); });
+
+  // El documento se guarda sin puntos ni espacios: es la llave que enlaza las
+  // etapas del estudiante, y un formato distinto rompe el historial.
+  const inDoc=$('student-doc');
+  inDoc.addEventListener('input',()=>{ inDoc.value=inDoc.value.replace(/[^A-Za-z0-9]/g,''); });
+
+  // Enlace profundo del QR / WhatsApp: index.html#CEF-XXXX
+  const hash=(location.hash||'').replace('#','').trim().toUpperCase();
+  if(hash.length>=4){ inCod.value=hash; pedirConfig(); }
 };
 
-function startExam(){
+async function startExam(){
   const name=$('student-name').value.trim(), doc=$('student-doc').value.trim();
   if(!name||!doc){ toast('Ingresa nombre y documento.',true); return; }
+  if(!CFG){ toast('Primero ingresa el código de tu examen.',true); return; }
+
+  /* Verificación previa en el servidor: ¿este documento ya presentó este código?
+     ¿con qué nombre presentó antes? Si el servidor no responde NO se bloquea el
+     inicio: el intento único se vuelve a verificar al enviar, que es donde de
+     verdad se decide (ahí sí es el servidor quien rechaza con 409). */
+  const btn=$('start-btn');
+  btn.disabled=true; btn.textContent='Verificando…';
+  let chk=null;
+  try{
+    const r=await fnPost({action:'check_student', tipo:'cefr_general', codigo:CFG.codigo, documento:doc});
+    if(r.ok&&r.j.ok) chk=r.j;
+  }catch(_){ /* sin verificación previa: se sigue */ }
+  btn.disabled=false; btn.textContent='Comenzar examen';
+
+  if(chk){
+    if(chk.ya_presento){
+      alert('Este documento ya presentó este examen'+(chk.fecha?' el '+chk.fecha:'')+
+        ' y su resultado quedó guardado.\n\nSolo se permite un intento. Si crees que es un error, avísale a tu docente.');
+      return;
+    }
+    if(chk.nombre_previo && !mismoNombre(chk.nombre_previo,name)){
+      const et=({diagnostico:'el diagnóstico',intermedio:'la etapa intermedia',final:'la etapa final',demo:'una demostración'})[chk.etapa_previa]||'una etapa anterior';
+      if(!confirm('Este documento ya presentó '+et+' a nombre de:\n\n«'+chk.nombre_previo+'»\n\n¿Eres tú?\n\nSi NO eres tú, dale Cancelar y revisa tu número de documento: un dígito errado rompe tu historial de progreso.')){
+        $('student-doc').focus(); return;
+      }
+    }
+  }
+
   student={ nombre:name, documento:doc, tipo_documento:$('student-doctype').value,
             ficha:$('student-ficha').value.trim(), programa:$('student-program').value.trim() };
   buildExam();
@@ -3119,6 +3233,7 @@ async function submitExam(){
   const wc=s=>((s||'').trim().match(/\S+/g)||[]).length;
 
   const payload={
+    codigo: CFG ? CFG.codigo : '',   // enlaza el resultado con el examen, la etapa y el grupo
     student,
     sections: sectionIds(),
     answers,                       // { id: opción marcada }  (sin saber cuál es la correcta)
@@ -3132,6 +3247,12 @@ async function submitExam(){
   };
 
   const res=await gradeExam(payload);
+  if(res && res._bloqueado){
+    // Intento único: el servidor rechazó (409). No tiene sentido reintentar.
+    $('loading-screen').classList.add('hidden');
+    alert(res.error);
+    location.hash=''; location.reload(); return;
+  }
   if(!res){ // error ya notificado; permitir reintentar
     $('loading-screen').classList.add('hidden'); $('exam-layout').classList.remove('hidden');
     examActive=true; toast('Vuelve a pulsar "Finalizar y enviar" para reintentar.',true); return;
@@ -3170,6 +3291,8 @@ async function gradeExam(payload){
       body:JSON.stringify(payload)
     });
     const j=await res.json();
+    if(res.status===409||(j&&j.ya_presento))
+      return { _bloqueado:true, error:j.error||'Este documento ya presentó este examen.' };
     if(!res.ok||j.error) throw new Error(j.error||('HTTP '+res.status));
     toast('✅ Examen calificado y guardado.');
     return j;
