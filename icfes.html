@@ -1656,6 +1656,10 @@ document.addEventListener('DOMContentLoaded', function(){
       });
       const j = await r.json();
       if (!r.ok || !j.ok){ throw new Error(j.error || 'No se pudo verificar el código.'); }
+      // Guarda: desde que el examen CEFR también tiene códigos, un código CEF-XXXX
+      // escrito aquí armaría el simulacro equivocado y se calificaría con otra clave.
+      if (j.tipo === 'cefr_general')
+        throw new Error('Ese código es del examen de inglés CEFR. Ese examen se presenta en la página index.html, no en esta.');
       ST.cfg = j;
       // Boleta
       $('bt-titulo').textContent = j.titulo || 'Simulacro tipo Saber 11° · Inglés';
