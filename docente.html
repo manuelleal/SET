@@ -176,6 +176,9 @@
       <div class="top"><h2>Progreso por estudiante</h2></div>
       <div class="card">
         <div class="filters">
+          <div><label>Instrumento</label><select id="p-f-tipo" onchange="renderProgreso()">
+            <option value="icfes_en">Simulacro tipo Saber 11°</option>
+            <option value="cefr_general">Examen de inglés CEFR</option></select></div>
           <div><label>Grupo</label><select id="p-f-grupo" onchange="renderProgreso()"><option value="">Todos</option></select></div>
           <div><label>Buscar nombre / documento</label><input id="p-f-q" oninput="renderProgreso()" placeholder="Cédula o nombre..."></div>
         </div>
@@ -238,7 +241,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-let sb=null, rows=[], icfesRows=[], exams=[], sortKey='score_total', sortDir=-1;
+let sb=null, rows=[], icfesRows=[], allRows=[], exams=[], sortKey='score_total', sortDir=-1;
 /* Llaves PÚBLICAS fijas: el docente solo escribe correo y contraseña.
    El anon key es seguro (RLS: el público no puede leer; solo un usuario autenticado lee). */
 const SUPABASE_URL = 'https://sacugfirjijrizcpsihn.supabase.co';
@@ -247,8 +250,10 @@ const $=id=>document.getElementById(id);
 const CEFRS=['A1','A2','B1','B2','C1','C2'];
 const ETAPAS=['diagnostico','intermedio','final'];
 const ETAPA_LBL={diagnostico:'Diagnóstico',intermedio:'Intermedio',final:'Final',demo:'Demo'};
-const NIVEL_CLS={'Pre A1':'nv-pre','A1':'nv-a1','A2':'nv-a2','B1':'nv-b1'};
-const NIVEL_HEX={'Pre A1':'#8E2A21','A1':'#9A5A14','A2':'#8A6D1A','B1':'#2E6B4F'};
+// Niveles del simulacro (4 bandas ICFES) + niveles CEFR del examen de nivel.
+// Se comparten los chips: la vista Progreso nunca mezcla los dos instrumentos.
+const NIVEL_CLS={'Pre A1':'nv-pre','A1':'nv-a1','A2':'nv-a2','B1':'nv-b1','B2':'nv-b1','C1':'nv-b1','C2':'nv-b1'};
+const NIVEL_HEX={'Pre A1':'#8E2A21','A1':'#9A5A14','A2':'#8A6D1A','B1':'#2E6B4F','B2':'#2E6B4F','C1':'#1E3A5F','C2':'#1E3A5F'};
 const PARTES_LBL={p1:'P1 Vocabulario',p2:'P2 Avisos',p3:'P3 Conversaciones',p4:'P4 Gramática',p5:'P5 Lectura literal',p6:'P6 Lectura inferencial',p7:'P7 Léxico-gramatical'};
 function toast(m,w){const t=$('toast');t.textContent=m;t.className='toast show'+(w?' warn':'');setTimeout(()=>t.className='toast'+(w?' warn':''),3000);}
 function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
@@ -311,6 +316,7 @@ async function loadData(){
   ]);
   if(r1.error){ toast('❌ '+r1.error.message,true); return; }
   const all=r1.data||[];
+  allRows=all;
   rows=all.filter(r=>r.exam_tipo!=='icfes_en');
   icfesRows=all.filter(r=>r.exam_tipo==='icfes_en');
   exams=(r2.error?[]:(r2.data||[]));
@@ -321,7 +327,7 @@ async function loadData(){
   // ICFES: exámenes y grupos
   const cods=[...new Set(icfesRows.map(r=>r.exam_codigo).filter(Boolean))];
   $('i-f-exam').innerHTML='<option value="">Todos</option>'+cods.map(c=>`<option>${esc(c)}</option>`).join('');
-  const grupos=[...new Set(icfesRows.map(r=>r.ficha).filter(Boolean))].sort();
+  const grupos=[...new Set(all.filter(r=>r.exam_codigo).map(r=>r.ficha).filter(Boolean))].sort();
   $('p-f-grupo').innerHTML='<option value="">Todos</option>'+grupos.map(g=>`<option>${esc(g)}</option>`).join('');
   kpis(); distributions(); render();
   kpisIcfes(); renderIcfes(); renderExams(); renderProgreso();
@@ -406,19 +412,23 @@ function imprimirInforme(i){
 }
 
 /* ==================== TAB EXÁMENES ==================== */
-function urlEstudiante(){ return location.href.replace(/[^\/]*$/,'') + 'icfes.html'; }
-function genCodigo(){
-  const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789'; let s='';
-  for(let i=0;i<4;i++) s+=A[Math.floor(Math.random()*A.length)];
-  return 'ICF-'+s;
+// Cada tipo de examen vive en su propia página: el código lleva al archivo correcto.
+const TIPO_LBL={icfes_en:'Saber 11°', cefr_general:'CEFR'};
+function urlEstudiante(tipo){
+  return location.href.replace(/[^\/]*$/,'') + (tipo==='cefr_general' ? 'index.html' : 'icfes.html');
 }
-function cuentaPresentados(cod){ return icfesRows.filter(r=>r.exam_codigo===cod).length; }
+function genCodigo(tipo){
+  const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789'; let s='';   // sin O,0,I,1,L (confusables)
+  for(let i=0;i<4;i++) s+=A[Math.floor(Math.random()*A.length)];
+  return (tipo==='cefr_general' ? 'CEF-' : 'ICF-')+s;
+}
+function cuentaPresentados(cod){ return allRows.filter(r=>r.exam_codigo===cod).length; }
 function renderExams(){
   $('e-tbody').innerHTML=exams.map((e,i)=>`
     <tr onclick="verExamen(${i})">
       <td><b class="mono">${esc(e.codigo)}</b></td>
       <td>${esc(e.titulo||'—')}</td>
-      <td>${e.tipo==='icfes_en'?'Saber 11°':'CEFR'}</td>
+      <td>${TIPO_LBL[e.tipo]||esc(e.tipo)}</td>
       <td>${esc(ETAPA_LBL[e.etapa]||e.etapa)}</td>
       <td>${esc(e.grupo||'—')}</td>
       <td>${cuentaPresentados(e.codigo)}</td>
@@ -435,27 +445,37 @@ async function toggleExamen(i){
 }
 function verExamen(i){
   const e=exams[i];
-  const msg=`📝 *${e.titulo||'Simulacro tipo Saber 11° — Inglés'}*\n\n1. Abre: ${urlEstudiante()}\n2. Escribe el código: *${e.codigo}*\n3. Llena tus datos con tu documento real y presenta el examen.\n\n⏱ Tienes ${(e.config&&e.config.minutos)||70} minutos. ¡Éxitos!`;
+  const url=urlEstudiante(e.tipo);
+  const tiempo=e.tipo==='cefr_general'
+    ? '⏱ Cada sección tiene su propio tiempo (unos 114 minutos en total).'
+    : `⏱ Tienes ${(e.config&&e.config.minutos)||70} minutos.`;
+  const msg=`📝 *${e.titulo||(e.tipo==='cefr_general'?'Examen de inglés — Nivel CEFR':'Simulacro tipo Saber 11° — Inglés')}*\n\n1. Abre: ${url}\n2. Escribe el código: *${e.codigo}*\n3. Llena tus datos con tu documento real y presenta el examen.\n\n${tiempo} ¡Éxitos!`;
   $('modal-box').innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:start">
       <h2 style="font-size:1.25rem">${esc(e.titulo||'Examen')}</h2>
       <button class="btn-ghost" onclick="closeModal()" style="padding:6px 12px">✕</button></div>
-    <p class="muted" style="font-size:.88rem">${esc(ETAPA_LBL[e.etapa]||e.etapa)} · ${esc(e.grupo||'sin grupo')} · ${e.tipo==='icfes_en'?'Saber 11°':'CEFR'} · ${cuentaPresentados(e.codigo)} presentados</p>
+    <p class="muted" style="font-size:.88rem">${esc(ETAPA_LBL[e.etapa]||e.etapa)} · ${esc(e.grupo||'sin grupo')} · ${TIPO_LBL[e.tipo]||e.tipo} · ${cuentaPresentados(e.codigo)} presentados</p>
     <div class="codebig">${esc(e.codigo)}</div>
+    <p class="muted" style="text-align:center;font-size:.82rem;margin-top:-4px">Se presenta en <b class="mono">${esc(url.replace(/^https?:\/\//,''))}</b></p>
     <div id="qrbox" style="display:grid;place-items:center;margin:10px 0"></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button style="flex:1" onclick="navigator.clipboard.writeText('${esc(e.codigo)}').then(()=>toast('Código copiado.'))">📋 Copiar código</button>
       <button class="btn-ghost" style="flex:1" onclick='navigator.clipboard.writeText(${JSON.stringify(msg)}).then(()=>toast("Mensaje copiado: pégalo en WhatsApp."))'>💬 Copiar mensaje para estudiantes</button>
     </div>`;
   $('modal').classList.add('show');
-  try{ new QRCode(document.getElementById('qrbox'),{text:urlEstudiante()+'#'+e.codigo,width:170,height:170,colorDark:'#1E3A5F'}); }catch(_){}
+  try{ new QRCode(document.getElementById('qrbox'),{text:url+'#'+e.codigo,width:170,height:170,colorDark:'#1E3A5F'}); }catch(_){}
 }
 function abrirCrear(){
   $('modal-box').innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:start">
       <h2 style="font-size:1.25rem">Crear examen</h2>
       <button class="btn-ghost" onclick="closeModal()" style="padding:6px 12px">✕</button></div>
-    <label>Título</label><input id="c-titulo" value="Simulacro tipo Saber 11° — Inglés" maxlength="120">
+    <label>Tipo de examen</label>
+    <select id="c-tipo" onchange="cambioTipo()">
+      <option value="icfes_en">Simulacro tipo Saber 11° — Inglés (7 partes)</option>
+      <option value="cefr_general">Examen de inglés CEFR (5 destrezas)</option>
+    </select>
+    <label>Título</label><input id="c-titulo" value="Simulacro tipo Saber 11° — Inglés" maxlength="120" oninput="this.dataset.tocado=1">
     <div class="cols">
       <div><label>Etapa</label><select id="c-etapa">
         <option value="diagnostico">Diagnóstico (inicio)</option>
@@ -463,6 +483,13 @@ function abrirCrear(){
         <option value="final">Final (cierre)</option></select></div>
       <div><label>Grupo / colegio</label><input id="c-grupo" placeholder="Ej: 11A - Colegio San José" maxlength="60"></div>
     </div>
+    <div id="c-cefr-only" class="note" style="display:none">
+      <span>ℹ️</span>
+      <div>El examen CEFR tiene <b>5 secciones fijas</b> (Reading, Listening, Grammar, Vocabulary y Writing),
+      cada una con su propio tiempo y su banco rotativo: no se configura por partes. Aquí solo eliges
+      <b>etapa</b> y <b>grupo</b>, que es lo que enlaza el resultado con el progreso del estudiante.</div>
+    </div>
+    <div id="c-icfes-only">
     <label>Partes y cantidad de preguntas</label>
     <div style="display:flex;gap:8px;margin-bottom:8px">
       <button class="btn-ghost" style="flex:1;padding:8px" onclick="presetPartes(55)">Completo (55) · como el ICFES</button>
@@ -477,9 +504,19 @@ function abrirCrear(){
       <div><label>Tiempo (minutos)</label><input type="number" id="c-min" value="70" min="5" max="240"></div>
       <div><label>Informe IA con estrategias</label><select id="c-informe"><option value="true">Sí — informe completo por estudiante</option><option value="false">No — solo puntaje y nivel</option></select></div>
     </div>
+    </div>
     <p class="muted" id="c-total" style="margin-top:10px;font-weight:700"></p>
     <button class="btn-block" onclick="crearExamen()">Crear examen y generar código</button>`;
   $('modal').classList.add('show'); calcTotal();
+}
+/* El tipo decide qué se configura: el simulacro se arma por partes; el CEFR es fijo. */
+function cambioTipo(){
+  const cefr=$('c-tipo').value==='cefr_general';
+  $('c-icfes-only').style.display=cefr?'none':'';
+  $('c-cefr-only').style.display=cefr?'':'none';
+  $('c-total').style.display=cefr?'none':'';
+  const tit=$('c-titulo');
+  if(!tit.dataset.tocado) tit.value=cefr?'Examen de inglés — Nivel CEFR':'Simulacro tipo Saber 11° — Inglés';
 }
 function presetPartes(n){
   const full={p1:6,p2:6,p3:6,p4:10,p5:9,p6:6,p7:12};
@@ -500,17 +537,23 @@ function calcTotal(){
   return n;
 }
 async function crearExamen(){
-  const partes={};
-  Object.keys(PARTES_LBL).forEach(p=>{ if($('c-on-'+p).checked){ const v=Math.max(1,parseInt($('c-n-'+p).value)||0); if(v) partes[p]=v; } });
-  if(!Object.keys(partes).length){ toast('Activa al menos una parte.',true); return; }
+  const tipo=($('c-tipo')&&$('c-tipo').value)||'icfes_en';
+  const cefr=tipo==='cefr_general';
+  const config={};
+  if(!cefr){
+    const partes={};
+    Object.keys(PARTES_LBL).forEach(p=>{ if($('c-on-'+p).checked){ const v=Math.max(1,parseInt($('c-n-'+p).value)||0); if(v) partes[p]=v; } });
+    if(!Object.keys(partes).length){ toast('Activa al menos una parte.',true); return; }
+    config.partes=partes; config.minutos=Math.max(5,parseInt($('c-min').value)||70);
+  }
   const row={
-    codigo:genCodigo(), tipo:'icfes_en',
+    codigo:genCodigo(tipo), tipo,
     etapa:$('c-etapa').value,
     forma:{diagnostico:'A',intermedio:'B',final:'C'}[$('c-etapa').value]||'A',
     grupo:$('c-grupo').value.trim()||null,
-    titulo:$('c-titulo').value.trim()||'Simulacro tipo Saber 11° — Inglés',
-    config:{partes, minutos:Math.max(5,parseInt($('c-min').value)||70)},
-    informe_completo:$('c-informe').value==='true'
+    titulo:$('c-titulo').value.trim()||(cefr?'Examen de inglés — Nivel CEFR':'Simulacro tipo Saber 11° — Inglés'),
+    config,
+    informe_completo: cefr ? true : ($('c-informe').value==='true')
   };
   const { data:me }=await sb.auth.getUser();
   if(me&&me.user) row.docente_email=me.user.email;
@@ -520,16 +563,25 @@ async function crearExamen(){
       const { data:fresh }=await sb.from('exams').select('*').eq('codigo',row.codigo).limit(1);
       if(fresh&&fresh[0]) exams[0]=fresh[0];
       renderExams(); verExamen(0); toast('✅ Examen creado. Dicta o proyecta el código.'); return; }
-    if(/duplicate|unique/i.test(error.message)){ row.codigo=genCodigo(); continue; }
+    if(/duplicate|unique/i.test(error.message)){ row.codigo=genCodigo(tipo); continue; }
     toast('❌ '+error.message,true); return;
   }
   toast('❌ No pude generar un código único, intenta de nuevo.',true);
 }
 
 /* ==================== TAB PROGRESO ==================== */
-function progresoData(){
+/* La vista sirve DOS instrumentos (simulacro Saber 11 y examen CEFR) pero nunca
+   los mezcla en la misma trayectoria: son escalas distintas y compararlas sería
+   inventar un avance que no existe. El selector decide cuál se está viendo. */
+function progTipo(){ return ($('p-f-tipo')&&$('p-f-tipo').value)||'icfes_en'; }
+function progScore(r,tipo){ return (tipo||progTipo())==='icfes_en' ? (r.score_icfes||0) : (r.score_total||0); }
+function progNivel(r,tipo){ return (tipo||progTipo())==='icfes_en' ? r.nivel_icfes : r.nivel_cefr; }
+function progFuente(tipo){
+  return (tipo||progTipo())==='icfes_en' ? icfesRows : rows.filter(r=>r.exam_codigo);
+}
+function progresoData(tipo){
   const fg=$('p-f-grupo').value, q=$('p-f-q').value.trim().toLowerCase();
-  const d=icfesRows.filter(r=>(!fg||r.ficha===fg)&&(!q||(`${r.nombre} ${r.documento}`).toLowerCase().includes(q)));
+  const d=progFuente(tipo).filter(r=>(!fg||r.ficha===fg)&&(!q||(`${r.nombre} ${r.documento}`).toLowerCase().includes(q)));
   const porDoc={};
   d.forEach(r=>{
     const doc=(r.documento||'').replace(/\D/g,''); if(!doc) return;
@@ -544,7 +596,7 @@ function progresoData(){
 function sendero(st){
   const xs=[14,60,106];
   let html='<svg width="120" height="30" viewBox="0 0 120 30">';
-  const pts=ETAPAS.map((e,i)=>{ const r=st.etapas[e]; return r?{x:xs[i],y:26-(r.score_icfes||0)/100*20,c:NIVEL_HEX[r.nivel_icfes]||'#888'}:null; });
+  const pts=ETAPAS.map((e,i)=>{ const r=st.etapas[e]; return r?{x:xs[i],y:26-progScore(r)/100*20,c:NIVEL_HEX[progNivel(r)]||'#888'}:null; });
   for(let i=0;i<2;i++) if(pts[i]&&pts[i+1]) html+=`<line x1="${pts[i].x}" y1="${pts[i].y}" x2="${pts[i+1].x}" y2="${pts[i+1].y}" stroke="#B8C4D2" stroke-width="2"/>`;
   ETAPAS.forEach((e,i)=>{ const p=pts[i];
     html+=p?`<circle cx="${xs[i]}" cy="${p.y}" r="5" fill="${p.c}"/>`:`<circle cx="${xs[i]}" cy="16" r="5" fill="none" stroke="#C9CFD8" stroke-width="1.5" stroke-dasharray="2,2"/>`; });
@@ -554,12 +606,12 @@ function renderProgreso(){
   const data=progresoData();
   // cohorte
   $('p-cohorte').innerHTML=ETAPAS.map((e,i)=>{
-    const vals=data.map(s=>s.etapas[e]).filter(Boolean).map(r=>r.score_icfes||0);
+    const vals=data.map(s=>s.etapas[e]).filter(Boolean).map(r=>progScore(r));
     const avg=vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length):null;
     const prevE=i>0?ETAPAS[i-1]:null;
     let deltaHtml='';
     if(prevE&&avg!=null){
-      const prevVals=data.map(s=>s.etapas[prevE]).filter(Boolean).map(r=>r.score_icfes||0);
+      const prevVals=data.map(s=>s.etapas[prevE]).filter(Boolean).map(r=>progScore(r));
       if(prevVals.length){ const dd=avg-Math.round(prevVals.reduce((a,b)=>a+b,0)/prevVals.length);
         deltaHtml=`<span class="delta ${dd>=5?'up':dd<=-5?'dn':'eq'}">${dd>=0?'+':''}${dd} pts</span>`; }
     }
@@ -569,7 +621,7 @@ function renderProgreso(){
   }).join('');
   // tabla
   $('p-tbody').innerHTML=data.map(s=>{
-    const sc=ETAPAS.map(e=>s.etapas[e]?s.etapas[e].score_icfes:null);
+    const sc=ETAPAS.map(e=>s.etapas[e]?progScore(s.etapas[e]):null);
     const presentes=sc.filter(v=>v!=null);
     const delta=presentes.length>=2?presentes[presentes.length-1]-presentes[0]:null;
     const ult=[...ETAPAS].reverse().map(e=>s.etapas[e]).find(Boolean);
@@ -578,10 +630,11 @@ function renderProgreso(){
       <td>${sendero(s)}</td>
       <td class="mono">${sc.map(v=>v==null?'·':v).join(' → ')}</td>
       <td>${delta==null?'<span class="muted">—</span>':`<span class="delta ${delta>=5?'up':delta<=-5?'dn':'eq'}">${delta>=0?'+':''}${delta}</span>`}</td>
-      <td>${nivelChip(ult?ult.nivel_icfes:null)}</td>
+      <td>${nivelChip(ult?progNivel(ult):null)}</td>
     </tr>`;
-  }).join('') || `<tr><td colspan="5" class="muted" style="text-align:center;padding:24px">Sin datos. El progreso aparece cuando los estudiantes presentan el simulacro.</td></tr>`;
-  $('p-nota').textContent=data.length?`${data.length} estudiantes. El avance se calcula entre la primera y la última etapa presentada (mismo documento).`:'';
+  }).join('') || `<tr><td colspan="5" class="muted" style="text-align:center;padding:24px">Sin datos para este instrumento. El progreso aparece cuando los estudiantes presentan con un código de examen.</td></tr>`;
+  const inst=progTipo()==='icfes_en'?'simulacro tipo Saber 11° (0–100)':'examen CEFR (0–100 interno)';
+  $('p-nota').textContent=data.length?`${data.length} estudiantes · ${inst}. El avance se calcula entre la primera y la última etapa presentada (mismo documento). Los dos instrumentos nunca se mezclan en la misma trayectoria.`:'';
 }
 
 /* ==================== EXCEL (ICFES) ==================== */
@@ -597,7 +650,7 @@ function exportXlsx(){
     'P7 Léx-gram %':r.score_partes&&r.score_partes.p7?r.score_partes.p7.pct:'',
     'Tiempo (min)':r.duracion_seg!=null?Math.round(r.duracion_seg/60):'','Alertas':r.alertas||0,'Sospechoso':r.sospechoso?'SÍ':'no',
     'Fecha':fmtDate(r.created_at) }));
-  const prog=progresoData().map(s=>{
+  const prog=progresoData('icfes_en').map(s=>{   // este Excel es del simulacro: nunca toma filas CEFR
     const g=e=>s.etapas[e]?s.etapas[e].score_icfes:'';
     const sc=ETAPAS.map(e=>s.etapas[e]?s.etapas[e].score_icfes:null).filter(v=>v!=null);
     const ult=[...ETAPAS].reverse().map(e=>s.etapas[e]).find(Boolean);
