@@ -17,11 +17,31 @@
     --ok:#2E7D5B; --ok-bg:#E7F4EC; --err:#C2553F; --err-bg:#FBEAE5;
     --navy:#1E3A5F; --navy-soft:#E8EEF5;
     --shadow:0 10px 30px -12px rgba(40,35,20,.25); --radius:16px;
+    /* ===== Sistema visual (docs/prototipo_visual.html §2) =====
+       Paleta validada: NO cambiar ni un tono. El color sigue a la destreza en
+       todas las pantallas y nunca se repinta al filtrar. */
+    --s1:#0D9488; --s2:#C2740A; --s3:#2F6FBF; --s4:#C0392B; --s5:#7A4FAE;
+    --n1:#57BFAF; --n2:#2FAA98; --n3:#0D9488; --n4:#0A7E73; --n5:#07665D; --n6:#044F47;
+    --good:#0CA30C; --warn:#FAB219; --serio:#EC835A; --crit:#D03B3B;
+    --axis:#C3C2B7; --ink-2:#52514E;
+    --glow1:#FBF4E5; --glow2:#EAF3F1;
+  }
+  [data-theme="dark"]{
+    --bg:#0F1214; --paper:#161A1D; --surface:#161A1D;
+    --ink:#FFFFFF; --ink-2:#C3C2B7; --muted:#898781;
+    --line:#2C2C2A; --axis:#383835;
+    --glow1:#171C1B; --glow2:#131A1D;
+    --s1:#12A192; --s2:#C9801A; --s3:#5A93E8; --s4:#E05B4E; --s5:#A77BD8;
+    --n1:#8FD8CB; --n2:#5CC3B2; --n3:#2FAA98; --n4:#12A192; --n5:#0A7E73; --n6:#07665D;
+    --primary:#12A192; --primary-d:#0A7E73; --primary-soft:#10312E;
+    --accent:#D9A64A; --navy:#7FA8D9; --navy-soft:#16202C;
+    --ok:#3FA97A; --ok-bg:#12291F; --err:#E0705A; --err-bg:#2E1A17;
+    --shadow:0 10px 30px -14px rgba(0,0,0,.6);
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Mulish',system-ui,sans-serif;color:var(--ink);line-height:1.55;
-    background:radial-gradient(1200px 600px at 100% -10%,#FBF4E5,transparent 60%),
-               radial-gradient(900px 500px at -10% 110%,#EAF3F1,transparent 55%),var(--bg);min-height:100vh}
+    background:radial-gradient(1200px 600px at 100% -10%,var(--glow1),transparent 60%),
+               radial-gradient(900px 500px at -10% 110%,var(--glow2),transparent 55%),var(--bg);min-height:100vh}
   .wrap{max-width:1080px;margin:0 auto;padding:24px 18px 60px}
   h1,h2,h3,.serif{font-family:'Fraunces',Georgia,serif;letter-spacing:-.01em}
   h2{font-size:1.6rem;font-weight:600}
@@ -48,15 +68,19 @@
   .kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:var(--shadow)}
   .kpi .n{font-family:'Fraunces',serif;font-weight:700;font-size:2rem;color:var(--primary);line-height:1}
   .kpi .l{font-size:.82rem;color:var(--muted);margin-top:4px}
-  .cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  /* align-items:start → cada tarjeta mide lo que su contenido, sin estirarse
+     hasta la altura de la vecina (dejaba un hueco vacío bajo el gráfico). */
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
   @media(max-width:760px){.cols{grid-template-columns:1fr}}
   .barline{margin:10px 0}
   .barline .lab{display:flex;justify-content:space-between;font-size:.86rem;font-weight:600;margin-bottom:5px}
   .barline .lab .v{font-family:'Fraunces',serif;color:var(--primary-d)}
   .bar{height:12px;background:var(--line);border-radius:999px;overflow:hidden}
   .bar>span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--primary))}
-  .filters{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px}
-  .filters > div{flex:1;min-width:160px}
+  /* Filtros en UNA sola fila encima de los gráficos (se apilan solo en móvil) */
+  .filters{display:flex;gap:10px;flex-wrap:nowrap;align-items:flex-end;margin-bottom:12px}
+  .filters > div{flex:1;min-width:0}
+  @media(max-width:720px){.filters{flex-wrap:wrap}.filters > div{min-width:150px}}
   table{width:100%;border-collapse:collapse;font-size:.9rem}
   th,td{text-align:left;padding:11px 10px;border-bottom:1px solid var(--line)}
   th{font-size:.74rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);cursor:pointer;user-select:none}
@@ -73,6 +97,7 @@
   .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(120%);background:var(--ink);color:#fff;
     padding:12px 18px;border-radius:12px;font-weight:600;font-size:.9rem;transition:.35s;z-index:80}
   .toast.show{transform:translateX(-50%) translateY(0)} .toast.warn{background:var(--err)}
+  .toast{display:flex;align-items:center;gap:9px}
   /* pestañas */
   .tabs{display:flex;gap:2px;border-bottom:2px solid var(--line);margin-bottom:18px;flex-wrap:wrap}
   .tab{background:none;border:none;box-shadow:none;color:var(--muted);font-weight:700;font-size:.95rem;padding:10px 16px;border-radius:10px 10px 0 0;border-bottom:3px solid transparent;margin-bottom:-2px}
@@ -100,13 +125,80 @@
   .inf-row{background:var(--navy-soft);border-radius:8px;padding:5px 9px;margin:5px 0}
   .partegrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 14px}
   @media(max-width:560px){.partegrid{grid-template-columns:1fr}}
+
+  /* ===== Gráficos (SVG/CSS a mano — sin librería de gráficos) ===== */
+  .blk{margin-top:22px}
+  .blk h3{font-size:1rem;margin:0 0 2px;font-weight:800}
+  .blk .cap{font-size:.79rem;color:var(--muted);margin:0 0 12px}
+  .stack{display:flex;height:32px;border-radius:8px;overflow:hidden;background:var(--line)}
+  .st-seg{position:relative;display:grid;place-items:center;font:700 .74rem inherit;color:#fff;
+    border-right:2px solid var(--surface);cursor:default;transition:filter .15s;overflow:hidden}
+  .st-seg:last-child{border-right:0}
+  .st-seg:hover{filter:brightness(1.12)}
+  .legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:11px}
+  .lg{display:flex;align-items:center;gap:6px;font-size:.78rem;color:var(--ink-2)}
+  .sw{width:11px;height:11px;border-radius:3px;flex:none}
+  .hbars{display:grid;gap:11px;margin-top:4px}
+  .hb{display:grid;grid-template-columns:118px 1fr 44px;align-items:center;gap:11px}
+  .hb .lb{font-size:.85rem;font-weight:600;display:flex;align-items:center;gap:7px}
+  .hb .lb svg{flex:none}
+  .hb .vv{font-weight:800;font-size:.85rem;text-align:right;font-variant-numeric:tabular-nums}
+  .hbtrack{position:relative;height:12px;background:var(--line);border-radius:6px}
+  .hbfill{position:absolute;inset:0 auto 0 0;width:0;border-radius:6px;transition:width .6s cubic-bezier(.2,.7,.3,1)}
+  .hbmark{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink-2);border-radius:1px}
+  @media(max-width:560px){.hb{grid-template-columns:92px 1fr 40px}}
+  /* box-shadow:none — el botón genérico trae sombra teal y aquí es texto plano */
+  .tblbtn{background:none;border:0;box-shadow:none;color:var(--ink-2);font:600 .78rem inherit;
+    text-decoration:underline;cursor:pointer;padding:6px 0;min-height:44px}
+  .tblbtn:hover{color:var(--ink);transform:none}
+  .tblview{display:none;margin-top:6px}
+  .tblview.on{display:block}
+  .tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);padding:7px 11px;
+    border-radius:8px;font-size:.78rem;font-weight:600;opacity:0;transition:opacity .12s;z-index:60;white-space:nowrap}
+  .themebtn{border:1px solid var(--line);background:var(--surface);color:var(--ink-2);border-radius:999px;
+    padding:9px 14px;font-weight:600;font-size:.85rem;cursor:pointer;display:inline-flex;align-items:center;
+    gap:8px;min-height:44px}
+  button svg,.themebtn svg{flex:none}
+  input,select,textarea{font-size:16px}
+
+  /* ===== §6 Vista de proyección (videobeam) — sin nombres ni documentos ===== */
+  .livewrap{position:fixed;inset:0;z-index:200;background:linear-gradient(160deg,var(--paper),var(--surface));
+    padding:34px 40px;overflow:auto}
+  .live-top{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
+  .live-n{font-family:'Fraunces',serif;font-weight:700;font-size:5rem;line-height:.95;color:var(--primary)}
+  .live-lbl{font-size:.86rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:700}
+  .live-sub{color:var(--ink-2);font-size:1rem}
+  .live-cod{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:2rem;letter-spacing:.24em;font-weight:600}
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--good);display:inline-block;margin-right:8px;
+    animation:pulso 1.8s ease-in-out infinite}
+  @keyframes pulso{0%,100%{opacity:1}50%{opacity:.25}}
+  .histo{display:flex;align-items:flex-end;gap:16px;height:230px;margin-top:34px}
+  .hcol{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px}
+  .hbar{width:100%;border-radius:8px 8px 0 0;transition:height .6s cubic-bezier(.2,.7,.3,1);min-height:2px}
+  .hcnt{font-weight:800;font-size:1.5rem;font-variant-numeric:tabular-nums}
+  .hlbl{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:1rem;color:var(--muted);font-weight:600}
+  .feed{margin-top:26px;display:grid;gap:10px}
+  .fitem{display:flex;align-items:center;gap:16px;background:var(--surface);border:1px solid var(--line);
+    border-radius:12px;padding:14px 20px;font-size:1.15rem;animation:entra .3s ease}
+  @keyframes entra{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+  .fitem .t{margin-left:auto;font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.9rem;color:var(--muted)}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
+<script>
+/* Tema: sigue al sistema salvo que el docente lo fije. Se aplica antes de pintar. */
+(function(){try{
+  var t=localStorage.getItem('set_theme');
+  if(!t) t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+  document.documentElement.setAttribute('data-theme',t);
+}catch(e){}})();
+</script>
 </head>
 <body>
 <div class="wrap">
-  <div class="brand">
+  <div class="brand" style="display:flex;align-items:center;gap:12px">
     <div class="logo">D</div>
-    <div><div class="t">Panel Docente</div><div class="s">Inglés CEFR · Simulacro tipo Saber 11°</div></div>
+    <div style="flex:1"><div class="t">Panel Docente</div><div class="s">Inglés CEFR · Simulacro tipo Saber 11°</div></div>
+    <button class="themebtn" id="theme-btn" onclick="toggleTema()" aria-label="Cambiar tema"></button>
   </div>
 
   <!-- LOGIN -->
@@ -137,8 +229,25 @@
     <!-- ============ TAB: SIMULACRO ICFES ============ -->
     <div id="tab-icfes">
       <div class="top"><h2>Simulacro tipo Saber 11° — Inglés</h2>
-        <button class="btn-ghost" onclick="exportXlsx()">⬇️ Descargar Excel</button></div>
+        <button class="btn-ghost" onclick="exportXlsx()"><span data-ic="down"></span> Descargar Excel</button></div>
       <div class="kpis" id="i-kpis"></div>
+      <div class="cols">
+        <div class="card blk">
+          <h3>Distribución de niveles</h3>
+          <p class="cap" id="i-dist-cap"></p>
+          <div class="stack" id="i-dist"></div>
+          <div class="legend" id="i-dist-lg"></div>
+          <button class="tblbtn" onclick="verTabla('i-dist-tb',this)">Ver como tabla</button>
+          <div class="tblview" id="i-dist-tb"></div>
+        </div>
+        <div class="card blk">
+          <h3>Promedio por parte</h3>
+          <p class="cap">Orden fijo (Parte 1 → 7). El color indica la banda en la que cae el promedio de esa parte; la línea es el puntaje promedio del grupo.</p>
+          <div class="hbars" id="i-partes"></div>
+          <button class="tblbtn" onclick="verTabla('i-partes-tb',this)">Ver como tabla</button>
+          <div class="tblview" id="i-partes-tb"></div>
+        </div>
+      </div>
       <div class="card">
         <div class="filters">
           <div><label>Filtrar por examen</label><select id="i-f-exam" onchange="renderIcfes()"><option value="">Todos</option></select></div>
@@ -148,7 +257,7 @@
         </div>
         <div class="scroll">
           <table>
-            <thead><tr><th>Estudiante</th><th>Examen</th><th>Etapa</th><th>Puntaje</th><th>Nivel</th><th>Tiempo</th><th>Fecha</th><th>⚠️</th></tr></thead>
+            <thead><tr><th>Estudiante</th><th>Examen</th><th>Etapa</th><th>Puntaje</th><th>Nivel</th><th>Tiempo</th><th>Fecha</th><th title="Alertas">Alertas</th></tr></thead>
             <tbody id="i-tbody"></tbody>
           </table>
         </div>
@@ -159,7 +268,7 @@
     <!-- ============ TAB: EXÁMENES Y CÓDIGOS ============ -->
     <div id="tab-examenes" class="hidden">
       <div class="top"><h2>Exámenes y códigos</h2>
-        <button onclick="abrirCrear()">➕ Crear examen</button></div>
+        <button onclick="abrirCrear()"><span data-ic="plus"></span> Crear examen</button></div>
       <div class="card">
         <div class="scroll">
           <table>
@@ -196,11 +305,24 @@
     <!-- ============ TAB: CEFR (original) ============ -->
     <div id="tab-cefr" class="hidden">
       <div class="top"><h2>Inglés CEFR — Evaluación de nivel</h2>
-        <button class="btn-ghost" onclick="exportCSV()">⬇️ Exportar CSV</button></div>
+        <button class="btn-ghost" onclick="exportCSV()"><span data-ic="down"></span> Exportar CSV</button></div>
       <div class="kpis" id="kpis"></div>
       <div class="cols">
-        <div class="card"><span class="eyebrow">Distribución por nivel CEFR</span><div id="cefr-dist"></div></div>
-        <div class="card"><span class="eyebrow">Promedio por destreza</span><div id="skill-avg"></div></div>
+        <div class="card blk">
+          <h3>Distribución de niveles</h3>
+          <p class="cap" id="c-dist-cap"></p>
+          <div class="stack" id="cefr-dist"></div>
+          <div class="legend" id="c-dist-lg"></div>
+          <button class="tblbtn" onclick="verTabla('c-dist-tb',this)">Ver como tabla</button>
+          <div class="tblview" id="c-dist-tb"></div>
+        </div>
+        <div class="card blk">
+          <h3>Promedio por destreza</h3>
+          <p class="cap">Orden fijo, nunca por puntaje: si el orden cambia entre cargas, dos capturas dejan de ser comparables. La línea es el promedio general.</p>
+          <div class="hbars" id="skill-avg"></div>
+          <button class="tblbtn" onclick="verTabla('c-sk-tb',this)">Ver como tabla</button>
+          <div class="tblview" id="c-sk-tb"></div>
+        </div>
       </div>
       <div class="card">
         <div class="filters">
@@ -223,7 +345,7 @@
               <th data-k="score_writing">Writ</th>
               <th data-k="duracion_seg">Tiempo</th>
               <th data-k="created_at">Fecha</th>
-              <th>⚠️</th>
+              <th title="Alertas">Alertas</th>
             </tr></thead>
             <tbody id="tbody"></tbody>
           </table>
@@ -240,6 +362,28 @@
 </div>
 <div class="toast" id="toast"></div>
 
+<!-- ===== §6 Vista de proyección: docente.html#/live  (o #/live/CEF-XXXX) =====
+     Para el videobeam de la ponencia. Sin nombres ni documentos: en una sala de
+     desconocidos eso no se muestra, y además es dato personal. -->
+<div class="livewrap hidden" id="live">
+  <div class="live-top">
+    <div>
+      <div class="live-lbl"><span class="dot"></span>Recibiendo resultados</div>
+      <div class="live-n" id="live-n">0</div>
+      <div class="live-sub" id="live-sub">presentaron el examen</div>
+    </div>
+    <div style="text-align:right;display:grid;gap:10px;justify-items:end">
+      <div><div class="live-lbl">Código</div><div class="live-cod" id="live-cod">—</div></div>
+      <div style="display:flex;gap:8px">
+        <button class="themebtn" onclick="pantallaCompleta()">Pantalla completa</button>
+        <button class="themebtn" onclick="cerrarLive()">Salir</button>
+      </div>
+    </div>
+  </div>
+  <div class="histo" id="live-histo"></div>
+  <div class="feed" id="live-feed"></div>
+</div>
+
 <script>
 let sb=null, rows=[], icfesRows=[], allRows=[], exams=[], sortKey='score_total', sortDir=-1;
 /* Llaves PÚBLICAS fijas: el docente solo escribe correo y contraseña.
@@ -252,10 +396,196 @@ const ETAPAS=['diagnostico','intermedio','final'];
 const ETAPA_LBL={diagnostico:'Diagnóstico',intermedio:'Intermedio',final:'Final',demo:'Demo'};
 // Niveles del simulacro (4 bandas ICFES) + niveles CEFR del examen de nivel.
 // Se comparten los chips: la vista Progreso nunca mezcla los dos instrumentos.
+/* =========================================================
+   SISTEMA VISUAL (docs/prototipo_visual.html)
+   Iconos SVG y gráficos en SVG/CSS a mano: sin librería de gráficos ni de
+   iconos por CDN. El panel lo abre una persona en escritorio, pero la misma
+   mecánica sirve en el celular del docente.
+========================================================= */
+const IC={
+  reading:'<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+  listening:'<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>',
+  grammar:'<path d="M6 16l6-12 6 12M8.5 12h7"/><path d="M4 21l3-3 2 2"/>',
+  vocabulary:'<path d="M16 6l3 12M8 6L5 18"/><rect x="2" y="4" width="4" height="16" rx="1"/><rect x="18" y="4" width="4" height="16" rx="1"/><path d="M10 4h4v16h-4z"/>',
+  writing:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  chat:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  print:'<path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/>',
+  down:'<path d="M12 3v13m0 0l-5-5m5 5l5-5"/><path d="M4 21h16"/>',
+  up:'<path d="M7 14l5-5 5 5"/>', dn:'<path d="M7 10l5 5 5-5"/>', eq:'<path d="M5 12h14"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  copy:'<rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+  close:'<path d="M6 6l12 12M18 6L6 18"/>',
+  ok:'<path d="M20 6L9 17l-5-5"/>',
+  alert:'<path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',
+  lock:'<rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  doc:'<path d="M4 4a2 2 0 0 1 2-2h7l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M13 2v5h5"/>',
+  sun:'<path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.36-6.36l-.7.7M6.34 17.66l-.7.7m12.72 0l-.7-.7M6.34 6.34l-.7-.7"/><circle cx="12" cy="12" r="4"/>',
+  moon:'<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>'
+};
+function ic(n,color,size,sw){
+  return '<svg width="'+(size||16)+'" height="'+(size||16)+'" viewBox="0 0 24 24" fill="none" aria-hidden="true"'+
+    ' stroke="'+(color||'currentColor')+'" stroke-width="'+(sw||2)+'" stroke-linecap="round" stroke-linejoin="round">'+
+    (IC[n]||'')+'</svg>';
+}
+const cssv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+/* Orden FIJO de destrezas — nunca ordenar por puntaje: si el orden cambia entre
+   cargas, dos capturas dejan de ser comparables. */
+const DESTREZAS=[
+  {k:'score_reading',    n:'Reading',    c:'--s1', i:'reading'},
+  {k:'score_listening',  n:'Listening',  c:'--s2', i:'listening'},
+  {k:'score_grammar',    n:'Grammar',    c:'--s3', i:'grammar'},
+  {k:'score_vocabulary', n:'Vocabulary', c:'--s4', i:'vocabulary'},
+  {k:'score_writing',    n:'Writing',    c:'--s5', i:'writing'}
+];
+const CEFR_RAMPA={A1:'--n1',A2:'--n2',B1:'--n3',B2:'--n4',C1:'--n5',C2:'--n6'};
+const ICFES_RAMPA={'Pre A1':'--n1','A1':'--n3','A2':'--n4','B1':'--n6'};
+
+/* Barra apilada al 100%. Un porcentaje sin n no es un dato: el n va siempre. */
+function stack100(elId,lgId,capId,tbId,items,total,unidad){
+  const T=total||items.reduce((a,b)=>a+b.n,0);
+  const el=$(elId);
+  if(!T){ el.innerHTML=''; $(lgId).innerHTML=''; $(capId).textContent='Sin datos todavía.'; return; }
+  el.innerHTML=items.map(d=>{
+    const p=d.n/T*100;
+    return '<div class="st-seg" style="width:'+p+'%;background:'+cssv(d.v)+'" '+
+      'data-tip="'+esc(d.k)+': '+d.n+' '+unidad+' ('+p.toFixed(0)+'%)">'+(p>9?esc(d.k):'')+'</div>';
+  }).join('');
+  $(lgId).innerHTML=items.map(d=>'<span class="lg"><span class="sw" style="background:'+cssv(d.v)+'"></span>'+esc(d.k)+' · '+d.n+'</span>').join('');
+  $(capId).textContent='Barra apilada al 100% · n = '+T+' '+unidad;
+  if(tbId) $(tbId).innerHTML='<table><thead><tr><th>Nivel</th><th>'+unidad+'</th><th>%</th></tr></thead><tbody>'+
+    items.map(d=>'<tr><td><b>'+esc(d.k)+'</b></td><td>'+d.n+'</td><td>'+(d.n/T*100).toFixed(0)+'%</td></tr>').join('')+
+    '</tbody></table>';
+}
+/* Barras horizontales con marca del promedio general (2px). */
+function hbars(elId,tbId,series,marca){
+  $(elId).innerHTML=series.map(s=>
+    '<div class="hb"><span class="lb">'+(s.i?ic(s.i,cssv(s.c),15,2):'')+esc(s.n)+'</span>'+
+    '<div class="hbtrack"><div class="hbfill" data-w="'+s.v+'" style="background:'+cssv(s.c)+'" '+
+      'data-tip="'+esc(s.n)+': '+s.v+'% promedio'+(s.det?' · '+esc(s.det):'')+'"></div>'+
+      (marca!=null?'<div class="hbmark" style="left:'+marca+'%" data-tip="promedio general '+marca+'%"></div>':'')+
+    '</div><span class="vv">'+s.v+'%</span></div>').join('');
+  requestAnimationFrame(()=>document.querySelectorAll('#'+elId+' .hbfill').forEach(f=>f.style.width=f.dataset.w+'%'));
+  if(tbId) $(tbId).innerHTML='<table><thead><tr><th>Serie</th><th>Promedio</th><th>Detalle</th></tr></thead><tbody>'+
+    series.map(s=>'<tr><td><b>'+esc(s.n)+'</b></td><td>'+s.v+'%</td><td>'+esc(s.det||'—')+'</td></tr>').join('')+
+    '</tbody></table>';
+}
+function verTabla(id,btn){
+  const el=$(id); const on=el.classList.toggle('on');
+  btn.textContent=on?'Ocultar tabla':'Ver como tabla';
+}
+/* Tooltip por marca: obligatorio en barras y celdas de todo gráfico del panel. */
+function initTip(){
+  const tip=document.createElement('div'); tip.className='tip'; document.body.appendChild(tip);
+  document.addEventListener('mouseover',e=>{
+    const t=e.target.closest('[data-tip]'); if(!t) return;
+    tip.textContent=t.dataset.tip; tip.style.opacity=1;
+  });
+  document.addEventListener('mousemove',e=>{
+    tip.style.left=Math.min(window.innerWidth-tip.offsetWidth-8,e.clientX+14)+'px';
+    tip.style.top=(e.clientY-34)+'px';
+  });
+  document.addEventListener('mouseout',e=>{ if(e.target.closest('[data-tip]')) tip.style.opacity=0; });
+}
+/* =========================================================
+   §6 · VISTA DE PROYECCIÓN  —  docente.html#/live[/CODIGO]
+   Refresco por polling cada 5 s (no hace falta realtime para esto).
+   NUNCA muestra nombre ni documento: solo nivel y puntaje.
+========================================================= */
+let liveInt=null, liveCod=null, liveIds=new Set();
+function rutaLive(){ return /^#\/live/.test(location.hash||''); }
+function codigoDeRuta(){
+  const m=(location.hash||'').match(/^#\/live\/([A-Za-z0-9-]{4,12})/);
+  return m?m[1].toUpperCase():null;
+}
+function bandasDe(tipo){
+  return tipo==='icfes_en'
+    ? [['Pre A1','--n1'],['A1','--n3'],['A2','--n4'],['B1','--n6']]
+    : CEFRS.map(c=>[c,CEFR_RAMPA[c]]);
+}
+async function abrirLive(){
+  if(!sb){ toast('Inicia sesión para usar la vista de proyección.',true); location.hash=''; return; }
+  // Sin código explícito: el examen creado más recientemente.
+  liveCod=codigoDeRuta()||((exams[0]&&exams[0].codigo)||null);
+  if(!liveCod){ toast('Crea un examen antes de proyectar.',true); location.hash=''; return; }
+  liveIds=new Set();
+  $('live').classList.remove('hidden');
+  $('live-cod').textContent=liveCod;
+  await tickLive();
+  clearInterval(liveInt); liveInt=setInterval(tickLive,5000);
+}
+function cerrarLive(){
+  clearInterval(liveInt); liveInt=null;
+  $('live').classList.add('hidden');
+  if(rutaLive()) location.hash='';
+}
+async function tickLive(){
+  const { data, error }=await sb.from('exam_results')
+    .select('id,exam_tipo,etapa,nivel_cefr,nivel_icfes,score_total,score_icfes,created_at')
+    .eq('exam_codigo',liveCod).order('created_at',{ascending:false}).limit(200);
+  if(error) return;
+  const filas=(data||[]).filter(r=>r.etapa!=='simulacion');
+  const tipo=(filas[0]&&filas[0].exam_tipo)||'cefr_general';
+  const nivelDe=r=>tipo==='icfes_en'?r.nivel_icfes:r.nivel_cefr;
+  const scoreDe=r=>tipo==='icfes_en'?r.score_icfes:r.score_total;
+
+  $('live-n').textContent=filas.length;
+  $('live-sub').textContent=filas.length===1?'presentó el examen':'presentaron el examen';
+
+  const bandas=bandasDe(tipo);
+  const cuenta=bandas.map(([k])=>filas.filter(r=>nivelDe(r)===k).length);
+  const mx=Math.max(1,...cuenta);
+  $('live-histo').innerHTML=bandas.map(([k,v],i)=>
+    '<div class="hcol"><span class="hcnt">'+(cuenta[i]||'')+'</span>'+
+    '<div class="hbar" style="height:'+(cuenta[i]/mx*170)+'px;background:'+cssv(v)+'"></div>'+
+    '<span class="hlbl">'+k+'</span></div>').join('');
+
+  // Últimos resultados, sin identificar a nadie
+  const ultimos=filas.slice(0,5);
+  $('live-feed').innerHTML=ultimos.map(r=>{
+    const k=nivelDe(r)||'—';
+    const v=(bandas.find(b=>b[0]===k)||[,'--n3'])[1];
+    const nuevo=!liveIds.has(r.id);
+    return '<div class="fitem"'+(nuevo?'':' style="animation:none"')+'>'+
+      '<span class="chip" style="background:'+cssv(v)+';color:#fff">'+esc(k)+'</span>'+
+      '<b style="font-variant-numeric:tabular-nums">'+(scoreDe(r)??'—')+'/100</b>'+
+      '<span style="color:var(--ink-2);font-size:.95rem">resultado recibido</span>'+
+      '<span class="t">'+new Date(r.created_at).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})+'</span></div>';
+  }).join('')||'<div class="fitem" style="animation:none;color:var(--muted)">Esperando el primer resultado…</div>';
+  filas.forEach(r=>liveIds.add(r.id));
+}
+function pantallaCompleta(){
+  const el=document.documentElement;
+  if(!document.fullscreenElement && el.requestFullscreen) el.requestFullscreen().catch(()=>{});
+  else if(document.exitFullscreen) document.exitFullscreen().catch(()=>{});
+}
+window.addEventListener('hashchange',()=>{ rutaLive()?abrirLive():cerrarLive(); });
+
+/* Tema: el docente puede fijarlo; por defecto sigue al sistema. */
+function pintarBotonTema(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  const b=$('theme-btn'); if(b) b.innerHTML=ic(dark?'sun':'moon',null,16)+'<span>'+(dark?'Modo claro':'Modo oscuro')+'</span>';
+}
+function toggleTema(){
+  const dark=document.documentElement.getAttribute('data-theme')==='dark';
+  const nuevo=dark?'light':'dark';
+  document.documentElement.setAttribute('data-theme',nuevo);
+  try{ localStorage.setItem('set_theme',nuevo); }catch(e){}
+  pintarBotonTema();
+  // Los gráficos leen los tokens en el momento de pintar: hay que repintarlos.
+  if(typeof rows!=='undefined'&&rows.length!==undefined){ try{ distributions(); distIcfes(); renderProgreso(); }catch(e){} }
+}
 const NIVEL_CLS={'Pre A1':'nv-pre','A1':'nv-a1','A2':'nv-a2','B1':'nv-b1','B2':'nv-b1','C1':'nv-b1','C2':'nv-b1'};
 const NIVEL_HEX={'Pre A1':'#8E2A21','A1':'#9A5A14','A2':'#8A6D1A','B1':'#2E6B4F','B2':'#2E6B4F','C1':'#1E3A5F','C2':'#1E3A5F'};
 const PARTES_LBL={p1:'P1 Vocabulario',p2:'P2 Avisos',p3:'P3 Conversaciones',p4:'P4 Gramática',p5:'P5 Lectura literal',p6:'P6 Lectura inferencial',p7:'P7 Léxico-gramatical'};
-function toast(m,w){const t=$('toast');t.textContent=m;t.className='toast show'+(w?' warn':'');setTimeout(()=>t.className='toast'+(w?' warn':''),3000);}
+/* Estado con ICONO Y TEXTO, nunca color solo. El mensaje va como texto. */
+function toast(m,w){
+  const t=$('toast');
+  t.innerHTML=ic(w?'alert':'ok',null,16,2.4)+'<span></span>';
+  t.lastChild.textContent=m;
+  t.className='toast show'+(w?' warn':'');
+  setTimeout(()=>t.className='toast'+(w?' warn':''),3000);
+}
 function esc(s){return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function fmtTime(sec){ if(sec==null) return '—'; const m=Math.floor(sec/60), s=sec%60; return `${m}m ${String(s).padStart(2,'0')}s`; }
 function fmtDate(d){ if(!d) return '—'; const x=new Date(d); return x.toLocaleDateString()+' '+x.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); }
@@ -282,21 +612,29 @@ function telemetryHTML(r){
   const items=Object.keys(TLAB).filter(k=>(tm[k]||0)>0).map(k=>`<span class="pill">${TLAB[k]}: <b>${tm[k]}</b></span>`);
   const tot=(r.alertas!=null)?r.alertas:((r.cambios_pestana||0)+(r.pegados||0));
   if(!items.length && !r.sospechoso)
-    return `<div style="background:var(--ok-bg);border:1px solid #cde8d7;border-radius:10px;padding:10px 12px;color:var(--ok);font-weight:600;font-size:.86rem;margin-bottom:12px">✅ Sin irregularidades detectadas</div>`;
+    return `<div style="background:var(--ok-bg);border:1px solid #cde8d7;border-radius:10px;padding:10px 12px;color:var(--ok);font-weight:600;font-size:.86rem;margin-bottom:12px">${ic('ok',null,15)} Sin irregularidades detectadas</div>`;
   const style=r.sospechoso?'background:var(--err-bg);border:1px solid #f1c4b8;color:var(--err)':'background:var(--paper);border:1px solid var(--line);color:var(--ink)';
-  const head=r.sospechoso?`⚠️ Posible irregularidad (${tot} alertas)`:`Actividad registrada (${tot})`;
+  const head=r.sospechoso?`${ic('alert',null,14)} Posible irregularidad (${tot} alertas)`:`Actividad registrada (${tot})`;
   return `<div style="${style};border-radius:10px;padding:10px 12px;font-size:.86rem;margin-bottom:12px">
     <div style="font-weight:700;margin-bottom:6px">${head}</div>${items.join(' ')||'<span class="muted">—</span>'}</div>`;
 }
 
-window.onload=()=>{ $('l-email').focus(); };
+window.onload=()=>{
+  $('l-email').focus();
+  initTip();
+  pintarBotonTema();
+  // Iconos declarados en el HTML como <span data-ic="nombre"> (§4.1: cero emojis)
+  document.querySelectorAll('[data-ic]').forEach(el=>{
+    el.innerHTML=ic(el.dataset.ic,null,el.dataset.icSize?+el.dataset.icSize:16);
+  });
+};
 
 async function login(){
   const email=$('l-email').value.trim(), pass=$('l-pass').value;
   if(!email||!pass){ toast('Ingresa tu correo y contraseña.',true); return; }
   sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
   const { error }=await sb.auth.signInWithPassword({email,password:pass});
-  if(error){ toast('❌ '+error.message,true); return; }
+  if(error){ toast(''+error.message,true); return; }
   $('login').classList.add('hidden'); $('dash').classList.remove('hidden');
   loadData();
 }
@@ -314,13 +652,18 @@ async function loadData(){
     sb.from('exam_results').select('*').order('created_at',{ascending:false}),
     sb.from('exams').select('*').order('created_at',{ascending:false})
   ]);
-  if(r1.error){ toast('❌ '+r1.error.message,true); return; }
-  const all=r1.data||[];
+  if(r1.error){ toast(''+r1.error.message,true); return; }
+  /* La SIMULACIÓN (examen de práctica sin código) se excluye de todo: panel,
+     progreso y cualquier consulta de calibración. No puede contaminar los datos
+     reales. Se reporta cuántas se dejaron fuera — nunca en silencio. */
+  const crudo=r1.data||[];
+  const sims=crudo.filter(r=>r.etapa==='simulacion').length;
+  const all=crudo.filter(r=>r.etapa!=='simulacion');
   allRows=all;
   rows=all.filter(r=>r.exam_tipo!=='icfes_en');
   icfesRows=all.filter(r=>r.exam_tipo==='icfes_en');
   exams=(r2.error?[]:(r2.data||[]));
-  if(r2.error) toast('⚠️ No pude leer la tabla exams: '+r2.error.message,true);
+  if(r2.error) toast('No pude leer la tabla exams: '+r2.error.message,true);
   // CEFR: fichas
   const fichas=[...new Set(rows.map(r=>r.ficha).filter(Boolean))].sort();
   $('f-ficha').innerHTML='<option value="">Todas</option>'+fichas.map(f=>`<option>${esc(f)}</option>`).join('');
@@ -331,7 +674,9 @@ async function loadData(){
   $('p-f-grupo').innerHTML='<option value="">Todos</option>'+grupos.map(g=>`<option>${esc(g)}</option>`).join('');
   kpis(); distributions(); render();
   kpisIcfes(); renderIcfes(); renderExams(); renderProgreso();
-  toast(`✅ ${all.length} resultados cargados (${icfesRows.length} del simulacro).`);
+  toast(`${all.length} resultados cargados (${icfesRows.length} del simulacro)` +
+        (sims?` · ${sims} de simulación excluidas`:'') + '.');
+  if(rutaLive()) abrirLive();   // se entró directo a docente.html#/live
 }
 
 /* ==================== TAB ICFES ==================== */
@@ -352,8 +697,29 @@ function kpisIcfes(){
     <div class="kpi"><div class="n">${b1}%</div><div class="l">En B1 (nacional: ~13% B1 o más)</div></div>
     <div class="kpi"><div class="n">${susp}</div><div class="l">Con alerta de trampa</div></div>`;
 }
+/* Banda ordinal a la que pertenece un puntaje del simulacro (escala vigente). */
+function bandaIcfes(p){ return p>=71?'B1':p>=58?'A2':p>=37?'A1':'Pre A1'; }
+function distIcfes(){
+  const d=iFiltered();
+  const niveles=['Pre A1','A1','A2','B1'];
+  stack100('i-dist','i-dist-lg','i-dist-cap','i-dist-tb',
+    niveles.map(k=>({k,n:d.filter(r=>r.nivel_icfes===k).length,v:ICFES_RAMPA[k]})),
+    d.length,'estudiantes');
+  const partes=Object.keys(PARTES_LBL);
+  const series=partes.map(p=>{
+    const vals=d.map(r=>r.score_partes&&r.score_partes[p]?r.score_partes[p].pct:null).filter(v=>v!=null);
+    const v=vals.length?Math.round(vals.reduce((a,b)=>a+b,0)/vals.length):0;
+    // La banda va también como TEXTO: dos pasos contiguos de la rampa ordinal se
+    // parecen mucho, y el color nunca puede ser el único portador del dato.
+    return {n:PARTES_LBL[p],c:ICFES_RAMPA[bandaIcfes(v)],v,
+            det:'banda '+bandaIcfes(v)+' · '+vals.length+' con datos'};
+  });
+  const gen=d.length?Math.round(d.reduce((a,r)=>a+(r.score_icfes||0),0)/d.length):null;
+  hbars('i-partes','i-partes-tb',series,gen);
+}
 function renderIcfes(){
   const data=iFiltered();
+  distIcfes();
   $('i-tbody').innerHTML=data.map(r=>`
     <tr onclick="detailIcfes(${icfesRows.indexOf(r)})">
       <td><b>${esc(r.nombre)}</b><br><span class="muted" style="font-size:.8rem">${esc(r.tipo_documento||'')} ${esc(r.documento)}</span></td>
@@ -363,7 +729,7 @@ function renderIcfes(){
       <td>${nivelChip(r.nivel_icfes)}</td>
       <td>${fmtTime(r.duracion_seg)}</td>
       <td class="muted" style="font-size:.8rem">${fmtDate(r.created_at)}</td>
-      <td>${r.sospechoso?`<span class="flag">⚠️ ${r.alertas||''}</span>`:(r.alertas?`<span class="muted">${r.alertas}</span>`:'')}</td>
+      <td>${r.sospechoso?`<span class="flag">${ic('alert',null,13)} ${r.alertas||''}</span>`:(r.alertas?`<span class="muted">${r.alertas}</span>`:'')}</td>
     </tr>`).join('') || `<tr><td colspan="8" class="muted" style="text-align:center;padding:24px">Sin resultados del simulacro todavía.</td></tr>`;
   $('i-count').textContent=`Mostrando ${data.length} de ${icfesRows.length} simulacros.`;
 }
@@ -379,7 +745,7 @@ function detailIcfes(i){
     <div style="display:flex;justify-content:space-between;align-items:start;gap:10px">
       <div><h2 style="font-size:1.3rem">${esc(r.nombre)}</h2>
         <div class="muted" style="font-size:.85rem">${esc(r.tipo_documento||'')} ${esc(r.documento)} · ${esc(ETAPA_LBL[r.etapa]||'')} · ${esc(r.exam_codigo||'')}</div></div>
-      <button class="btn-ghost" onclick="closeModal()" style="padding:6px 12px">✕</button>
+      <button class="btn-ghost" onclick="closeModal()" style="padding:6px 12px">${ic('close',null,15)}</button>
     </div>
     <div style="margin:12px 0">
       <span class="pill">Puntaje: <b>${r.score_icfes}/100</b></span>
@@ -391,8 +757,8 @@ function detailIcfes(i){
     <h3 class="serif" style="font-size:1rem;margin:10px 0 4px">Desglose por parte</h3>
     ${partesHTML(r.score_partes)}
     ${r.writing_feedback?`<h3 class="serif" style="font-size:1rem;margin:12px 0 2px">Feedback breve</h3><div class="wbox">${esc(r.writing_feedback)}</div>`:''}
-    ${r.informe_full?`<h3 class="serif" style="font-size:1rem;margin:12px 0 2px">📋 Informe completo</h3><div class="informe">${mdHtml(r.informe_full)}</div>
-      <button class="btn-ghost btn-block" onclick="imprimirInforme(${i})">🖨️ Imprimir informe del estudiante</button>`:''}`;
+    ${r.informe_full?`<h3 class="serif" style="font-size:1rem;margin:12px 0 2px">${ic('doc',null,15)} Informe completo</h3><div class="informe">${mdHtml(r.informe_full)}</div>
+      <button class="btn-ghost btn-block" onclick="imprimirInforme(${i})">${ic('print',null,15)} Imprimir informe del estudiante</button>`:''}`;
   $('modal').classList.add('show');
 }
 function imprimirInforme(i){
@@ -435,13 +801,13 @@ function renderExams(){
       <td><span class="nv ${e.estado==='activo'?'estado-on':'estado-off'}">${e.estado==='activo'?'Activo':'Cerrado'}</span></td>
       <td class="muted" style="font-size:.8rem">${fmtDate(e.created_at)}</td>
       <td onclick="event.stopPropagation()"><button class="btn-ghost" style="padding:6px 10px;font-size:.8rem" onclick="toggleExamen(${i})">${e.estado==='activo'?'Cerrar':'Reabrir'}</button></td>
-    </tr>`).join('') || `<tr><td colspan="9" class="muted" style="text-align:center;padding:24px">Aún no has creado exámenes. Usa "➕ Crear examen".</td></tr>`;
+    </tr>`).join('') || `<tr><td colspan="9" class="muted" style="text-align:center;padding:24px">Aún no has creado exámenes. Usa "Crear examen".</td></tr>`;
 }
 async function toggleExamen(i){
   const e=exams[i]; const nuevo=e.estado==='activo'?'cerrado':'activo';
   const { error }=await sb.from('exams').update({estado:nuevo}).eq('id',e.id);
-  if(error){ toast('❌ '+error.message,true); return; }
-  e.estado=nuevo; renderExams(); toast(nuevo==='activo'?'✅ Examen reabierto.':'🔒 Examen cerrado: los estudiantes ya no pueden entrar con ese código.');
+  if(error){ toast(''+error.message,true); return; }
+  e.estado=nuevo; renderExams(); toast(nuevo==='activo'?'Examen reabierto.':'Examen cerrado: los estudiantes ya no pueden entrar con ese código.');
 }
 function verExamen(i){
   const e=exams[i];
@@ -453,14 +819,14 @@ function verExamen(i){
   $('modal-box').innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:start">
       <h2 style="font-size:1.25rem">${esc(e.titulo||'Examen')}</h2>
-      <button class="btn-ghost" onclick="closeModal()" style="padding:6px 12px">✕</button></div>
+      <button class="btn-ghost" onclick="closeModal()" style="padding:6px 12px">${ic('close',null,15)}</button></div>
     <p class="muted" style="font-size:.88rem">${esc(ETAPA_LBL[e.etapa]||e.etapa)} · ${esc(e.grupo||'sin grupo')} · ${TIPO_LBL[e.tipo]||e.tipo} · ${cuentaPresentados(e.codigo)} presentados</p>
     <div class="codebig">${esc(e.codigo)}</div>
     <p class="muted" style="text-align:center;font-size:.82rem;margin-top:-4px">Se presenta en <b class="mono">${esc(url.replace(/^https?:\/\//,''))}</b></p>
     <div id="qrbox" style="display:grid;place-items:center;margin:10px 0"></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
-      <button style="flex:1" onclick="navigator.clipboard.writeText('${esc(e.codigo)}').then(()=>toast('Código copiado.'))">📋 Copiar código</button>
-      <button class="btn-ghost" style="flex:1" onclick='navigator.clipboard.writeText(${JSON.stringify(msg)}).then(()=>toast("Mensaje copiado: pégalo en WhatsApp."))'>💬 Copiar mensaje para estudiantes</button>
+      <button style="flex:1" onclick="navigator.clipboard.writeText('${esc(e.codigo)}').then(()=>toast('Código copiado.'))">${ic('copy',null,15)} Copiar código</button>
+      <button class="btn-ghost" style="flex:1" onclick='navigator.clipboard.writeText(${JSON.stringify(msg)}).then(()=>toast("Mensaje copiado: pégalo en WhatsApp."))'>${ic('chat',null,15)} Copiar mensaje para estudiantes</button>
     </div>`;
   $('modal').classList.add('show');
   try{ new QRCode(document.getElementById('qrbox'),{text:url+'#'+e.codigo,width:170,height:170,colorDark:'#1E3A5F'}); }catch(_){}
@@ -469,7 +835,7 @@ function abrirCrear(){
   $('modal-box').innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:start">
       <h2 style="font-size:1.25rem">Crear examen</h2>
-      <button class="btn-ghost" onclick="closeModal()" style="padding:6px 12px">✕</button></div>
+      <button class="btn-ghost" onclick="closeModal()" style="padding:6px 12px">${ic('close',null,15)}</button></div>
     <label>Tipo de examen</label>
     <select id="c-tipo" onchange="cambioTipo()">
       <option value="icfes_en">Simulacro tipo Saber 11° — Inglés (7 partes)</option>
@@ -562,11 +928,11 @@ async function crearExamen(){
     if(!error){ exams.unshift({...row,estado:'activo',created_at:new Date().toISOString(),id:null});
       const { data:fresh }=await sb.from('exams').select('*').eq('codigo',row.codigo).limit(1);
       if(fresh&&fresh[0]) exams[0]=fresh[0];
-      renderExams(); verExamen(0); toast('✅ Examen creado. Dicta o proyecta el código.'); return; }
+      renderExams(); verExamen(0); toast('Examen creado. Dicta o proyecta el código.'); return; }
     if(/duplicate|unique/i.test(error.message)){ row.codigo=genCodigo(tipo); continue; }
-    toast('❌ '+error.message,true); return;
+    toast(''+error.message,true); return;
   }
-  toast('❌ No pude generar un código único, intenta de nuevo.',true);
+  toast('No pude generar un código único, intenta de nuevo.',true);
 }
 
 /* ==================== TAB PROGRESO ==================== */
@@ -678,19 +1044,16 @@ function kpis(){
     <div class="kpi"><div class="n">${susp}</div><div class="l">Con alerta de trampa</div></div>`;
 }
 function distributions(){
-  const n=rows.length||1;
-  const counts=Object.fromEntries(CEFRS.map(c=>[c,0]));
-  rows.forEach(r=>{ if(counts[r.nivel_cefr]!=null) counts[r.nivel_cefr]++; });
-  const max=Math.max(1,...Object.values(counts));
-  $('cefr-dist').innerHTML=CEFRS.map(c=>`
-    <div class="barline"><div class="lab"><span>${c}</span><span class="v">${counts[c]} (${Math.round(100*counts[c]/n)}%)</span></div>
-    <div class="bar"><span style="width:${Math.round(100*counts[c]/max)}%"></span></div></div>`).join('');
-  const skills=[['Reading','score_reading'],['Listening','score_listening'],['Grammar','score_grammar'],['Vocabulary','score_vocabulary'],['Writing','score_writing']];
-  $('skill-avg').innerHTML=skills.map(([lab,k])=>{
-    const avg=rows.length? Math.round(rows.reduce((a,r)=>a+(r[k]||0),0)/rows.length):0;
-    return `<div class="barline"><div class="lab"><span>${lab}</span><span class="v">${avg}%</span></div>
-      <div class="bar"><span style="width:${avg}%"></span></div></div>`;
-  }).join('');
+  // Distribución de niveles: barra apilada al 100% con su n (un % sin n no es un dato)
+  const items=CEFRS.map(c=>({k:c,n:rows.filter(r=>r.nivel_cefr===c).length,v:CEFR_RAMPA[c]||'--n3'}));
+  stack100('cefr-dist','c-dist-lg','c-dist-cap','c-dist-tb',items,rows.length,'estudiantes');
+  // Promedio por destreza, en orden fijo y cada una con SU color
+  const series=DESTREZAS.map(d=>({
+    n:d.n, c:d.c, i:d.i,
+    v: rows.length ? Math.round(rows.reduce((a,r)=>a+(r[d.k]||0),0)/rows.length) : 0
+  }));
+  const gen=rows.length ? Math.round(rows.reduce((a,r)=>a+(r.score_total||0),0)/rows.length) : null;
+  hbars('skill-avg','c-sk-tb',series,gen);
 }
 function filtered(){
   const ff=$('f-ficha').value, fc=$('f-cefr').value, q=$('f-q').value.trim().toLowerCase();
@@ -714,7 +1077,7 @@ function render(){
       <td>${r.score_vocabulary??'—'}%</td><td>${r.score_writing??'—'}%</td>
       <td>${fmtTime(r.duracion_seg)}</td>
       <td class="muted" style="font-size:.8rem">${fmtDate(r.created_at)}</td>
-      <td>${r.sospechoso?`<span class="flag" title="Posible irregularidad">⚠️ ${r.alertas||''}</span>`:(r.alertas?`<span class="muted">${r.alertas}</span>`:'')}</td>
+      <td>${r.sospechoso?`<span class="flag" title="Posible irregularidad">${ic('alert',null,13)} ${r.alertas||''}</span>`:(r.alertas?`<span class="muted">${r.alertas}</span>`:'')}</td>
     </tr>`).join('') || `<tr><td colspan="12" class="muted" style="text-align:center;padding:24px">Sin resultados.</td></tr>`;
   $('count').textContent=`Mostrando ${data.length} de ${rows.length} resultados.`;
 }
@@ -724,7 +1087,7 @@ function detail(i){
     <div style="display:flex;justify-content:space-between;align-items:start;gap:10px">
       <div><h2 style="font-size:1.3rem">${esc(r.nombre)}</h2>
         <div class="muted" style="font-size:.85rem">${esc(r.tipo_documento||'')} ${esc(r.documento)} ${r.ficha?'· Ficha '+esc(r.ficha):''}</div></div>
-      <button class="btn-ghost" onclick="closeModal()" style="padding:6px 12px">✕</button>
+      <button class="btn-ghost" onclick="closeModal()" style="padding:6px 12px">${ic('close',null,15)}</button>
     </div>
     <div style="margin:12px 0">
       <span class="pill">CEFR: <b>${esc(r.nivel_cefr)}</b></span>

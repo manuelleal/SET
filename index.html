@@ -17,14 +17,39 @@
     --ok:#2E7D5B; --ok-bg:#E7F4EC; --err:#C2553F; --err-bg:#FBEAE5;
     --shadow:0 10px 30px -12px rgba(40,35,20,.25);
     --radius:16px;
+    /* ===== Sistema visual (docs/prototipo_visual.html §2) =====
+       Paleta validada: daltonismo, contraste sobre la superficie real y
+       separación perceptual. NO cambiar ni un tono: alterar uno rompe las
+       garantías del conjunto. El color SIGUE A LA DESTREZA, siempre, en
+       todas las pantallas, y nunca se recicla ni se repinta. */
+    --s1:#0D9488; --s2:#C2740A; --s3:#2F6FBF; --s4:#C0392B; --s5:#7A4FAE;
+    /* rampa ordinal CEFR A1→C2 (magnitud ordenada = un solo tono) */
+    --n1:#57BFAF; --n2:#2FAA98; --n3:#0D9488; --n4:#0A7E73; --n5:#07665D; --n6:#044F47;
+    /* estado — reservados, nunca como color de serie */
+    --good:#0CA30C; --warn:#FAB219; --serio:#EC835A; --crit:#D03B3B;
+    --axis:#C3C2B7; --ink-2:#52514E;
+    --glow1:#FBF4E5; --glow2:#EAF3F1;
+  }
+  [data-theme="dark"]{
+    --bg:#0F1214; --bg2:#12161A; --paper:#161A1D; --surface:#161A1D;
+    --ink:#FFFFFF; --ink-2:#C3C2B7; --muted:#898781;
+    --line:#2C2C2A; --axis:#383835;
+    --glow1:#171C1B; --glow2:#131A1D;
+    --s1:#12A192; --s2:#C9801A; --s3:#5A93E8; --s4:#E05B4E; --s5:#A77BD8;
+    --n1:#8FD8CB; --n2:#5CC3B2; --n3:#2FAA98; --n4:#12A192; --n5:#0A7E73; --n6:#07665D;
+    /* cromo de la app (no es paleta de datos): tinte oscuro equivalente */
+    --primary:#12A192; --primary-d:#0A7E73; --primary-soft:#10312E;
+    --accent:#D9A64A; --accent-d:#C9892A;
+    --ok:#3FA97A; --ok-bg:#12291F; --err:#E0705A; --err-bg:#2E1A17;
+    --shadow:0 10px 30px -14px rgba(0,0,0,.6);
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{-webkit-text-size-adjust:100%}
   body{
     font-family:'Mulish',system-ui,sans-serif;color:var(--ink);line-height:1.6;
     background:
-      radial-gradient(1200px 600px at 100% -10%, #FBF4E5 0%, transparent 60%),
-      radial-gradient(900px 500px at -10% 110%, #EAF3F1 0%, transparent 55%),
+      radial-gradient(1200px 600px at 100% -10%, var(--glow1) 0%, transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, var(--glow2) 0%, transparent 55%),
       var(--bg);
     min-height:100vh;
   }
@@ -118,22 +143,39 @@
   @keyframes rot{to{transform:rotate(360deg)}}
 
   .result-hero{text-align:center;padding:8px 0 6px}
-  .cefr-ring{width:170px;height:170px;border-radius:50%;margin:6px auto 14px;display:grid;place-items:center;
-    color:#fff;position:relative;box-shadow:0 16px 36px -16px rgba(21,117,110,.7);
-    background:conic-gradient(var(--accent) var(--p,70%), rgba(255,255,255,.25) 0)}
-  .cefr-ring .inner{width:138px;height:138px;border-radius:50%;display:grid;place-items:center;
-    background:linear-gradient(135deg,var(--primary),var(--primary-d))}
-  .cefr-ring .lvl{font-family:'Fraunces',serif;font-weight:700;font-size:3rem;line-height:1}
-  .cefr-ring .cap{font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;opacity:.85}
+  /* Medidor con la escala visible: un anillo con "B2" no dice dónde queda B2. */
+  .gaugewrap{position:relative;margin:6px auto 0;width:280px;max-width:100%}
+  .gaugewrap svg{display:block;width:100%;height:auto}
+  .gauge-score{position:absolute;left:0;right:0;top:26.5%;text-align:center}
+  .gauge-score .lvl{font-family:'Fraunces',serif;font-weight:700;font-size:3.1rem;line-height:1;color:var(--ink)}
+  .gauge-score .pts{font-size:.92rem;color:var(--ink-2);margin-top:2px}
+  .gauge-score .pts b{font-variant-numeric:tabular-nums}
+  .bandticks{display:flex;justify-content:space-between;width:280px;max-width:100%;margin:0 auto;
+    font:600 .66rem 'IBM Plex Mono',ui-monospace,monospace;color:var(--muted);letter-spacing:.04em}
+  .nextband{text-align:center;font-size:.9rem;color:var(--ink-2);margin:8px 0 2px}
+  .nextband b{color:var(--ink)}
   .totline{font-size:1.05rem;margin-bottom:2px}
   .totline b{font-family:'Fraunces',serif;color:var(--primary);font-size:1.3rem}
 
-  .skill{margin:14px 0}
-  .skill .lab{display:flex;justify-content:space-between;font-weight:600;font-size:.92rem;margin-bottom:6px}
-  .skill .lab .pct{font-family:'Fraunces',serif;color:var(--primary-d)}
-  .bar{height:11px;background:var(--line);border-radius:999px;overflow:hidden}
-  .bar > span{display:block;height:100%;border-radius:999px;width:0;transition:width .9s cubic-bezier(.2,.8,.2,1);
-    background:linear-gradient(90deg,var(--primary),#27a89c)}
+  /* Barras de destreza: cada una con SU color, fijo en todas las pantallas.
+     Prefijo sk- porque .track/.fill ya son la barra de progreso del examen. */
+  .skill{margin-top:15px}
+  .sk-top{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+  .sk-top .ic{display:grid;place-items:center;width:22px;height:22px;flex:none}
+  .sk-top .nm{font-weight:700;font-size:.95rem;flex:1}
+  .sk-top .vl{font-weight:800;font-size:.95rem;font-variant-numeric:tabular-nums}
+  .sk-track{position:relative;height:10px;background:var(--line);border-radius:5px}
+  .sk-fill{position:absolute;inset:0 auto 0 0;width:0;border-radius:5px;transition:width .9s cubic-bezier(.2,.7,.3,1)}
+  .sk-mark{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink-2);border-radius:1px}
+  .sk-mark::after{content:attr(data-t);position:absolute;left:50%;top:-22px;transform:translateX(-50%);
+    white-space:nowrap;font:600 .66rem Mulish,sans-serif;color:var(--ink-2);background:var(--surface);
+    border:1px solid var(--line);padding:1px 5px;border-radius:4px;opacity:0;transition:opacity .18s}
+  .skill:hover .sk-mark::after,.skill:focus-within .sk-mark::after{opacity:1}
+  .sk-prev{position:relative;height:6px;background:var(--line);border-radius:3px;margin-top:4px;opacity:.75}
+  .sk-prev > span{position:absolute;inset:0 auto 0 0;border-radius:3px;opacity:.45}
+  .dchip{display:inline-flex;align-items:center;gap:3px;font:700 .74rem Mulish,sans-serif;margin-left:7px}
+  .emptynote{margin-top:14px;padding:12px 14px;border:1px dashed var(--line);border-radius:10px;
+    color:var(--ink-2);font-size:.88rem;display:flex;align-items:flex-start;gap:9px}
   .feedback{background:var(--ok-bg);border:1px solid #CDE8D7;border-left:4px solid var(--ok);
     border-radius:12px;padding:16px 18px;margin-top:18px;font-size:.96rem}
   .feedback .h{font-weight:700;color:var(--ok);margin-bottom:5px;display:flex;align-items:center;gap:7px}
@@ -146,6 +188,18 @@
     box-shadow:var(--shadow);transition:.35s;z-index:50;max-width:90%;text-align:center}
   .toast.show{transform:translateX(-50%) translateY(0)}
   .toast.warn{background:var(--err)}
+  .toast{display:flex;align-items:center;gap:9px;justify-content:center}
+  .toast svg{flex:none}
+  /* Objetivos táctiles y tamaño de fuente que evita el zoom automático de iOS */
+  input,select,textarea{font-size:16px}
+  button{min-height:44px}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+  /* Alineación de los iconos SVG dentro de notas, títulos y botones */
+  .note svg{flex:none;margin-top:2px}
+  .passage .ttl{display:flex;align-items:center;gap:8px}
+  .passage .ttl svg{flex:none}
+  .row-actions button{display:inline-flex;align-items:center;justify-content:center;gap:8px}
+  .feedback .h svg{flex:none}
 
   /* ===== Listening (reproductor con límite de plays) ===== */
   .audio-ev{border-left:4px solid var(--primary)}
@@ -173,6 +227,16 @@
   .ev-chat .ot{align-self:flex-start;background:#F1ECE0;border-bottom-left-radius:4px}
   .ev-chat .who{font-size:.72rem;font-weight:700;color:var(--muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em}
 </style>
+<script>
+/* Tema: sigue al sistema (o lo que el usuario haya fijado). Se aplica ANTES de
+   pintar para que no haya destello blanco. El modo oscuro usa los pasos
+   declarados del sistema visual, nunca una inversión automática. */
+(function(){try{
+  var t=localStorage.getItem('set_theme');
+  if(!t) t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+  document.documentElement.setAttribute('data-theme',t);
+}catch(e){}})();
+</script>
 </head>
 <body>
 <div class="wrap">
@@ -202,7 +266,7 @@
   <div id="home-screen" class="card hidden">
     <span class="eyebrow">Bienvenido / Welcome</span>
     <div class="note" id="exam-ticket" style="background:var(--primary-soft);border-style:solid;border-color:#bfe0db;margin-bottom:14px">
-      <span>🎟️</span>
+      <span data-ic="ticket"></span>
       <div><b id="tk-titulo"></b><br><span id="tk-meta"></span></div>
     </div>
     <h2>Antes de empezar</h2>
@@ -235,7 +299,7 @@
       </div>
     </div>
     <div class="note" style="margin-top:16px;background:var(--primary-soft);border-color:#bfe0db">
-      <span>🕵️</span>
+      <span data-ic="search"></span>
       <div>
         <b>Tu misión: Auditor Forense Junior.</b> Hubo una filtración de datos en la institución.
         Los textos y audios de esta prueba son <b>evidencias del caso</b>: correos interceptados,
@@ -244,7 +308,7 @@
       </div>
     </div>
     <div class="note">
-      <span>ℹ️</span>
+      <span data-ic="info"></span>
       <div>
         <b>Instrucciones.</b> El examen tiene 5 secciones: Reading, Listening, Grammar, Vocabulary y Writing.
         Cada sección tiene tiempo límite; al agotarse, pasas automáticamente a la siguiente y no
@@ -253,7 +317,7 @@
       </div>
     </div>
     <div class="note warn">
-      <span>🛡️</span>
+      <span data-ic="shield"></span>
       <div>
         <b>Examen vigilado.</b> Durante la prueba se <b>bloquea y registra</b>: copiar, cortar, pegar,
         clic derecho, traducir, atajos de teclado, abrir herramientas del navegador y salir de la pestaña.
@@ -290,28 +354,28 @@
   <div id="results-screen" class="card hidden">
     <div class="result-hero">
       <span class="eyebrow">Resultado</span>
-      <div class="cefr-ring" id="ring"><div class="inner">
-        <div class="lvl" id="r-cefr">B2</div><div class="cap">Nivel CEFR</div>
-      </div></div>
-      <div class="totline">Puntaje total: <b id="r-total">0%</b></div>
-      <div class="muted" id="r-name" style="font-size:.9rem"></div>
+      <div class="gaugewrap">
+        <svg viewBox="0 0 280 152" id="gauge" role="img" aria-label="Medidor de nivel"></svg>
+        <div class="gauge-score">
+          <div class="lvl" id="r-cefr">—</div>
+          <div class="pts">Puntaje <b id="r-total">0</b>/100</div>
+        </div>
+      </div>
+      <div class="bandticks"><span>A1</span><span>A2</span><span>B1</span><span>B2</span><span>C1</span><span>C2</span></div>
+      <div class="nextband" id="r-next"></div>
+      <div class="muted" id="r-name" style="font-size:.9rem;margin-top:6px"></div>
     </div>
 
-    <div style="margin-top:20px">
-      <div class="skill"><div class="lab"><span>📖 Reading</span><span class="pct" id="r-read">0%</span></div><div class="bar"><span id="b-read"></span></div></div>
-      <div class="skill"><div class="lab"><span>🎧 Listening</span><span class="pct" id="r-lis">0%</span></div><div class="bar"><span id="b-lis"></span></div></div>
-      <div class="skill"><div class="lab"><span>✍️ Grammar</span><span class="pct" id="r-gram">0%</span></div><div class="bar"><span id="b-gram"></span></div></div>
-      <div class="skill"><div class="lab"><span>📚 Vocabulary</span><span class="pct" id="r-voc">0%</span></div><div class="bar"><span id="b-voc"></span></div></div>
-      <div class="skill"><div class="lab"><span>🖊️ Writing</span><span class="pct" id="r-wri">0%</span></div><div class="bar"><span id="b-wri"></span></div></div>
-    </div>
+    <div id="r-skills" style="margin-top:18px"></div>
+    <div id="r-avance"></div>
 
     <div class="feedback">
-      <div class="h">💬 Comentarios del examinador (IA)</div>
+      <div class="h" id="r-fb-h">Comentarios del examinador (IA)</div>
       <div id="r-feedback">—</div>
     </div>
     <div class="equiv" id="r-equiv"></div>
     <div class="row-actions">
-      <button class="btn-ghost" onclick="window.print()">🖨️ Guardar / Imprimir</button>
+      <button class="btn-ghost" id="btn-print" onclick="window.print()">Guardar / Imprimir</button>
       <button onclick="location.reload()">Finalizar</button>
     </div>
   </div>
@@ -2922,12 +2986,95 @@ const GRADE_FN_PATH     = '/functions/v1/bright-handler';      // función despl
 const SECTIONS = ['reading','listening','grammar','vocabulary','writing'];
 const SEC_LABEL = { reading:'Reading', listening:'Listening', grammar:'Grammar', vocabulary:'Vocabulary', writing:'Writing' };
 const SEC_INTRO = {
-  reading:'🗂️ Evidencia documental del caso. Lee con atención: los detalles importan.',
-  listening:'🎧 Audios recuperados de la investigación. Cada audio se reproduce máximo 2 veces.',
-  grammar:'🧩 Reconstrucción del informe: elige la forma correcta en cada línea.',
-  vocabulary:'🔤 Terminología del caso: completa con la palabra precisa.',
-  writing:'🖊️ Tu reporte como auditor: redacta con tus propias palabras.'
+  reading:'Evidencia documental del caso. Lee con atención: los detalles importan.',
+  listening:'Audios recuperados de la investigación. Cada audio se reproduce máximo 2 veces.',
+  grammar:'Reconstrucción del informe: elige la forma correcta en cada línea.',
+  vocabulary:'Terminología del caso: completa con la palabra precisa.',
+  writing:'Tu reporte como auditor: redacta con tus propias palabras.'
 };
+
+/* =========================================================
+   SISTEMA VISUAL — iconos SVG (docs/prototipo_visual.html §3)
+   Los emojis se dibujan distinto en cada teléfono, no se pueden colorear y
+   rompen la línea tipográfica. Todo icono de esta app es un trazado SVG.
+   Regla dura del encargo: index.html NO carga librerías de gráficos ni de
+   iconos — los estudiantes entran desde gama baja con datos móviles.
+========================================================= */
+const IC={
+  reading:'<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+  listening:'<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>',
+  grammar:'<path d="M6 16l6-12 6 12M8.5 12h7"/><path d="M4 21l3-3 2 2"/>',
+  vocabulary:'<path d="M16 6l3 12M8 6L5 18"/><rect x="2" y="4" width="4" height="16" rx="1"/><rect x="18" y="4" width="4" height="16" rx="1"/><path d="M10 4h4v16h-4z"/>',
+  writing:'<path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  chat:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  print:'<path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/>',
+  up:'<path d="M7 14l5-5 5 5"/>', down:'<path d="M7 10l5 5 5-5"/>', eq:'<path d="M5 12h14"/>',
+  alert:'<path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',
+  ok:'<path d="M20 6L9 17l-5-5"/>',
+  lock:'<rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  ticket:'<path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M13 6v2m0 4v2m0 4v2"/>',
+  shield:'<path d="M12 3l8 3v6c0 4.6-3.2 8.6-8 9.9C7.2 20.6 4 16.6 4 12V6z"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/>',
+  block:'<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/>',
+  docs:'<path d="M4 4a2 2 0 0 1 2-2h7l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M13 2v5h5"/>',
+  puzzle:'<path d="M10 3h4v3a2 2 0 1 0 4 0V3h3v4h-3a2 2 0 1 0 0 4h3v10H3V11h3a2 2 0 1 0 0-4H3V3h3v3a2 2 0 1 0 4 0z"/>',
+  abc:'<path d="M3 17l3.5-9L10 17M4.4 14h4.2"/><path d="M13 7h3.4a2.3 2.3 0 0 1 0 4.6H13zM13 11.6h3.9a2.7 2.7 0 0 1 0 5.4H13z"/>'
+};
+function ic(n,color,size,sw){
+  return '<svg width="'+(size||16)+'" height="'+(size||16)+'" viewBox="0 0 24 24" fill="none" aria-hidden="true"'+
+    ' stroke="'+(color||'currentColor')+'" stroke-width="'+(sw||2)+'" stroke-linecap="round" stroke-linejoin="round">'+
+    (IC[n]||'')+'</svg>';
+}
+const cssv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const SEC_IC={reading:'docs',listening:'listening',grammar:'puzzle',vocabulary:'abc',writing:'writing'};
+
+/* Orden FIJO de destrezas y su color: el color sigue a la destreza en todas
+   las pantallas y no se repinta nunca. */
+const SKILLS=[
+  {k:'reading',    n:'Reading',    c:'--s1'},
+  {k:'listening',  n:'Listening',  c:'--s2'},
+  {k:'grammar',    n:'Grammar',    c:'--s3'},
+  {k:'vocabulary', n:'Vocabulary', c:'--s4'},
+  {k:'writing',    n:'Writing',    c:'--s5'}
+];
+/* Bandas CEFR — los mismos cortes que aplica el servidor en toCEFR(). */
+const BANDS=[{k:'A1',a:0,b:30,v:'--n1'},{k:'A2',a:30,b:45,v:'--n2'},{k:'B1',a:45,b:60,v:'--n3'},
+             {k:'B2',a:60,b:75,v:'--n4'},{k:'C1',a:75,b:90,v:'--n5'},{k:'C2',a:90,b:100,v:'--n6'}];
+
+/* Medidor semicircular con la escala visible: seis sectores proporcionales al
+   rango de cada banda, la alcanzada al 100% y las demás al 25%. */
+const gP=(cx,cy,r,d)=>{const t=(180+d*1.8)*Math.PI/180;return[cx+r*Math.cos(t),cy+r*Math.sin(t)];};
+function drawGauge(score){
+  const g=$('gauge'); if(!g) return;
+  const cx=140,cy=140,R=118,W=17,s=Math.max(0,Math.min(100,score));
+  let h='';
+  BANDS.forEach(b=>{
+    const[x1,y1]=gP(cx,cy,R,b.a),[x2,y2]=gP(cx,cy,R,b.b);
+    const on=s>=b.a&&(s<b.b||(b.b===100&&s>=100));
+    h+='<path d="M'+x1+' '+y1+' A'+R+' '+R+' 0 0 1 '+x2+' '+y2+'" fill="none" stroke="'+cssv(b.v)+
+       '" stroke-width="'+W+'" opacity="'+(on?1:.25)+'"/>';
+  });
+  const[mx,my]=gP(cx,cy,R,s),[ix,iy]=gP(cx,cy,R-W/2-7,s),[ox,oy]=gP(cx,cy,R+W/2+7,s);
+  h+='<line x1="'+ix+'" y1="'+iy+'" x2="'+ox+'" y2="'+oy+'" stroke="'+cssv('--ink')+'" stroke-width="3" stroke-linecap="round"/>';
+  h+='<circle cx="'+mx+'" cy="'+my+'" r="6" fill="'+cssv('--ink')+'" stroke="'+cssv('--surface')+'" stroke-width="2.5"/>';
+  g.innerHTML=h;
+}
+/* Cuánto falta para la banda siguiente — calculado, no fijo. En la banda máxima no se muestra. */
+function nextBandTxt(score){
+  const i=BANDS.findIndex(b=>score>=b.a&&score<b.b);
+  if(i<0||i>=BANDS.length-1) return '';
+  const falta=Math.max(1,Math.ceil(BANDS[i+1].a-score));
+  return 'Te faltan <b>'+falta+(falta===1?' punto':' puntos')+'</b> para '+BANDS[i+1].k;
+}
+function countUp(el,to,ms){
+  if(!el) return;
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){ el.textContent=Math.round(to); return; }
+  const t0=performance.now();
+  (function step(t){const k=Math.min(1,(t-t0)/ms);
+    el.textContent=Math.round(to*(1-Math.pow(1-k,3)));
+    if(k<1) requestAnimationFrame(step);})(t0);
+}
 
 /* ===== Examen por código =====
    El docente crea el examen en docente.html (etapa + grupo) y reparte un código
@@ -2935,6 +3082,11 @@ const SEC_INTRO = {
    que hace posible el intento único. El cliente NUNCA decide nada de esto: solo
    pregunta por el código y respeta lo que responde el servidor. */
 let CFG=null;
+/* Modo simulación (index.html#simulacion): muestra libre de 8 preguntas, sin
+   código y SIN documento de identidad — sin cédula no hay dato personal que
+   proteger, y en una sala de desconocidos eso importa. Repetible sin límite y
+   excluida de panel, progreso y calibración (se guarda con etapa "simulacion"). */
+let SIM=false;
 const ETAPA_LBL={diagnostico:'Diagnóstico',intermedio:'Intermedio',final:'Final',demo:'Demostración'};
 
 // ¿Son el mismo nombre? (sin tildes, mayúsculas ni espacios dobles)
@@ -2996,30 +3148,38 @@ function totalAlerts(){ return telemetry.tab_switch+telemetry.blur+telemetry.cop
 const $=id=>document.getElementById(id);
 function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
 function pick(arr,n){ return shuffle(arr).slice(0,n); }
-function toast(msg,warn){ const t=$('toast'); t.textContent=msg; t.className='toast show'+(warn?' warn':''); clearTimeout(toast._t); toast._t=setTimeout(()=>t.className='toast'+(warn?' warn':''),3000); }
+/* El estado va con ICONO Y TEXTO, nunca color solo (regla §2 del sistema visual).
+   El mensaje se inserta como texto, nunca como HTML. */
+function toast(msg,warn){
+  const t=$('toast');
+  t.innerHTML=ic(warn?'alert':'ok',null,16,2.4)+'<span></span>';
+  t.lastChild.textContent=msg;
+  t.className='toast show'+(warn?' warn':'');
+  clearTimeout(toast._t); toast._t=setTimeout(()=>t.className='toast'+(warn?' warn':''),3000);
+}
 function esc(s){ return (s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 
 /* ===== antitrampa (se activa solo durante el examen) ===== */
 function setupAntiCheat(){
   const blk=(e,type,msg)=>{ if(!examActive) return; e.preventDefault(); logEvent(type); if(msg) toast(msg,true); };
-  document.addEventListener('copy',     e=>blk(e,'copy','🚫 Copiar está deshabilitado durante el examen.'));
-  document.addEventListener('cut',      e=>blk(e,'cut','🚫 Cortar está deshabilitado.'));
-  document.addEventListener('paste',    e=>blk(e,'paste','🚫 Pegar está deshabilitado (no puedes pegar traducciones).'));
-  document.addEventListener('contextmenu',e=>blk(e,'contextmenu','🚫 Clic derecho deshabilitado (no se puede traducir la selección).'));
+  document.addEventListener('copy',     e=>blk(e,'copy','Copiar está deshabilitado durante el examen.'));
+  document.addEventListener('cut',      e=>blk(e,'cut','Cortar está deshabilitado.'));
+  document.addEventListener('paste',    e=>blk(e,'paste','Pegar está deshabilitado (no puedes pegar traducciones).'));
+  document.addEventListener('contextmenu',e=>blk(e,'contextmenu','Clic derecho deshabilitado (no se puede traducir la selección).'));
   document.addEventListener('dragstart',e=>{ if(examActive) e.preventDefault(); });
   window.addEventListener('blur', ()=>{ if(examActive){ logEvent('blur'); } });
   document.addEventListener('visibilitychange', ()=>{
-    if(examActive && document.hidden){ logEvent('tab_switch'); toast('⚠️ Saliste de la pestaña. Esto queda registrado.',true); }
+    if(examActive && document.hidden){ logEvent('tab_switch'); toast('Saliste de la pestaña. Esto queda registrado.',true); }
   });
   window.addEventListener('beforeprint', ()=>{ if(examActive) logEvent('print'); });
   document.addEventListener('keydown', e=>{
     if(!examActive) return;
     const k=(e.key||'').toLowerCase();
     if(e.key==='F12' || (e.ctrlKey&&e.shiftKey&&['i','j','c'].includes(k)) || ((e.ctrlKey||e.metaKey)&&k==='u')){
-      e.preventDefault(); logEvent('devtools'); toast('🚫 Herramientas del navegador bloqueadas.',true); return;
+      e.preventDefault(); logEvent('devtools'); toast('Herramientas del navegador bloqueadas.',true); return;
     }
     if((e.ctrlKey||e.metaKey) && ['c','v','x','p','s'].includes(k)){
-      e.preventDefault(); logEvent('shortcut'); toast('🚫 Atajo de teclado deshabilitado.',true);
+      e.preventDefault(); logEvent('shortcut'); toast('Atajo de teclado deshabilitado.',true);
     }
   });
 }
@@ -3027,31 +3187,50 @@ function setupAntiCheat(){
 /* build a randomized exam form */
 function prepQ(q){ return { id:q.id, q:q.q, options:(q.fixed?q.options.slice():shuffle(q.options)) }; }
 
+/* Muestra de práctica (§7 del encargo visual): 8 preguntas, ~5 minutos, con las
+   CINCO secciones representadas para que el resultado se vea completo. */
+const SIM_PLAN={ reading:2, listening:1, grammar:2, vocabulary:2, writing:1,
+                 tiempos:{reading:3,listening:3,grammar:2,vocabulary:2,writing:5} };
+
 function buildExam(){
   exam={};
+  const sim=SIM;
   // Reading = 1 evidencia visual garantizada + N textos normales, en orden barajado
   const chosen = shuffle([
     ...pick(BANK.reading.evidence, BANK.reading.pickEvidence),
     ...pick(BANK.reading.passages, BANK.reading.pickText)
   ]);
-  exam.reading={ timeLimit:BANK.reading.timeLimit, passages: chosen.map(p=>({
-    title:p.title, text:p.text, evidence:!!p.evidence, questions:p.questions.map(prepQ)
+  const textos = sim ? chosen.slice(0,1) : chosen;
+  exam.reading={ timeLimit: sim?SIM_PLAN.tiempos.reading:BANK.reading.timeLimit, passages: textos.map(p=>({
+    title:p.title, text:p.text, evidence:!!p.evidence,
+    questions:(sim?p.questions.slice(0,SIM_PLAN.reading):p.questions).map(prepQ)
   }))};
   // Listening = N audios al azar (cada uno con su reproductor limitado)
-  exam.listening={ timeLimit:BANK.listening.timeLimit, clips: pick(BANK.listening.clips,BANK.listening.pickClips).map(c=>({
-    id:c.id, file:c.file, title:c.title, questions:c.questions.map(prepQ)
+  const clips = pick(BANK.listening.clips, sim?1:BANK.listening.pickClips);
+  exam.listening={ timeLimit: sim?SIM_PLAN.tiempos.listening:BANK.listening.timeLimit, clips: clips.map(c=>({
+    id:c.id, file:c.file, title:c.title,
+    questions:(sim?c.questions.slice(0,SIM_PLAN.listening):c.questions).map(prepQ)
   }))};
   ['grammar','vocabulary'].forEach(sec=>{
-    exam[sec]={ timeLimit:BANK[sec].timeLimit, questions:pick(BANK[sec].questions,BANK[sec].pick).map(prepQ) };
+    exam[sec]={ timeLimit: sim?SIM_PLAN.tiempos[sec]:BANK[sec].timeLimit,
+      questions:pick(BANK[sec].questions, sim?SIM_PLAN[sec]:BANK[sec].pick).map(prepQ) };
   });
-  exam.writing={ timeLimit:BANK.writing.timeLimit, tasks:pick(BANK.writing.tasks,BANK.writing.pick) };
+  exam.writing={ timeLimit: sim?SIM_PLAN.tiempos.writing:BANK.writing.timeLimit,
+    tasks:pick(BANK.writing.tasks, sim?SIM_PLAN.writing:BANK.writing.pick) };
 }
 
 /* ===== flow ===== */
 window.onload=()=>{
   if(SUPABASE_URL.includes('TU-PROYECTO')||SUPABASE_ANON_KEY.includes('PEGA_AQUI'))
-    toast('⚠️ Falta configurar SUPABASE_URL / SUPABASE_ANON_KEY en el código.',true);
+    toast('Falta configurar SUPABASE_URL / SUPABASE_ANON_KEY en el código.',true);
   setupAntiCheat();
+
+  // Iconos declarados en el HTML como <span data-ic="nombre"> (§4.1: cero emojis)
+  document.querySelectorAll('[data-ic]').forEach(el=>{
+    el.innerHTML=ic(el.dataset.ic,null,el.dataset.icSize?+el.dataset.icSize:18);
+  });
+  $('r-fb-h').innerHTML=ic('chat',null,15,2.2)+'<span>Comentarios del examinador (IA)</span>';
+  $('btn-print').innerHTML=ic('print',null,16)+'<span>Guardar / Imprimir</span>';
 
   // Código: se escribe como CEF-XXXX y se acepta con Enter
   const inCod=$('exam-code');
@@ -3067,13 +3246,38 @@ window.onload=()=>{
   const inDoc=$('student-doc');
   inDoc.addEventListener('input',()=>{ inDoc.value=inDoc.value.replace(/[^A-Za-z0-9]/g,''); });
 
-  // Enlace profundo del QR / WhatsApp: index.html#CEF-XXXX
+  // Enlace profundo del QR / WhatsApp: index.html#CEF-XXXX · muestra: #simulacion
   const hash=(location.hash||'').replace('#','').trim().toUpperCase();
-  if(hash.length>=4){ inCod.value=hash; pedirConfig(); }
+  if(hash==='SIMULACION'||hash==='SIMULACIÓN'){ entrarSimulacion(); }
+  else if(hash.length>=4){ inCod.value=hash; pedirConfig(); }
+};
+
+/* Entra a la muestra de práctica: sin código y sin documento. */
+function entrarSimulacion(){
+  SIM=true;
+  $('code-screen').classList.add('hidden');
+  $('home-screen').classList.remove('hidden');
+  $('tk-titulo').textContent='Muestra de práctica · 8 preguntas';
+  $('tk-meta').textContent='Sin código y sin documento · puedes repetirla las veces que quieras';
+  // Sin documento: no se piden datos personales, solo un nombre o apodo opcional.
+  ['student-doc','student-ficha','student-program'].forEach(id=>{
+    const f=$(id); if(f&&f.parentElement) f.parentElement.style.display='none';
+  });
+  const dt=$('student-doctype'); if(dt&&dt.parentElement) dt.parentElement.style.display='none';
+  const nm=$('student-name');
+  if(nm){ nm.placeholder='Tu nombre o apodo (opcional)';
+    const lab=nm.parentElement&&nm.parentElement.querySelector('label');
+    if(lab) lab.textContent='Nombre o apodo (opcional)'; }
+  $('start-btn').textContent='Comenzar la muestra';
 };
 
 async function startExam(){
   const name=$('student-name').value.trim(), doc=$('student-doc').value.trim();
+  // En la muestra no se pide nada: ni documento ni nombre.
+  if(SIM){
+    student={ nombre:name||'Anónimo', documento:'', tipo_documento:'', ficha:'', programa:'' };
+    arrancar(); return;
+  }
   if(!name||!doc){ toast('Ingresa nombre y documento.',true); return; }
   if(!CFG){ toast('Primero ingresa el código de tu examen.',true); return; }
 
@@ -3106,6 +3310,10 @@ async function startExam(){
 
   student={ nombre:name, documento:doc, tipo_documento:$('student-doctype').value,
             ficha:$('student-ficha').value.trim(), programa:$('student-program').value.trim() };
+  arrancar();
+}
+
+function arrancar(){
   buildExam();
   answers={}; examStart=Date.now(); examActive=true;
   telemetry={ tab_switch:0, blur:0, copy:0, cut:0, paste:0, contextmenu:0, devtools:0, shortcut:0, print:0, audio_play:0, audio_overplay:0, log:[] };
@@ -3117,7 +3325,7 @@ function loadSection(i){
   secIndex=i; const sec=SECTIONS[i]; const data=exam[sec];
   $('sec-name').textContent=SEC_LABEL[sec];
   $('sec-step').textContent=`Sección ${i+1} de ${SECTIONS.length}`;
-  $('next-btn').textContent=(i===SECTIONS.length-1)?'Finalizar y enviar ✓':'Siguiente sección →';
+  $('next-btn').textContent=(i===SECTIONS.length-1)?'Finalizar y enviar':'Siguiente sección →';
   $('fill').style.width=`${(i/SECTIONS.length)*100}%`;
   $('questions').innerHTML=renderSection(sec,data);
   if(sec==='writing') wireWriting();
@@ -3129,9 +3337,12 @@ function loadSection(i){
 }
 
 function renderSection(sec,data){
-  const intro = SEC_INTRO[sec]?`<div class="note"><span>🕵️</span><div>${SEC_INTRO[sec]}</div></div>`:'';
+  const scol = (SKILLS.find(x=>x.k===sec)||{}).c;
+  const intro = SEC_INTRO[sec]
+    ? `<div class="note"><span>${ic(SEC_IC[sec]||'info', scol?cssv(scol):null, 18)}</span><div>${SEC_INTRO[sec]}</div></div>`
+    : '';
   if(sec==='writing'){
-    return intro+`<div class="note warn"><span>🔒</span><div>En Writing no se puede copiar ni pegar. Escribe con tus propias palabras.</div></div>`+
+    return intro+`<div class="note warn"><span data-ic="lock"></span><div>En Writing no se puede copiar ni pegar. Escribe con tus propias palabras.</div></div>`+
       data.tasks.map((t,idx)=>`
        <div class="q">
          <div class="qtext"><span class="num">Task ${idx+1}.</span> ${esc(t.prompt)} <span class="muted">(mínimo ${t.min} palabras)</span></div>
@@ -3146,7 +3357,7 @@ function renderSection(sec,data){
   } else if(sec==='listening'){
     data.clips.forEach(c=>{
       html+=`<div class="passage audio-ev">
-        <div class="ttl">🎧 ${esc(c.title)}</div>
+        <div class="ttl">${ic('listening',cssv('--s2'),17,1.9)} ${esc(c.title)}</div>
         <audio id="aud_${c.id}" src="${c.file}" preload="auto"></audio>
         <div class="audio-ctl">
           <button type="button" class="play-btn" id="play_${c.id}" data-aud="${c.id}">▶ Reproducir audio</button>
@@ -3181,20 +3392,20 @@ function wireAudio(){
     leftEl.textContent=word(left);
     btn.addEventListener('click',()=>{
       if(playing) return;
-      if(left<=0){ logEvent('audio_overplay'); toast('🚫 Ya usaste las 2 reproducciones de este audio.',true); return; }
+      if(left<=0){ logEvent('audio_overplay'); toast('Ya usaste las 2 reproducciones de este audio.',true); return; }
       left--; playing=true; logEvent('audio_play');
       try{ aud.currentTime=0; }catch(e){}
       const p=aud.play();
-      if(p&&p.catch) p.catch(()=>{ playing=false; toast('⚠️ No se pudo reproducir el audio.',true); });
+      if(p&&p.catch) p.catch(()=>{ playing=false; toast('No se pudo reproducir el audio.',true); });
       btn.textContent='⏸ Reproduciendo…'; btn.classList.add('playing');
       leftEl.textContent=word(left);
     });
     aud.addEventListener('ended',()=>{
       playing=false; btn.classList.remove('playing');
-      if(left<=0){ btn.textContent='🔒 Audio bloqueado'; btn.disabled=true; btn.classList.add('locked'); leftEl.textContent='Sin reproducciones restantes'; }
+      if(left<=0){ btn.textContent='Audio bloqueado'; btn.disabled=true; btn.classList.add('locked'); leftEl.textContent='Sin reproducciones restantes'; }
       else btn.textContent='▶ Reproducir de nuevo';
     });
-    aud.addEventListener('error',()=>{ toast('⚠️ No se pudo cargar el audio ('+id+').',true); });
+    aud.addEventListener('error',()=>{ toast('No se pudo cargar el audio ('+id+').',true); });
   });
 }
 
@@ -3233,7 +3444,8 @@ async function submitExam(){
   const wc=s=>((s||'').trim().match(/\S+/g)||[]).length;
 
   const payload={
-    codigo: CFG ? CFG.codigo : '',   // enlaza el resultado con el examen, la etapa y el grupo
+    codigo: (!SIM && CFG) ? CFG.codigo : '',   // enlaza el resultado con el examen, la etapa y el grupo
+    modo: SIM ? 'simulacion' : '',              // la muestra se guarda aparte y no entra al panel
     student,
     sections: sectionIds(),
     answers,                       // { id: opción marcada }  (sin saber cuál es la correcta)
@@ -3266,16 +3478,61 @@ function equiv(c){ return ({
   B2:'Equivale a IELTS 5.5–6.5 / TOEFL 72–94', B1:'Equivale a IELTS 4.0–5.0 / TOEFL 42–71',
   A2:'Equivale a IELTS 3.0–3.5 / TOEFL 19–41', A1:'Nivel inicial (A1)' })[c]; }
 
+/* Barras de destreza: color propio + marca de comparación con el grupo.
+   Si no hay grupo (examen sin código, o es el primero del grupo) la línea NO
+   se dibuja: no se inventa una referencia. */
+function drawSkills(mias,grupo,previo){
+  $('r-skills').innerHTML=SKILLS.map(s=>{
+    const v=Math.round(mias[s.k]||0), col=cssv(s.c);
+    const g=(grupo&&grupo[s.k]!=null)?Math.round(grupo[s.k]):null;
+    const p=(previo&&previo[s.k]!=null)?Math.round(previo[s.k]):null;
+    const d=p!=null?v-p:null;
+    const dc=d==null?'':'<span class="dchip" style="color:'+cssv(d>=5?'--good':d<=-5?'--crit':'--muted')+'">'+
+      ic(d>0?'up':d<0?'down':'eq',null,11,3)+(d>0?'+':'')+d+'</span>';
+    return '<div class="skill">'+
+      '<div class="sk-top"><span class="ic">'+ic(s.k,col,19,1.9)+'</span>'+
+        '<span class="nm">'+s.n+'</span><span class="vl">'+v+'%'+dc+'</span></div>'+
+      '<div class="sk-track">'+
+        '<div class="sk-fill" style="background:'+col+'" data-w="'+v+'"></div>'+
+        (g!=null?'<div class="sk-mark" style="left:'+g+'%" data-t="grupo '+g+'%"></div>':'')+
+      '</div>'+
+      (p!=null?'<div class="sk-prev"><span style="width:'+p+'%;background:'+col+'"></span></div>':'')+
+    '</div>';
+  }).join('');
+  requestAnimationFrame(()=>document.querySelectorAll('#r-skills .sk-fill')
+    .forEach(f=>{ f.style.width=f.dataset.w+'%'; }));
+}
+
 function showResults(p,sk){
   $('loading-screen').classList.add('hidden'); $('results-screen').classList.remove('hidden');
-  $('r-cefr').textContent=p.nivel_cefr;
-  $('ring').style.setProperty('--p',`${p.score_total}%`);
-  $('r-total').textContent=`${p.score_total}%`;
-  $('r-name').textContent=`${p.nombre}${p.ficha?' · Ficha '+p.ficha:''}`;
-  const set=(pct,lab,bar)=>{ $(lab).textContent=`${Math.round(pct)}%`; setTimeout(()=>$(bar).style.width=`${Math.round(pct)}%`,80); };
-  set(sk.r,'r-read','b-read'); set(sk.l,'r-lis','b-lis'); set(sk.g,'r-gram','b-gram'); set(sk.v,'r-voc','b-voc'); set(sk.w,'r-wri','b-wri');
+  const total=Math.round(p.score_total||0);
+  $('r-cefr').textContent=p.nivel_cefr||'—';
+  drawGauge(total);
+  countUp($('r-total'),total,900);
+  const nb=nextBandTxt(total);
+  $('r-next').innerHTML=nb; $('r-next').style.display=nb?'':'none';
+  $('r-name').textContent=`${p.nombre}${p.ficha?' · '+p.ficha:''}`;
+
+  const mias={reading:sk.r,listening:sk.l,grammar:sk.g,vocabulary:sk.v,writing:sk.w};
+  const previo=p.etapa_previa&&p.etapa_previa.destrezas?p.etapa_previa.destrezas:null;
+  drawSkills(mias, p.grupo_promedios||null, previo);
+
+  // Comparación entre etapas: si no hay etapa anterior se dice, no se esconde.
+  $('r-avance').innerHTML = previo
+    ? '<div class="emptynote">'+ic('info',null,16)+'<div>La barra tenue y el número al lado de cada destreza comparan con tu <b>'+
+      esc(p.etapa_previa.etapa||'etapa anterior')+'</b> ('+Math.round(p.etapa_previa.score_total||0)+'/100).</div></div>'
+    : '<div class="emptynote">'+ic('info',null,16)+'<div>Tu avance aparecerá cuando presentes la siguiente etapa: aquí verás cuánto subiste en cada destreza.</div></div>';
+
   $('r-feedback').textContent=p.writing_feedback||'—';
   $('r-equiv').textContent=equiv(p.nivel_cefr);
+
+  // Cierre honesto de la muestra: qué acaba de ver y qué mide el examen real.
+  if(SIM){
+    $('r-avance').innerHTML='<div class="emptynote">'+ic('info',null,16)+
+      '<div>Esto fue una <b>muestra de 8 preguntas</b>. El examen completo mide cinco destrezas en 55 preguntas, '+
+      'y el resultado queda registrado para tu docente.</div></div>';
+    $('r-next').style.display='none';
+  }
 }
 
 /* ===== Calificación + guardado en el servidor =====
@@ -3294,11 +3551,11 @@ async function gradeExam(payload){
     if(res.status===409||(j&&j.ya_presento))
       return { _bloqueado:true, error:j.error||'Este documento ya presentó este examen.' };
     if(!res.ok||j.error) throw new Error(j.error||('HTTP '+res.status));
-    toast('✅ Examen calificado y guardado.');
+    toast('Examen calificado y guardado.');
     return j;
   }catch(e){
     console.error('grade-exam error:',e);
-    toast('❌ No se pudo calificar/guardar: '+e.message,true);
+    toast('No se pudo calificar/guardar: '+e.message,true);
     return null;
   }
 }

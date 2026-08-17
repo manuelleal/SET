@@ -16,6 +16,26 @@
   --gold:#C99235; --gold-ink:#8A6215;
   --ok:#2E7D5B; --ok-bg:#E7F4EC;
   --shadow:0 10px 30px -12px rgba(31,41,51,.22); --radius:14px;
+  /* ===== Sistema visual (docs/prototipo_visual.html §2) =====
+     Paleta validada (daltonismo, contraste, separación perceptual): NO cambiar
+     ni un tono. El simulacro usa los pasos n1/n3/n4/n6 de la rampa ordinal para
+     sus 4 bandas, para que los dos instrumentos se lean como un solo sistema. */
+  --n1:#57BFAF; --n2:#2FAA98; --n3:#0D9488; --n4:#0A7E73; --n5:#07665D; --n6:#044F47;
+  --good:#0CA30C; --warn:#FAB219; --serio:#EC835A; --crit:#D03B3B;
+  --axis:#C3C2B7; --ink-2:#52514E;
+  /* icono del bocadillo como máscara (antes era un emoji en content:) */
+  --ic-chat:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/></svg>");
+}
+[data-theme="dark"]{
+  --bg:#0F1214; --paper:#161A1D; --surface:#161A1D;
+  --ink:#FFFFFF; --ink-2:#C3C2B7; --muted:#898781;
+  --line:#2C2C2A; --axis:#383835;
+  --n1:#8FD8CB; --n2:#5CC3B2; --n3:#2FAA98; --n4:#12A192; --n5:#0A7E73; --n6:#07665D;
+  --navy:#7FA8D9; --navy-d:#A9C4E6; --navy-soft:#16202C;
+  --gold:#D9A64A; --gold-ink:#E6C171;
+  --sello:#E0705A; --sello-bg:#2E1A17;
+  --ok:#3FA97A; --ok-bg:#12291F;
+  --shadow:0 10px 30px -14px rgba(0,0,0,.6);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{font-size:16px}
@@ -107,19 +127,41 @@ label{font-weight:700;font-size:.9rem;display:block;margin:12px 0 4px}
 .av-placa .sub{letter-spacing:.05em;font-size:.85rem;font-family:'Mulish',sans-serif;font-weight:700;text-transform:none}
 /* diálogo (Parte 3) */
 .bocadillo{background:var(--navy-soft);border-radius:14px 14px 14px 4px;padding:12px 14px;font-size:1rem;margin-bottom:4px;position:relative}
-.bocadillo::before{content:'💬';margin-right:6px}
+.bocadillo::before{content:'';display:inline-block;width:15px;height:15px;margin-right:7px;vertical-align:-2px;
+  background:currentColor;opacity:.55;
+  -webkit-mask:var(--ic-chat) center/contain no-repeat;mask:var(--ic-chat) center/contain no-repeat}
 /* resultados */
 .res-hero{text-align:center;padding:10px 0}
 .res-score{font-family:'Fraunces',serif;font-weight:700;font-size:4.2rem;color:var(--navy);line-height:1}
-.gauge{width:220px;height:110px;margin:14px auto 4px;position:relative;overflow:hidden}
-.gauge .arc{width:220px;height:220px;border-radius:50%;background:conic-gradient(from 270deg,#8E2A21 0deg 66.6deg,#9A5A14 66.6deg 102.6deg,#8A6D1A 102.6deg 126deg,#2E6B4F 126deg 180deg,transparent 180deg);-webkit-mask:radial-gradient(circle,transparent 62px,#000 63px);mask:radial-gradient(circle,transparent 62px,#000 63px)}
-.gauge .needle{position:absolute;left:50%;bottom:0;width:3px;height:96px;background:var(--ink);transform-origin:bottom center;border-radius:3px}
+/* Medidor con la escala visible: cuatro sectores proporcionales al rango real de
+   cada banda vigente del ICFES (Pre A1 0-36 · A1 37-57 · A2 58-70 · B1 71-100).
+   La banda alcanzada va al 100% y las demás al 25%. */
+.gaugewrap{position:relative;margin:10px auto 0;width:280px;max-width:100%}
+.gaugewrap svg{display:block;width:100%;height:auto}
+.gauge-score{position:absolute;left:0;right:0;top:30%;text-align:center}
+.gauge-score .num{font-family:'Fraunces',serif;font-weight:700;font-size:3rem;line-height:1;color:var(--ink)}
+.gauge-score .cap{font-size:.82rem;color:var(--ink-2)}
+.bandticks{display:flex;justify-content:space-between;width:280px;max-width:100%;margin:2px auto 0;
+  font:600 .64rem 'IBM Plex Mono',ui-monospace,monospace;color:var(--muted)}
+.nextband{text-align:center;font-size:.9rem;color:var(--ink-2);margin:8px 0 0}
+.nextband b{color:var(--ink)}
 .nivel-chip{font-size:1.15rem;font-weight:800;border-radius:999px;padding:8px 22px;display:inline-block;margin-top:10px}
 .bar-row{margin:10px 0}
 .bar-lbl{display:flex;justify-content:space-between;font-size:.88rem;font-weight:700}
 .bar-lbl span:last-child{font-family:'IBM Plex Mono',monospace}
-.bar{height:10px;background:#E3DFD2;border-radius:999px;overflow:hidden;margin-top:4px}
-.bar i{display:block;height:100%;background:var(--navy);border-radius:999px}
+.bar{position:relative;height:10px;background:var(--line);border-radius:5px;margin-top:4px}
+.bar i{position:absolute;inset:0 auto 0 0;height:100%;border-radius:5px;width:0;
+  transition:width .9s cubic-bezier(.2,.7,.3,1)}
+/* Marca de comparación con el grupo. Si no hay grupo NO se dibuja: no se
+   inventa una referencia. */
+.bar .mk{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--ink-2);border-radius:1px}
+.bar .mk::after{content:attr(data-t);position:absolute;left:50%;top:-22px;transform:translateX(-50%);
+  white-space:nowrap;font:600 .66rem Mulish,sans-serif;color:var(--ink-2);background:var(--surface);
+  border:1px solid var(--line);padding:1px 5px;border-radius:4px;opacity:0;transition:opacity .18s}
+.bar-row:hover .mk::after,.bar-row:focus-within .mk::after{opacity:1}
+.bar-lbl svg{flex:none;vertical-align:-2px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+input,select,textarea{font-size:16px}
 .informe{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px;margin-top:14px;overflow-wrap:break-word}
 .informe h3{margin:14px 0 6px;font-size:1.05rem;color:var(--navy)}
 .informe h3:first-child{margin-top:0}
@@ -130,6 +172,8 @@ label{font-weight:700;font-size:.9rem;display:block;margin:12px 0 4px}
 .inf-row{background:var(--navy-soft);border-radius:8px;padding:6px 10px;margin:6px 0}
 .toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:var(--ink);color:#fff;border-radius:10px;padding:12px 18px;font-weight:700;font-size:.92rem;z-index:99;display:none;max-width:92vw}
 .toast.red{background:var(--sello)}
+.toast[style*="block"]{display:flex!important;align-items:center;gap:9px}
+.toast svg{flex:none}
 .overlay{position:fixed;inset:0;background:rgba(245,242,234,.94);z-index:80;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;text-align:center;padding:20px}
 .spin{width:38px;height:38px;border:4px solid var(--line);border-top-color:var(--navy);border-radius:50%;animation:rot 1s linear infinite}
 @keyframes rot{to{transform:rotate(360deg)}}
@@ -137,6 +181,16 @@ label{font-weight:700;font-size:.9rem;display:block;margin:12px 0 4px}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 @media print{.hdr,.wbank,.btn,.toast,.overlay,.no-print{display:none!important}body{background:#fff}.card{box-shadow:none;border:none}}
 </style>
+<script>
+/* Tema: sigue al sistema (o lo que el usuario haya fijado). Se aplica ANTES de
+   pintar para que no haya destello. Modo oscuro con los pasos declarados del
+   sistema visual, nunca una inversión automática. */
+(function(){try{
+  var t=localStorage.getItem('set_theme');
+  if(!t) t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+  document.documentElement.setAttribute('data-theme',t);
+}catch(e){}})();
+</script>
 </head>
 <body>
 
@@ -228,9 +282,16 @@ label{font-weight:700;font-size:.9rem;display:block;margin:12px 0 4px}
       <div class="res-hero">
         <span class="eyebrow" style="background:var(--sello-bg);color:var(--sello)">Puntaje estimado · No oficial</span>
         <p class="help" id="r-quien" style="margin-top:8px"></p>
-        <div class="res-score" id="r-score">0</div>
-        <div class="gauge"><div class="arc"></div><div class="needle" id="r-needle"></div></div>
+        <div class="gaugewrap">
+          <svg viewBox="0 0 280 152" id="gauge" role="img" aria-label="Medidor de puntaje"></svg>
+          <div class="gauge-score">
+            <div class="num" id="r-score">0</div>
+            <div class="cap">de 100</div>
+          </div>
+        </div>
+        <div class="bandticks" id="r-ticks"></div>
         <div class="nivel-chip" id="r-nivel"></div>
+        <div class="nextband" id="r-next"></div>
         <p class="help" id="r-desc" style="margin-top:8px"></p>
         <p class="help" id="r-legacy" style="font-size:.78rem"></p>
       </div>
@@ -238,7 +299,7 @@ label{font-weight:700;font-size:.9rem;display:block;margin:12px 0 4px}
       <div id="r-bars"></div>
       <div id="r-prev" style="margin-top:10px"></div>
       <div id="r-feed" class="instr" style="display:none"></div>
-      <h3 id="r-inf-titulo" style="margin:16px 0 4px;display:none">📋 Tu informe personalizado</h3>
+      <h3 id="r-inf-titulo" style="margin:16px 0 4px;display:none"><span data-ic="report"></span> Tu informe personalizado</h3>
       <div id="r-informe" class="informe" style="display:none"></div>
       <div class="grid2 no-print" style="margin-top:16px">
         <button class="btn btn-g" onclick="window.print()">Imprimir / Guardar</button>
@@ -1511,6 +1572,68 @@ const NIVEL_DESC = {
 const NIVEL_COLOR = {'Pre A1':['#F9E7E4','#8E2A21'],'A1':['#FBEFDD','#9A5A14'],'A2':['#F7F0D8','#8A6D1A'],'B1':['#E4F2EA','#2E6B4F']};
 const LETRAS = ['A','B','C','D'];
 
+/* =========================================================
+   SISTEMA VISUAL (docs/prototipo_visual.html)
+   Iconos SVG en vez de emojis y medidor con la escala visible.
+   Regla dura: esta página NO carga ninguna librería de gráficos ni de iconos
+   — se presenta desde celulares de gama baja con datos móviles.
+========================================================= */
+const IC = {
+  chat:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+  report:'<path d="M4 4a2 2 0 0 1 2-2h7l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/><path d="M13 2v5h5"/><path d="M8 13h8M8 17h5"/>',
+  print:'<path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/>',
+  ok:'<path d="M20 6L9 17l-5-5"/>',
+  alert:'<path d="M12 9v4m0 4h.01M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/>',
+  up:'<path d="M7 14l5-5 5 5"/>', down:'<path d="M7 10l5 5 5-5"/>', eq:'<path d="M5 12h14"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/>'
+};
+function ic(n,color,size,sw){
+  return '<svg width="'+(size||16)+'" height="'+(size||16)+'" viewBox="0 0 24 24" fill="none" aria-hidden="true"'+
+    ' stroke="'+(color||'currentColor')+'" stroke-width="'+(sw||2)+'" stroke-linecap="round" stroke-linejoin="round">'+
+    (IC[n]||'')+'</svg>';
+}
+const cssv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+// El `$` de la app vive dentro del IIFE de más abajo; estas funciones son de
+// ámbito global, así que necesitan el suyo.
+const byId = id => document.getElementById(id);
+
+/* Bandas VIGENTES del ICFES con su rango real. Los pasos n1/n3/n4/n6 son los que
+   el sistema visual reserva para este instrumento. */
+const BANDAS = [
+  {k:'Pre A1', a:0,  b:37,  v:'--n1'},
+  {k:'A1',     a:37, b:58,  v:'--n3'},
+  {k:'A2',     a:58, b:71,  v:'--n4'},
+  {k:'B1',     a:71, b:100, v:'--n6'}
+];
+const gP = (cx,cy,r,d) => { const t=(180+d*1.8)*Math.PI/180; return [cx+r*Math.cos(t), cy+r*Math.sin(t)]; };
+function drawGauge(score){
+  const g = byId('gauge'); if (!g) return;
+  const cx=140, cy=140, R=118, W=17, s=Math.max(0,Math.min(100,score));
+  let h='';
+  BANDAS.forEach(b => {
+    const [x1,y1]=gP(cx,cy,R,b.a), [x2,y2]=gP(cx,cy,R,b.b);
+    const on = s>=b.a && (s<b.b || (b.b===100 && s>=100));
+    h += '<path d="M'+x1+' '+y1+' A'+R+' '+R+' 0 0 1 '+x2+' '+y2+'" fill="none" stroke="'+cssv(b.v)+
+         '" stroke-width="'+W+'" opacity="'+(on?1:.25)+'"/>';
+  });
+  const [mx,my]=gP(cx,cy,R,s), [ix,iy]=gP(cx,cy,R-W/2-7,s), [ox,oy]=gP(cx,cy,R+W/2+7,s);
+  h += '<line x1="'+ix+'" y1="'+iy+'" x2="'+ox+'" y2="'+oy+'" stroke="'+cssv('--ink')+'" stroke-width="3" stroke-linecap="round"/>';
+  h += '<circle cx="'+mx+'" cy="'+my+'" r="6" fill="'+cssv('--ink')+'" stroke="'+cssv('--surface')+'" stroke-width="2.5"/>';
+  g.innerHTML = h;
+}
+// Color de la banda a la que pertenece un puntaje (para las barras por parte).
+function colorDeBanda(pct){
+  const b = BANDAS.find(x => pct>=x.a && (pct<x.b || (x.b===100 && pct>=100)));
+  return cssv((b||BANDAS[0]).v);
+}
+// Cuánto falta para la banda siguiente — calculado. En la máxima no se muestra.
+function nextBandTxt(score){
+  const i = BANDAS.findIndex(b => score>=b.a && score<b.b);
+  if (i < 0 || i >= BANDAS.length-1) return '';
+  const falta = Math.max(1, Math.ceil(BANDAS[i+1].a - score));
+  return 'Te faltan <b>'+falta+(falta===1?' punto':' puntos')+'</b> para '+BANDAS[i+1].k;
+}
+
 /* ================== Utilidades puras (testeables sin DOM) ================== */
 function pickN(arr, n){
   const a = arr.slice();
@@ -1576,6 +1699,8 @@ function mdHtml(md){
 }
 
 /* ================== Estado ================== */
+/* Muestra de práctica sin código ni documento (icfes.html#simulacion). */
+let SIM = false;
 const ST = {
   exam:null, parts:[], partIdx:-1, answers:{}, numById:{},
   cfg:null, student:{}, startedAt:null, t0:0, totalSec:0, deadline:0, tLeft:0, tInt:0, tCollapsed:false, warn2m:false,
@@ -1587,10 +1712,19 @@ const ST = {
 document.addEventListener('DOMContentLoaded', function(){
   const $ = id => document.getElementById(id);
 
+  /* El estado va con ICONO Y TEXTO, nunca color solo. El mensaje se inserta
+     como texto, nunca como HTML. */
   function toast(msg, red){
-    const t = $('toast'); t.textContent = msg; t.className = 'toast' + (red?' red':''); t.style.display='block';
+    const t = $('toast');
+    t.innerHTML = ic(red?'alert':'ok', null, 16, 2.4) + '<span></span>';
+    t.lastChild.textContent = msg;
+    t.className = 'toast' + (red?' red':''); t.style.display='block';
     clearTimeout(t._h); t._h = setTimeout(()=>{ t.style.display='none'; }, 4200);
   }
+  // Iconos declarados en el HTML como <span data-ic="nombre">
+  document.querySelectorAll('[data-ic]').forEach(el => {
+    el.innerHTML = ic(el.dataset.ic, null, el.dataset.icSize ? +el.dataset.icSize : 17);
+  });
   function show(id){
     ['scr-code','scr-datos','scr-inter','scr-parte','scr-result'].forEach(s=>$(s).classList.remove('on'));
     $(id).classList.add('on'); window.scrollTo(0,0);
@@ -1635,6 +1769,40 @@ document.addEventListener('DOMContentLoaded', function(){
   }
   window.addEventListener('pagehide', guardar);
   document.addEventListener('visibilitychange', () => { if (document.hidden) guardar(); });
+
+  /* ---------- Modo simulación (icfes.html#simulacion) ----------
+     Muestra libre de 8 preguntas: sin código, SIN documento de identidad y
+     repetible. Se guarda con etapa "simulacion", que el panel, el progreso y
+     cualquier consulta de calibración excluyen. */
+  function entrarSimulacion(){
+    SIM = true;
+    // 8 preguntas de partes SUELTAS (avisos y conversaciones). Las partes de
+    // lectura vienen en bloques completos con su texto: no se pueden recortar a
+    // 2 preguntas sin romper el bloque, y no caben en una muestra de 5 minutos.
+    const partes = { p2:4, p3:4 };
+    ST.cfg = { codigo:'', tipo:'icfes_en', etapa:'simulacion',
+               titulo:'Muestra de práctica', grupo:'', config:{ partes, minutos:8 } };
+    ST.exam = buildExam(BANK_ICFES, partes);
+    let n = 0; ST.exam.forEach(pt => { n += idsDePart(pt).length; });
+    ST.totalSec = 8 * 60;
+    $('bt-titulo').textContent = 'Muestra de práctica · ' + n + ' preguntas';
+    $('bt-etapa').textContent = 'Muestra';
+    $('bt-grupo').textContent = 'sin código';
+    $('bt-cod').textContent = '—';
+    $('bt-n').textContent = n; $('bt-min').textContent = 8;
+    // Sin documento: no se pide ningún dato personal, solo un nombre o apodo.
+    // OJO: in-doc e in-colegio cuelgan directamente de la tarjeta, así que hay
+    // que ocultar el campo y su etiqueta — no el contenedor, que se llevaría
+    // por delante el botón de comenzar.
+    ['in-doc','in-colegio'].forEach(id => { const f = $(id); if (f) f.style.display = 'none'; });
+    const dt = $('in-tipodoc'); if (dt && dt.parentElement) dt.parentElement.style.display = 'none';
+    document.querySelectorAll('label[for="in-doc"],label[for="in-colegio"]')
+      .forEach(l => { l.style.display = 'none'; });
+    const ln = document.querySelector('label[for="in-nombre"]');
+    if (ln) ln.textContent = 'Nombre o apodo (opcional)';
+    $('btn-comenzar').textContent = 'Comenzar la muestra';
+    show('scr-datos');
+  }
 
   /* ---------- Pantalla 1: código ---------- */
   const inCod = $('in-codigo');
@@ -1686,6 +1854,15 @@ document.addEventListener('DOMContentLoaded', function(){
   $('btn-comenzar').addEventListener('click', async () => {
     const nombre = $('in-nombre').value.trim(), doc = $('in-doc').value.trim();
     const err = $('datos-err'); err.style.display = 'none';
+    // En la muestra no se valida nada: no se pide documento ni nombre.
+    if (SIM){
+      ST.student = { nombre: nombre || 'Anónimo', documento: '', tipo_documento: '', colegio: '' };
+      ST.startedAt = new Date().toISOString(); ST.t0 = Date.now();
+      armarStepper(); iniciarTimer(); activarAntitrampa();
+      $('hdr').style.display = 'block';
+      ST.partIdx = -1; siguienteParte();
+      return;
+    }
     if (nombre.length < 5){ err.textContent = 'Escribe tu nombre completo.'; err.style.display='block'; return; }
     if (doc.length < 5){ err.textContent = 'Revisa tu número de documento (solo números, sin puntos).'; err.style.display='block'; return; }
 
@@ -1837,7 +2014,7 @@ document.addEventListener('DOMContentLoaded', function(){
       if (ej){
         h += '<div class="ejq"><span class="tag">Ejemplo 0</span><br>' +
              (pt.p==='p2' ? avisoHtml(ej) : '<div class="bocadillo">' + esc(ej.linea) + '</div>') +
-             ej.options.map((o,i)=>'<div>' + LETRAS[i] + '. ' + (i===ej.answer?'<span class="okopt">'+esc(o)+' ✓</span>':esc(o)) + '</div>').join('') + '</div>';
+             ej.options.map((o,i)=>'<div>' + LETRAS[i] + '. ' + (i===ej.answer?'<span class="okopt">'+esc(o)+'</span>':esc(o)) + '</div>').join('') + '</div>';
       }
       pt.items.forEach(it => {
         h += '<div class="q"><span class="qnum">' + ST.numById[it.id] + '.</span>' +
@@ -1847,13 +2024,13 @@ document.addEventListener('DOMContentLoaded', function(){
     } else if (pt.p === 'p4' || pt.p === 'p7'){
       pt.texts.forEach(t => {
         h += '<div class="lectura"><h3>' + esc((t.titulo||'').toUpperCase()) + '</h3><p>' + clozeTexto(t) + '</p></div>';
-        if (t.ejemplo) h += '<div class="ejq"><span class="tag">Ejemplo 0</span> ' + t.ejemplo.options.map((o,i)=> LETRAS[i] + '. ' + (i===t.ejemplo.answer?'<span class="okopt">'+esc(o)+' ✓</span>':esc(o))).join(' · ') + '</div>';
+        if (t.ejemplo) h += '<div class="ejq"><span class="tag">Ejemplo 0</span> ' + t.ejemplo.options.map((o,i)=> LETRAS[i] + '. ' + (i===t.ejemplo.answer?'<span class="okopt">'+esc(o)+'</span>':esc(o))).join(' · ') + '</div>';
         t.gaps.forEach(g => { h += '<div class="q"><span class="qnum">' + ST.numById[g.id] + '.</span>' + optsHtml(g.id, g.options) + '</div>'; });
       });
     } else { // p5 / p6
       pt.texts.forEach(t => {
         h += '<div class="lectura"><h3>' + esc((t.titulo||'').toUpperCase()) + '</h3><p>' + esc(t.texto) + '</p></div>';
-        if (t.ejemplo) h += '<div class="ejq"><span class="tag">Ejemplo 0</span><br>' + esc(t.ejemplo.q) + '<br>' + t.ejemplo.options.map((o,i)=> LETRAS[i] + '. ' + (i===t.ejemplo.answer?'<span class="okopt">'+esc(o)+' ✓</span>':esc(o))).join('<br>') + '</div>';
+        if (t.ejemplo) h += '<div class="ejq"><span class="tag">Ejemplo 0</span><br>' + esc(t.ejemplo.q) + '<br>' + t.ejemplo.options.map((o,i)=> LETRAS[i] + '. ' + (i===t.ejemplo.answer?'<span class="okopt">'+esc(o)+'</span>':esc(o))).join('<br>') + '</div>';
         t.questions.forEach(q => { h += '<div class="q"><span class="qnum">' + ST.numById[q.id] + '.</span> ' + esc(q.q) + optsHtml(q.id, q.options) + '</div>'; });
       });
     }
@@ -1926,7 +2103,9 @@ document.addEventListener('DOMContentLoaded', function(){
     const partes = {};
     ST.exam.forEach(pt => { partes[pt.p] = idsDePart(pt); });
     const payload = {
-      action:'grade', tipo:'icfes_en', codigo: ST.cfg.codigo,
+      action:'grade', tipo:'icfes_en',
+      codigo: SIM ? '' : ST.cfg.codigo,
+      modo: SIM ? 'simulacion' : '',   // la muestra se guarda aparte y no entra al panel
       student: ST.student, partes, answers: ST.answers,
       meta:{ started_at: ST.startedAt, duracion_seg: Math.round((Date.now()-ST.t0)/1000),
              telemetria: ST.tm, navegador: navigator.userAgent.slice(0,380) }
@@ -1973,17 +2152,34 @@ document.addEventListener('DOMContentLoaded', function(){
       let cur = 0; const step = Math.max(1, Math.round(score/45));
       const iv = setInterval(()=>{ cur = Math.min(score, cur+step); el.textContent = cur; if (cur>=score) clearInterval(iv); }, 20);
     }
-    $('r-needle').style.transform = 'rotate(' + ((score/100)*180 - 90) + 'deg)';
+    drawGauge(score);
+    // Marcas de la escala, proporcionales al rango real de cada banda
+    $('r-ticks').innerHTML = BANDAS.map(b => '<span>'+b.k+'</span>').join('');
+    const nb = nextBandTxt(score);
+    $('r-next').innerHTML = nb; $('r-next').style.display = nb ? '' : 'none';
     const col = NIVEL_COLOR[j.nivel] || ['#EEE','#333'];
     const nv = $('r-nivel'); nv.textContent = j.nivel; nv.style.background = col[0]; nv.style.color = col[1];
     $('r-desc').textContent = NIVEL_DESC[j.nivel] || '';
     $('r-legacy').textContent = 'Equivalencia con la escala anterior del ICFES: ' + (j.nivel_anterior || '—');
+
+    /* Barras por parte. El color codifica la BANDA alcanzada en esa parte (misma
+       rampa ordinal del medidor): las 5 ranuras categóricas del sistema visual
+       son para las 5 destrezas del examen CEFR, no para las 7 partes de aquí. */
+    const grupo = j.grupo_promedios || null;
     let bars = '';
     Object.keys(PARTES_META).forEach(p => {
       const d = j.partes && j.partes[p]; if (!d) return;
-      bars += '<div class="bar-row"><div class="bar-lbl"><span>' + PARTES_META[p].n + ' · ' + PARTES_META[p].comp + '</span><span>' + d.c + '/' + d.t + ' · ' + d.pct + '%</span></div><div class="bar"><i style="width:' + d.pct + '%"></i></div></div>';
+      const g = grupo && grupo[p] != null ? Math.round(grupo[p]) : null;
+      bars += '<div class="bar-row">' +
+        '<div class="bar-lbl"><span>' + PARTES_META[p].n + ' · ' + PARTES_META[p].comp + '</span>' +
+        '<span>' + d.c + '/' + d.t + ' · ' + d.pct + '%</span></div>' +
+        '<div class="bar"><i data-w="' + d.pct + '" style="background:' + colorDeBanda(d.pct) + '"></i>' +
+        (g != null ? '<span class="mk" style="left:' + g + '%" data-t="grupo ' + g + '%"></span>' : '') +
+        '</div></div>';
     });
     $('r-bars').innerHTML = bars;
+    requestAnimationFrame(() => document.querySelectorAll('#r-bars .bar i')
+      .forEach(i => { i.style.width = i.dataset.w + '%'; }));
     if (j.previos && j.previos.length){
       $('r-prev').innerHTML = '<h3 style="margin:10px 0 4px">Tus aplicaciones anteriores</h3>' +
         j.previos.map(pv => '<span class="chip" style="background:var(--navy-soft);color:var(--navy-d);margin-right:6px">' + esc(pv.etapa) + ': ' + esc(pv.score) + '/100 (' + esc(pv.fecha) + ')</span>').join('');
@@ -1992,7 +2188,13 @@ document.addEventListener('DOMContentLoaded', function(){
     $('r-quien').textContent = (ST.student.nombre || '') + ' · ' + etapaLbl + ' · ' + new Date().toLocaleDateString('es-CO', {day:'numeric', month:'long', year:'numeric'});
     if (j.feedback){ const f = $('r-feed'); f.style.display='block'; f.textContent = j.feedback; }
     if (j.informe){ $('r-inf-titulo').style.display='block'; const inf = $('r-informe'); inf.style.display='block'; inf.innerHTML = mdHtml(j.informe); }
-    if (!j.saved) toast('⚠️ El resultado se calculó pero no se pudo guardar. Muéstrale esta pantalla a tu docente.', true);
+    // Cierre honesto de la muestra: qué acaba de ver y qué mide la prueba real.
+    if (SIM){
+      $('r-prev').innerHTML = '<div class="instr" style="margin-top:12px">' +
+        'Esto fue una <b>muestra de ' + Object.values(j.partes||{}).reduce((a,b)=>a+(b.t||0),0) + ' preguntas</b>. ' +
+        'El simulacro completo son <b>55 preguntas en 7 partes</b>, con informe personalizado y seguimiento por etapas.</div>';
+    }
+    if (!j.saved) toast('El resultado se calculó pero no se pudo guardar. Muéstrale esta pantalla a tu docente.', true);
   }
 
   // ¿Quedó un examen sin terminar en este dispositivo? → ofrecer continuarlo
@@ -2014,13 +2216,15 @@ document.addEventListener('DOMContentLoaded', function(){
     });
   } else {
     // Enlace profundo: icfes.html#ICF-XXXX (el QR del docente) → prellenar y verificar
+    // Muestra de práctica: icfes.html#simulacion
     const hashCod = (location.hash || '').replace('#', '').trim().toUpperCase();
-    if (/^[A-Z0-9-]{4,8}$/.test(hashCod)){ inCod.value = hashCod; pedirConfig(); }
+    if (hashCod === 'SIMULACION' || hashCod === 'SIMULACIÓN'){ entrarSimulacion(); }
+    else if (/^[A-Z0-9-]{4,8}$/.test(hashCod)){ inCod.value = hashCod; pedirConfig(); }
   }
 
   // Aviso si faltan las llaves
   if (SUPABASE_URL.includes('TU-PROYECTO') || SUPABASE_ANON_KEY.includes('PEGA_AQUI'))
-    toast('⚠️ Falta configurar SUPABASE_URL / SUPABASE_ANON_KEY en el código.', true);
+    toast('Falta configurar SUPABASE_URL / SUPABASE_ANON_KEY en el código.', true);
 });
 </script>
 </body>
