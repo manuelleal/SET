@@ -306,6 +306,7 @@
     <div id="tab-cefr" class="hidden">
       <div class="top"><h2>Inglés CEFR — Evaluación de nivel</h2>
         <button class="btn-ghost" onclick="exportCSV()"><span data-ic="down"></span> Exportar CSV</button></div>
+      <div class="note" id="aviso-v1" style="display:none"></div>
       <div class="kpis" id="kpis"></div>
       <div class="cols">
         <div class="card blk">
@@ -338,6 +339,7 @@
               <th data-k="ficha">Ficha</th>
               <th data-k="nivel_cefr">CEFR</th>
               <th data-k="score_total">Total</th>
+              <th data-k="nota_destino" title="Nota en la escala de la institución. Va junto al 0-100, nunca en su lugar.">Nota inst.</th>
               <th data-k="score_reading">Read</th>
               <th data-k="score_listening">List</th>
               <th data-k="score_grammar">Gram</th>
@@ -386,6 +388,11 @@
 
 <script>
 let sb=null, rows=[], icfesRows=[], allRows=[], exams=[], sortKey='score_total', sortDir=-1;
+
+/* Versión del banco cuyos resultados son comparables entre sí. Los anteriores se
+   excluyen por defecto de todo cálculo (ver loadData). No se borran nunca. */
+const BANCO_VIGENTE='v2';
+let verHistoricoV1=false, v1Excluidas=0;
 /* Llaves PÚBLICAS fijas: el docente solo escribe correo y contraseña.
    El anon key es seguro (RLS: el público no puede leer; solo un usuario autenticado lee). */
 const SUPABASE_URL = 'https://sacugfirjijrizcpsihn.supabase.co';
@@ -521,10 +528,11 @@ function cerrarLive(){
 }
 async function tickLive(){
   const { data, error }=await sb.from('exam_results')
-    .select('id,exam_tipo,etapa,nivel_cefr,nivel_icfes,score_total,score_icfes,created_at')
+    .select('id,exam_tipo,etapa,nivel_cefr,nivel_icfes,score_total,score_icfes,created_at,banco_version')
     .eq('exam_codigo',liveCod).order('created_at',{ascending:false}).limit(200);
   if(error) return;
-  const filas=(data||[]).filter(r=>r.etapa!=='simulacion');
+  // Misma regla que en el panel: fuera la simulación y fuera el banco v1.
+  const filas=(data||[]).filter(r=>r.etapa!=='simulacion'&&(r.banco_version||'v1')===BANCO_VIGENTE);
   const tipo=(filas[0]&&filas[0].exam_tipo)||'cefr_general';
   const nivelDe=r=>tipo==='icfes_en'?r.nivel_icfes:r.nivel_cefr;
   const scoreDe=r=>tipo==='icfes_en'?r.score_icfes:r.score_total;
@@ -658,7 +666,17 @@ async function loadData(){
      reales. Se reporta cuántas se dejaron fuera — nunca en silencio. */
   const crudo=r1.data||[];
   const sims=crudo.filter(r=>r.etapa==='simulacion').length;
-  const all=crudo.filter(r=>r.etapa!=='simulacion');
+  let all=crudo.filter(r=>r.etapa!=='simulacion');
+
+  /* Lo mismo, por la misma razón, con el BANCO v1.
+     La auditoría encontró sesgo de longitud en el banco CEFR viejo: la respuesta
+     correcta era la más larga el 57,6% de las veces en los ítems de 4 opciones,
+     contra un 25% de azar. Los resultados que salieron de ese banco NO miden lo
+     que dicen medir, así que no entran a promedios, distribuciones ni progreso.
+     No se borran —son evidencia y van al manual técnico como limitación conocida
+     del periodo— y el docente puede pedirlos explícitamente con el interruptor. */
+  v1Excluidas=all.filter(r=>(r.banco_version||'v1')!==BANCO_VIGENTE).length;
+  if(!verHistoricoV1) all=all.filter(r=>(r.banco_version||'v1')===BANCO_VIGENTE);
   allRows=all;
   rows=all.filter(r=>r.exam_tipo!=='icfes_en');
   icfesRows=all.filter(r=>r.exam_tipo==='icfes_en');
@@ -674,10 +692,27 @@ async function loadData(){
   $('p-f-grupo').innerHTML='<option value="">Todos</option>'+grupos.map(g=>`<option>${esc(g)}</option>`).join('');
   kpis(); distributions(); render();
   kpisIcfes(); renderIcfes(); renderExams(); renderProgreso();
+  pintarAvisoV1();
   toast(`${all.length} resultados cargados (${icfesRows.length} del simulacro)` +
-        (sims?` · ${sims} de simulación excluidas`:'') + '.');
+        (sims?` · ${sims} de simulación excluidas`:'') +
+        (v1Excluidas&&!verHistoricoV1?` · ${v1Excluidas} del banco v1 excluidas`:'') + '.');
   if(rutaLive()) abrirLive();   // se entró directo a docente.html#/live
 }
+
+/* Se dice cuántos resultados quedaron fuera y por qué, y se ofrece verlos. Nunca
+   en silencio: un panel que esconde 94 resultados sin decirlo miente por omisión. */
+function pintarAvisoV1(){
+  const caja=$('aviso-v1'); if(!caja) return;
+  if(!v1Excluidas){ caja.style.display='none'; return; }
+  caja.style.display='';
+  caja.className='note'+(verHistoricoV1?' warn':'');
+  caja.innerHTML=`<span>${ic(verHistoricoV1?'alert':'info',null,16)}</span><div>`+
+    (verHistoricoV1
+      ? `Estás viendo <b>el histórico completo</b>, con ${v1Excluidas} resultados del <b>banco v1</b>. Ese banco tiene sesgo de longitud comprobado (la correcta era la más larga el 57,6% de las veces, contra un 25% de azar): <b>esos puntajes no son comparables</b> con los actuales y no deben usarse para calibrar.`
+      : `Se dejaron fuera <b>${v1Excluidas} resultados del banco v1</b> (anteriores al cambio de banco). Tienen sesgo de longitud comprobado y no son comparables con los actuales, así que no entran a promedios, distribuciones ni progreso. No se han borrado.`)+
+    ` <button class="btn-ghost" style="padding:4px 10px;margin-left:8px" onclick="alternarHistoricoV1()">${verHistoricoV1?'Ver solo el banco vigente':'Ver el histórico completo'}</button></div>`;
+}
+function alternarHistoricoV1(){ verHistoricoV1=!verHistoricoV1; loadData(); }
 
 /* ==================== TAB ICFES ==================== */
 function nivelChip(nv){ return `<span class="nv ${NIVEL_CLS[nv]||''}">${esc(nv||'—')}</span>`; }
@@ -780,6 +815,69 @@ function imprimirInforme(i){
 /* ==================== TAB EXÁMENES ==================== */
 // Cada tipo de examen vive en su propia página: el código lleva al archivo correcto.
 const TIPO_LBL={icfes_en:'Saber 11°', cefr_general:'CEFR'};
+const CONTEXTO_LBL={sena:'SENA', uis:'UIS', colegio:'Colegio'};
+
+/* Cortes de la escala UIS — CORTES_UIS.md, definidos por el dueño el 17-ago-2026.
+   Van POR CURSO: el 3.0 se ancla al nivel objetivo del curso, no a un porcentaje
+   fijo. Un 60/100 no significa lo mismo en un curso que apunta a A2 que en uno que
+   apunta a B1, y por eso no hay una sola tabla. NO son una fórmula: son una
+   decisión pedagógica y por eso viven como datos, aquí y en `exams.config`. */
+const CURSOS_UIS=[
+  {codigo:'23424', nombre:'Inglés I',              nivel:'A2',           aprob:30, max:60},
+  {codigo:'23425', nombre:'Inglés II',             nivel:'A2 alto / B1', aprob:38, max:70},
+  {codigo:'40555', nombre:'Lengua Extranjera I',   nivel:'A2',           aprob:30, max:60},
+  {codigo:'40557', nombre:'Lengua Extranjera III', nivel:'B1',           aprob:45, max:80},
+];
+
+/* Llamada a la Edge Function (la misma que califica). El panel solo la usa para
+   consultar CONTEOS de disponibilidad: nunca recibe ítems ni respuestas. */
+async function fnPost(body){
+  const res=await fetch(SUPABASE_URL+'/functions/v1/bright-handler',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':`Bearer ${SUPABASE_ANON_KEY}`,'apikey':SUPABASE_ANON_KEY},
+    body:JSON.stringify(body)
+  });
+  let j={}; try{ j=await res.json()||{}; }catch(_){}
+  return { status:res.status, ok:res.ok, j };
+}
+
+let DISPONIBILIDAD=null;   // { contexto: [ {seccion, disponibles, necesita, alcanza, sin_recurso, clase_recurso} ] }
+
+/* Cuántos ítems hay por sección en el contexto elegido, ANTES de generar el código.
+   Si una sección no alcanza, el docente lo ve aquí y no reparte un examen que el
+   servidor va a rechazar con 422 cuando el estudiante ya esté sentado. */
+async function cargarDisponibilidad(){
+  const caja=$('c-disp'); if(!caja) return;
+  if(!DISPONIBILIDAD){
+    caja.innerHTML='<span class="muted">Consultando el banco…</span>';
+    try{
+      const r=await fnPost({action:'disponibilidad'});
+      if(r.ok&&r.j.ok) DISPONIBILIDAD=r.j.contextos;
+    }catch(_){ /* sin conexión: se dice, no se inventa */ }
+  }
+  pintarDisponibilidad();
+}
+function pintarDisponibilidad(){
+  const caja=$('c-disp'); if(!caja) return;
+  const ctx=($('c-contexto')&&$('c-contexto').value)||'sena';
+  if(!DISPONIBILIDAD){
+    caja.innerHTML='<span class="muted">No pude consultar el banco. Al crear el examen el servidor igual verifica y avisa si no alcanza.</span>';
+    return;
+  }
+  const filas=DISPONIBILIDAD[ctx]||[];
+  const faltan=filas.filter(f=>!f.alcanza);
+  caja.innerHTML=
+    '<table style="width:100%;font-size:.85rem"><thead><tr><th style="text-align:left">Sección</th><th>Disponibles</th><th>Necesita</th></tr></thead><tbody>'+
+    filas.map(f=>`<tr>
+        <td>${esc(f.seccion)}${f.sin_recurso?` <span class="muted" title="Excluidos por faltarles el ${esc(f.clase_recurso)} que necesitan para presentarse">(${f.sin_recurso} sin ${esc(f.clase_recurso)})</span>`:''}</td>
+        <td style="text-align:center"><b>${f.disponibles}</b></td>
+        <td style="text-align:center">${f.necesita} ${f.alcanza?'✅':'❌'}</td>
+      </tr>`).join('')+
+    '</tbody></table>'+
+    (faltan.length
+      ? `<div class="note warn" style="margin-top:8px"><span>${ic('alert',null,16)}</span><div>Este contexto <b>no alcanza</b> para armar el examen: ${esc(faltan.map(f=>f.seccion).join(', '))}. El servidor lo rechazará con 422 antes de que el estudiante empiece.</div></div>`
+      : '');
+}
 function urlEstudiante(tipo){
   return location.href.replace(/[^\/]*$/,'') + (tipo==='cefr_general' ? 'index.html' : 'icfes.html');
 }
@@ -794,7 +892,7 @@ function renderExams(){
     <tr onclick="verExamen(${i})">
       <td><b class="mono">${esc(e.codigo)}</b></td>
       <td>${esc(e.titulo||'—')}</td>
-      <td>${TIPO_LBL[e.tipo]||esc(e.tipo)}</td>
+      <td>${TIPO_LBL[e.tipo]||esc(e.tipo)}${e.contexto?` <span class="muted" style="font-size:.8rem">· ${esc(CONTEXTO_LBL[e.contexto]||e.contexto)}</span>`:''}</td>
       <td>${esc(ETAPA_LBL[e.etapa]||e.etapa)}</td>
       <td>${esc(e.grupo||'—')}</td>
       <td>${cuentaPresentados(e.codigo)}</td>
@@ -849,11 +947,46 @@ function abrirCrear(){
         <option value="final">Final (cierre)</option></select></div>
       <div><label>Grupo / colegio</label><input id="c-grupo" placeholder="Ej: 11A - Colegio San José" maxlength="60"></div>
     </div>
-    <div id="c-cefr-only" class="note" style="display:none">
-      <span>ℹ️</span>
-      <div>El examen CEFR tiene <b>5 secciones fijas</b> (Reading, Listening, Grammar, Vocabulary y Writing),
-      cada una con su propio tiempo y su banco rotativo: no se configura por partes. Aquí solo eliges
-      <b>etapa</b> y <b>grupo</b>, que es lo que enlaza el resultado con el progreso del estudiante.</div>
+    <div id="c-cefr-only" style="display:none">
+      <div class="note">
+        <span>${ic('info',null,16)}</span>
+        <div>El examen CEFR tiene <b>5 secciones fijas</b> (Reading, Listening, Grammar, Vocabulary y Writing),
+        cada una con su propio tiempo y su banco rotativo: no se configura por partes. Aquí eliges
+        <b>etapa</b> y <b>grupo</b> —que enlazan el resultado con el progreso del estudiante— y el
+        <b>contexto</b>, que decide de qué pool salen los ítems y en qué escala se reporta la nota.</div>
+      </div>
+
+      <label>Contexto</label>
+      <select id="c-contexto" onchange="cambioContexto()">
+        <option value="sena">SENA — aprendices</option>
+        <option value="uis">UIS — Instituto de Lenguas</option>
+        <option value="colegio">Colegio — preparación Saber 11</option>
+      </select>
+
+      <label style="margin-top:10px">Ítems disponibles en este contexto</label>
+      <div id="c-disp" style="border:1px solid var(--line);border-radius:10px;padding:10px"></div>
+
+      <!-- Cortes de la escala destino. NO se inventan: los define el docente.
+           Si se dejan vacíos, el sistema muestra solo el puntaje 0-100. -->
+      <div id="c-uis-only" style="display:none;margin-top:12px">
+        <label>Curso (define los cortes de la escala 0.0–5.0)</label>
+        <select id="c-uis-curso" onchange="cambioCursoUis()">
+          <option value="">— Sin cortes: se reporta solo el puntaje 0-100 —</option>
+          ${CURSOS_UIS.map(c=>`<option value="${c.codigo}">${esc(c.nombre)} (${c.codigo}) · objetivo ${esc(c.nivel)}</option>`).join('')}
+        </select>
+        <div class="cols" style="margin-top:8px">
+          <div><label>3.0 en puntaje</label><input type="number" id="c-uis-aprob" min="1" max="99" placeholder="—"></div>
+          <div><label>5.0 en puntaje</label><input type="number" id="c-uis-max" min="2" max="100" placeholder="—"></div>
+        </div>
+        <label style="margin-top:8px">Peso del examen en la nota del corte <span class="muted">(opcional)</span></label>
+        <input type="number" id="c-uis-peso" step="0.05" min="0" max="1" placeholder="vacío = se muestra solo la nota">
+      </div>
+
+      <div id="c-sena-only" style="margin-top:12px">
+        <label>Puntaje mínimo para APROBADO <span class="muted">(opcional)</span></label>
+        <input type="number" id="c-sena-aprob" min="1" max="99" placeholder="vacío = no se emite juicio, solo el puntaje 0-100">
+        <div class="muted" style="font-size:.82rem;margin-top:4px">El corte de aprobación es una decisión del docente. Vacío, el sistema no inventa ninguno.</div>
+      </div>
     </div>
     <div id="c-icfes-only">
     <label>Partes y cantidad de preguntas</label>
@@ -873,7 +1006,7 @@ function abrirCrear(){
     </div>
     <p class="muted" id="c-total" style="margin-top:10px;font-weight:700"></p>
     <button class="btn-block" onclick="crearExamen()">Crear examen y generar código</button>`;
-  $('modal').classList.add('show'); calcTotal();
+  $('modal').classList.add('show'); calcTotal(); cambioTipo();
 }
 /* El tipo decide qué se configura: el simulacro se arma por partes; el CEFR es fijo. */
 function cambioTipo(){
@@ -883,6 +1016,19 @@ function cambioTipo(){
   $('c-total').style.display=cefr?'none':'';
   const tit=$('c-titulo');
   if(!tit.dataset.tocado) tit.value=cefr?'Examen de inglés — Nivel CEFR':'Simulacro tipo Saber 11° — Inglés';
+  if(cefr){ cambioContexto(); cargarDisponibilidad(); }
+}
+/* El contexto decide de qué pool se sirve y en qué escala se reporta la nota. */
+function cambioContexto(){
+  const ctx=($('c-contexto')&&$('c-contexto').value)||'sena';
+  if($('c-uis-only'))  $('c-uis-only').style.display  = ctx==='uis'  ? '' : 'none';
+  if($('c-sena-only')) $('c-sena-only').style.display = ctx==='sena' ? '' : 'none';
+  pintarDisponibilidad();
+}
+function cambioCursoUis(){
+  const c=CURSOS_UIS.find(x=>x.codigo===$('c-uis-curso').value);
+  $('c-uis-aprob').value=c?c.aprob:'';
+  $('c-uis-max').value=c?c.max:'';
 }
 function presetPartes(n){
   const full={p1:6,p2:6,p3:6,p4:10,p5:9,p6:6,p7:12};
@@ -906,14 +1052,35 @@ async function crearExamen(){
   const tipo=($('c-tipo')&&$('c-tipo').value)||'icfes_en';
   const cefr=tipo==='cefr_general';
   const config={};
+  // El contexto del simulacro es siempre 'colegio': es la prueba Saber 11.
+  const contexto = cefr ? (($('c-contexto')&&$('c-contexto').value)||'sena') : 'colegio';
   if(!cefr){
     const partes={};
     Object.keys(PARTES_LBL).forEach(p=>{ if($('c-on-'+p).checked){ const v=Math.max(1,parseInt($('c-n-'+p).value)||0); if(v) partes[p]=v; } });
     if(!Object.keys(partes).length){ toast('Activa al menos una parte.',true); return; }
     config.partes=partes; config.minutos=Math.max(5,parseInt($('c-min').value)||70);
+  } else {
+    /* Cortes de la escala destino como DATOS editables, nunca incrustados en el
+       código. Vacíos = el sistema muestra solo el puntaje 0-100 y deja la nota
+       destino vacía. Nunca un número inventado. (§4.3 · CORTES_UIS.md) */
+    const num=id=>{ const v=parseFloat(($(id)&&$(id).value)||''); return Number.isFinite(v)?v:null; };
+    if(contexto==='uis'){
+      const curso=($('c-uis-curso')&&$('c-uis-curso').value)||null;
+      const ficha=CURSOS_UIS.find(c=>c.codigo===curso);
+      const ap=num('c-uis-aprob'), mx=num('c-uis-max');
+      if(ap!=null&&mx!=null&&mx<=ap){ toast('El puntaje del 5.0 debe ser mayor que el del 3.0.',true); return; }
+      config.conversion={ escala:'uis_0_5', curso, nivel_objetivo:ficha?ficha.nivel:null,
+        cortes:{ aprobatorio:{score:ap, nota:ap==null?null:3.0}, maximo:{score:mx, nota:mx==null?null:5.0} },
+        peso_en_corte:num('c-uis-peso') };
+    } else if(contexto==='sena'){
+      const ap=num('c-sena-aprob');
+      config.conversion={ escala:'juicio_sena', cortes:{ aprobatorio:{score:ap, nota:null} }, peso_en_corte:null };
+    } else {
+      config.conversion={ escala:'icfes_0_100', cortes:{}, peso_en_corte:null };
+    }
   }
   const row={
-    codigo:genCodigo(tipo), tipo,
+    codigo:genCodigo(tipo), tipo, contexto,
     etapa:$('c-etapa').value,
     forma:{diagnostico:'A',intermedio:'B',final:'C'}[$('c-etapa').value]||'A',
     grupo:$('c-grupo').value.trim()||null,
@@ -1073,12 +1240,13 @@ function render(){
       <td>${esc(r.ficha||'—')}</td>
       <td><span class="chip">${esc(r.nivel_cefr||'—')}</span></td>
       <td><b>${r.score_total??'—'}%</b></td>
+      <td>${notaDestinoHTML(r)}</td>
       <td>${r.score_reading??'—'}%</td><td>${r.score_listening??'—'}%</td><td>${r.score_grammar??'—'}%</td>
       <td>${r.score_vocabulary??'—'}%</td><td>${r.score_writing??'—'}%</td>
       <td>${fmtTime(r.duracion_seg)}</td>
       <td class="muted" style="font-size:.8rem">${fmtDate(r.created_at)}</td>
       <td>${r.sospechoso?`<span class="flag" title="Posible irregularidad">${ic('alert',null,13)} ${r.alertas||''}</span>`:(r.alertas?`<span class="muted">${r.alertas}</span>`:'')}</td>
-    </tr>`).join('') || `<tr><td colspan="12" class="muted" style="text-align:center;padding:24px">Sin resultados.</td></tr>`;
+    </tr>`).join('') || `<tr><td colspan="13" class="muted" style="text-align:center;padding:24px">Sin resultados.</td></tr>`;
   $('count').textContent=`Mostrando ${data.length} de ${rows.length} resultados.`;
 }
 function detail(i){
@@ -1115,9 +1283,18 @@ document.querySelectorAll('th[data-k]').forEach(th=>th.addEventListener('click',
   render();
 }));
 
+/* La nota de la institución se muestra SIEMPRE junto al 0-100, nunca en su lugar.
+   Vacía = el docente todavía no definió los cortes de ese examen: se dice, no se
+   rellena con un número inventado. */
+function notaDestinoHTML(r){
+  if(!r.nota_destino) return '<span class="muted" title="El docente no ha definido los cortes de este examen">—</span>';
+  const esc2=escala=>({uis_0_5:'UIS 0-5',juicio_sena:'SENA',icfes_0_100:'0-100'})[escala]||escala||'';
+  return `<span class="chip" title="${esc(esc2(r.escala_destino))}">${esc(String(r.nota_destino))}</span>`;
+}
+
 function exportCSV(){
   const data=filtered();
-  const cols=['nombre','tipo_documento','documento','ficha','programa','nivel_cefr','score_total','score_reading','score_listening','score_grammar','score_vocabulary','score_writing','duracion_seg','cambios_pestana','pegados','alertas','sospechoso','created_at'];
+  const cols=['nombre','tipo_documento','documento','ficha','programa','nivel_cefr','score_total','contexto','escala_destino','nota_destino','score_reading','score_listening','score_grammar','score_vocabulary','score_writing','duracion_seg','cambios_pestana','pegados','alertas','sospechoso','created_at'];
   const head=cols.join(',');
   const body=data.map(r=>cols.map(c=>{ let v=r[c]==null?'':String(r[c]); v=v.replace(/"/g,'""'); return /[",\n]/.test(v)?`"${v}"`:v; }).join(',')).join('\n');
   const blob=new Blob(['﻿'+head+'\n'+body],{type:'text/csv;charset=utf-8'});
