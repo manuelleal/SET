@@ -508,51 +508,37 @@ const BANK = {
             "id": "r_a1",
             "q": "Where did Mark buy his umbrella?",
             "options": [
-              "British Museum",
-              "Covent Garden",
+              "His hotel",
               "River Thames",
-              "His hotel"
-            ]
+              "Covent Garden",
+              "British Museum"
+            ],
+            "nivel_cefr": "A2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "r_a2",
             "q": "What does Mark think about the food?",
             "options": [
-              "It is terrible.",
               "It is better than expected.",
-              "It is too expensive.",
-              "It is very healthy."
-            ]
+              "It is very healthy.",
+              "It is too expensive for tourists.",
+              "It is really terrible."
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "actitud_tono"
           },
           {
             "id": "r_a3",
             "q": "Why is Mark's hotel noisy?",
             "options": [
-              "It is near the river.",
-              "It is too big.",
-              "It is in the city center.",
-              "Because of the rain."
-            ]
-          },
-          {
-            "id": "r_a4",
-            "q": "True / False / Not Given: Mark saw everything in the British Museum.",
-            "options": [
-              "True",
-              "False",
-              "Not Given"
+              "It is next to the train station.",
+              "It is much too big.",
+              "It is right beside the river.",
+              "It is in the city center."
             ],
-            "fixed": true
-          },
-          {
-            "id": "r_a5",
-            "q": "True / False / Not Given: Sarah has visited London before.",
-            "options": [
-              "True",
-              "False",
-              "Not Given"
-            ],
-            "fixed": true
+            "nivel_cefr": "A2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "r_a6",
@@ -562,14 +548,38 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B1"
+          },
+          {
+            "id": "r_a5",
+            "q": "True / False / Not Given: Sarah has visited London before.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true,
+            "nivel_cefr": "B1"
+          },
+          {
+            "id": "r_a4",
+            "q": "True / False / Not Given: Mark saw everything in the British Museum.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true,
+            "nivel_cefr": "A2"
           }
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "tipo": "reading_set"
       },
       {
         "title": "Text — Technology and the Future (B1/B2)",
@@ -579,41 +589,49 @@ const BANK = {
             "id": "r_b1",
             "q": "According to experts, what is the impact of AI on employment?",
             "options": [
-              "It will destroy all jobs.",
-              "It will only replace human jobs.",
+              "It will replace human workers in every sector.",
+              "It will change nothing for workers.",
               "It will create more jobs than it destroys.",
-              "It will have no effect."
-            ]
+              "It will destroy jobs faster than it creates them."
+            ],
+            "nivel_cefr": "B2",
+            "funcion": "inferencia"
           },
           {
             "id": "r_b2",
             "q": "How is AI helping in healthcare?",
             "options": [
-              "By replacing doctors.",
+              "By keeping all patient records completely private.",
+              "By replacing doctors in most hospitals.",
               "By processing data to detect diseases earlier.",
-              "By keeping patient data private.",
-              "By making hospitals cheaper."
-            ]
+              "By lowering the cost of treatment."
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "r_b3",
             "q": "What concern is mentioned about AI in healthcare?",
             "options": [
-              "It is too slow.",
-              "It is too expensive.",
-              "Ethical issues about data privacy.",
-              "Robots making mistakes."
-            ]
+              "Mistakes made by surgical robots.",
+              "The slow speed of diagnosis.",
+              "The high cost of the new technology.",
+              "Ethical issues about data privacy."
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "r_b4",
             "q": "What should education focus on for the future?",
             "options": [
+              "Critical thinking.",
               "Rote memorization.",
               "Programming languages only.",
-              "Critical thinking.",
               "Using AI to cheat."
-            ]
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "r_b5",
@@ -623,7 +641,8 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B1"
           },
           {
             "id": "r_b6",
@@ -633,14 +652,16 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B2"
           }
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "tipo": "reading_set"
       },
       {
         "title": "Text — Working from Home (B1)",
@@ -650,31 +671,37 @@ const BANK = {
             "id": "r_c1",
             "q": "What surprised many companies?",
             "options": [
-              "That employees worked slower at home.",
-              "That employees could be just as productive at home.",
+              "That offices were cheaper.",
               "That nobody wanted to work from home.",
-              "That offices were cheaper."
-            ]
+              "That employees worked slower at home.",
+              "That employees could be just as productive at home."
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "r_c2",
             "q": "What is one advantage of remote work mentioned?",
             "options": [
-              "Workers earn more money.",
               "Workers save travel time and money.",
-              "Workers never feel lonely.",
-              "Workers do less work."
-            ]
+              "Workers receive a much higher salary.",
+              "Workers do less work each day.",
+              "Workers never feel alone."
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "r_c3",
             "q": "What does 'hybrid' mean in the text?",
             "options": [
-              "Working only at home.",
-              "Working only in the office.",
-              "Mixing home and office days.",
-              "Working at night."
-            ]
+              "Working at night instead of daytime.",
+              "Working only in the company office.",
+              "Working from home every day of the week.",
+              "Mixing home and office days."
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "vocabulario_en_contexto"
           },
           {
             "id": "r_c4",
@@ -684,17 +711,19 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B1"
           },
           {
             "id": "r_c5",
-            "q": "True / False / Not Given: Working from home was common ten years ago.",
+            "q": "True / False / Not Given: Millions of people today do their jobs without going to an office.",
             "options": [
               "True",
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B1"
           },
           {
             "id": "r_c6",
@@ -704,14 +733,16 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B1"
           }
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "tipo": "reading_set"
       },
       {
         "title": "Text — The Importance of Sleep (B1)",
@@ -721,51 +752,37 @@ const BANK = {
             "id": "r_d1",
             "q": "How many hours of sleep do most adults need?",
             "options": [
-              "Three to five",
               "Seven to nine",
               "Ten to twelve",
-              "Less than seven"
-            ]
+              "Less than seven",
+              "Three to five"
+            ],
+            "nivel_cefr": "A2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "r_d2",
             "q": "What does the brain do during sleep?",
             "options": [
-              "Nothing, it rests completely",
               "Organises memories and removes waste",
               "Produces more light",
+              "Nothing, it rests completely",
               "Increases anxiety"
-            ]
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "r_d3",
             "q": "Why should we avoid screens before bed?",
             "options": [
-              "They are boring",
+              "They use far too much electricity during the night",
+              "Their blue light permanently damages the muscles of the eyes",
               "Their light tricks the brain into thinking it is daytime",
-              "They use too much electricity",
-              "They damage the eyes only"
-            ]
-          },
-          {
-            "id": "r_d4",
-            "q": "True / False / Not Given: Lack of sleep has been linked to heart disease.",
-            "options": [
-              "True",
-              "False",
-              "Not Given"
+              "They heat the room and raise the body temperature"
             ],
-            "fixed": true
-          },
-          {
-            "id": "r_d5",
-            "q": "True / False / Not Given: Everyone needs exactly eight hours of sleep.",
-            "options": [
-              "True",
-              "False",
-              "Not Given"
-            ],
-            "fixed": true
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "r_d6",
@@ -775,14 +792,38 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B1"
+          },
+          {
+            "id": "r_d5",
+            "q": "True / False / Not Given: Everyone needs exactly eight hours of sleep.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true,
+            "nivel_cefr": "B1"
+          },
+          {
+            "id": "r_d4",
+            "q": "True / False / Not Given: Lack of sleep has been linked to heart disease.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true,
+            "nivel_cefr": "B1"
           }
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "tipo": "reading_set"
       },
       {
         "title": "Text — Plastic and the Oceans (B2)",
@@ -792,21 +833,25 @@ const BANK = {
             "id": "r_e1",
             "q": "What happens to plastic in the ocean?",
             "options": [
+              "It turns into a natural material",
               "It disappears completely",
               "It fragments into microplastics",
-              "It turns into a natural material",
               "It sinks and stays whole"
-            ]
+            ],
+            "nivel_cefr": "B2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "r_e2",
             "q": "Why is plastic dangerous to marine animals?",
             "options": [
-              "It is too cold",
-              "They mistake it for food",
               "It makes the water salty",
-              "It is too heavy to move"
-            ]
+              "It is too heavy to move",
+              "They mistake it for food",
+              "It is too cold"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "r_e3",
@@ -814,29 +859,11 @@ const BANK = {
             "options": [
               "Banning all fishing",
               "Cleaning beaches only",
-              "Producing less plastic in the first place",
-              "Using more straws"
-            ]
-          },
-          {
-            "id": "r_e4",
-            "q": "True / False / Not Given: Microplastics have been found in fish that people eat.",
-            "options": [
-              "True",
-              "False",
-              "Not Given"
+              "Using more straws",
+              "Producing less plastic in the first place"
             ],
-            "fixed": true
-          },
-          {
-            "id": "r_e5",
-            "q": "True / False / Not Given: Banning plastic bags has completely solved the problem.",
-            "options": [
-              "True",
-              "False",
-              "Not Given"
-            ],
-            "fixed": true
+            "nivel_cefr": "B2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "r_e6",
@@ -846,14 +873,38 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B2"
+          },
+          {
+            "id": "r_e4",
+            "q": "True / False / Not Given: Microplastics have been found in fish that people eat.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true,
+            "nivel_cefr": "B2"
+          },
+          {
+            "id": "r_e5",
+            "q": "True / False / Not Given: Most of the plastic in the ocean comes from plastic bags.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true,
+            "nivel_cefr": "B2"
           }
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "tipo": "reading_set"
       },
       {
         "title": "Text — The Story of Coffee (B1/B2)",
@@ -863,41 +914,37 @@ const BANK = {
             "id": "r_f1",
             "q": "Where was coffee first discovered, according to legend?",
             "options": [
-              "Europe",
+              "Central America",
               "Ethiopia",
-              "Arabia",
-              "America"
-            ]
+              "The Arabian Peninsula",
+              "Southern India"
+            ],
+            "nivel_cefr": "A2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "r_f2",
             "q": "How was coffee supposedly discovered?",
             "options": [
-              "A scientist invented it",
+              "A king ordered his servants to test the red berries",
+              "A scientist invented the drink in a small laboratory",
               "A herder noticed his goats became energetic",
-              "A king ordered it",
-              "Farmers planted it by accident"
-            ]
+              "Farmers planted the seeds by accident near a river"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "r_f3",
             "q": "What did the first coffee houses become?",
             "options": [
-              "Places that closed quickly",
               "Centres of conversation and business",
-              "Places only for kings",
-              "Shops that sold only tea"
-            ]
-          },
-          {
-            "id": "r_f4",
-            "q": "True / False / Not Given: Some Europeans were suspicious of coffee at first.",
-            "options": [
-              "True",
-              "False",
-              "Not Given"
+              "Shops that sold only tea",
+              "Places that closed quickly",
+              "Places only for kings"
             ],
-            "fixed": true
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "r_f5",
@@ -907,7 +954,8 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B1"
           },
           {
             "id": "r_f6",
@@ -917,14 +965,27 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B1"
+          },
+          {
+            "id": "r_f4",
+            "q": "True / False / Not Given: Some Europeans were suspicious of coffee at first.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true,
+            "nivel_cefr": "B1"
           }
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "tipo": "reading_set"
       },
       {
         "title": "Text — Why We Form Habits (C1)",
@@ -934,41 +995,49 @@ const BANK = {
             "id": "r_g1",
             "q": "Why does the brain form habits?",
             "options": [
-              "To waste energy",
               "To save mental effort",
+              "To waste energy",
               "To make us forget",
               "To slow us down"
-            ]
+            ],
+            "nivel_cefr": "B2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "r_g2",
             "q": "What is 'chunking'?",
             "options": [
-              "Forgetting information",
               "Shifting a behaviour from conscious to automatic",
               "Breaking a bad habit",
-              "Driving dangerously"
-            ]
+              "Driving dangerously",
+              "Forgetting information"
+            ],
+            "nivel_cefr": "C1",
+            "funcion": "vocabulario_en_contexto"
           },
           {
             "id": "r_g3",
             "q": "Why is willpower often not enough to change a habit?",
             "options": [
-              "People are simply lazy",
-              "The behaviour no longer requires deliberate thought",
+              "The brain enjoys suffering",
               "Habits are illegal",
-              "The brain enjoys suffering"
-            ]
+              "The behaviour no longer requires deliberate thought",
+              "People are simply lazy"
+            ],
+            "nivel_cefr": "B2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "r_g4",
             "q": "What strategy do researchers recommend?",
             "options": [
-              "Suppressing the habit with pure willpower",
               "Substituting a new routine for the same cue and reward",
-              "Ignoring the habit completely",
-              "Punishing yourself each time"
-            ]
+              "Removing the reward completely while keeping the same routine",
+              "Punishing yourself financially every time the habit returns",
+              "Suppressing the urge with pure willpower until it disappears"
+            ],
+            "nivel_cefr": "C1",
+            "funcion": "relacion_entre_partes"
           },
           {
             "id": "r_g5",
@@ -978,24 +1047,27 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B2"
           },
           {
             "id": "r_g6",
-            "q": "True / False / Not Given: The writer believes habits can never be changed.",
+            "q": "True / False / Not Given: It takes about three weeks to change a habit.",
             "options": [
               "True",
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B2"
           }
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "tipo": "reading_set"
       },
       {
         "title": "Text — My First Online Course (A2)",
@@ -1005,31 +1077,37 @@ const BANK = {
             "id": "rk_a1",
             "q": "Where does Camila live?",
             "options": [
-              "Bogotá",
-              "Medellín",
               "Cali",
-              "Cartagena"
-            ]
+              "Cartagena",
+              "Medellín",
+              "Bogotá"
+            ],
+            "nivel_cefr": "A2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "rk_a2",
             "q": "When does Camila study?",
             "options": [
-              "In the morning",
+              "Before breakfast",
               "At night after dinner",
-              "At noon",
-              "On weekends only"
-            ]
+              "At noon before her classes",
+              "Only on Saturday afternoons"
+            ],
+            "nivel_cefr": "A2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "rk_a3",
             "q": "Who helps Camila when she has a problem?",
             "options": [
               "Her brother",
-              "Her teacher",
+              "A friend",
               "Her mother",
-              "A friend"
-            ]
+              "Her teacher"
+            ],
+            "nivel_cefr": "A2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "rk_a4",
@@ -1039,17 +1117,19 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "A2"
           },
           {
             "id": "rk_a5",
-            "q": "True / False / Not Given: Camila gives up after many mistakes.",
+            "q": "True / False / Not Given: Camila makes many mistakes at the beginning of the course.",
             "options": [
               "True",
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "A2"
           },
           {
             "id": "rk_a6",
@@ -1059,14 +1139,16 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "A2"
           }
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "tipo": "reading_set"
       },
       {
         "title": "Text — Taking the Bus to Class (A2/B1)",
@@ -1076,41 +1158,49 @@ const BANK = {
             "id": "rk_b1",
             "q": "What does Andrés do in the afternoon?",
             "options": [
-              "He studies software",
               "He works in a shop",
               "He sleeps",
-              "He plays sports"
-            ]
+              "He plays sports",
+              "He studies software"
+            ],
+            "nivel_cefr": "A2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "rk_b2",
             "q": "What does he listen to on the bus?",
             "options": [
+              "A radio show in Spanish",
               "Music",
               "A podcast in English",
-              "The news",
-              "A radio show in Spanish"
-            ]
+              "The news"
+            ],
+            "nivel_cefr": "A2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "rk_b3",
             "q": "Why does Andrés like taking the bus?",
             "options": [
-              "It is faster than a taxi",
+              "It is faster than the metro",
               "It is cheaper than a taxi",
-              "It is never full",
-              "It has free internet"
-            ]
+              "It is never crowded",
+              "It is more comfortable than a taxi"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "rk_b4",
             "q": "How long is the trip with no heavy traffic?",
             "options": [
-              "Twenty minutes",
               "About forty minutes",
-              "One hour",
-              "Ten minutes"
-            ]
+              "Twenty minutes",
+              "Ten minutes",
+              "One hour"
+            ],
+            "nivel_cefr": "A2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "rk_b5",
@@ -1120,7 +1210,8 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B1"
           },
           {
             "id": "rk_b6",
@@ -1130,12 +1221,14 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B1"
           }
         ],
         "contextos": [
           "sena"
-        ]
+        ],
+        "tipo": "reading_set"
       },
       {
         "title": "Text — Working in a Team (B1)",
@@ -1145,51 +1238,60 @@ const BANK = {
             "id": "rk_c1",
             "q": "What did Laura believe before her internship?",
             "options": [
-              "That programming is done alone",
+              "That teams are slow",
               "That meetings are boring",
-              "That English is easy",
-              "That teams are slow"
-            ]
+              "That programming is done alone",
+              "That English is easy"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "rk_c2",
             "q": "What happened every Monday?",
             "options": [
-              "The team had a party",
-              "The team had a planning meeting",
-              "Laura worked from home",
-              "The company was closed"
-            ]
+              "The whole company closed for the day",
+              "The team celebrated with a small party",
+              "Laura worked from home the whole day",
+              "The team had a planning meeting"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "rk_c3",
             "q": "Why was Laura nervous at first?",
             "options": [
-              "The work was too easy",
+              "The office was far from her house",
               "Some meetings were in English",
-              "She did not like her job",
-              "The office was far away"
-            ]
+              "The work was too easy",
+              "Her new boss was very strict"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "rk_c4",
             "q": "What did Laura finally learn?",
             "options": [
-              "That code is more important than people",
+              "That technical skill alone decides the success of a project",
               "That communication matters as much as code",
-              "That teams are not useful",
-              "That she should work alone"
-            ]
+              "That working alone produces cleaner results than teamwork",
+              "That she should let her manager handle every discussion"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "rk_c5",
-            "q": "True / False / Not Given: Laura's colleagues were impatient with her.",
+            "q": "True / False / Not Given: Laura wants to work at a different company after finishing her internship.",
             "options": [
               "True",
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B1"
           },
           {
             "id": "rk_c6",
@@ -1199,12 +1301,14 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B1"
           }
         ],
         "contextos": [
           "sena"
-        ]
+        ],
+        "tipo": "reading_set"
       },
       {
         "title": "Text — A Small Online Business (B1)",
@@ -1214,41 +1318,49 @@ const BANK = {
             "id": "rk_d1",
             "q": "What does Julián sell?",
             "options": [
+              "Coffee",
               "Mobile phones",
-              "Handmade leather wallets",
               "Online courses",
-              "Coffee"
-            ]
+              "Handmade leather wallets"
+            ],
+            "nivel_cefr": "A2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "rk_d2",
             "q": "Who makes the products?",
             "options": [
-              "His mother",
-              "His brother",
               "A factory",
-              "Julián himself"
-            ]
+              "Julián himself",
+              "His mother",
+              "His brother"
+            ],
+            "nivel_cefr": "A2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "rk_d3",
             "q": "How does Julián promote the products?",
             "options": [
               "On television",
-              "On social media",
               "In a physical store",
+              "On social media",
               "In a newspaper"
-            ]
+            ],
+            "nivel_cefr": "A2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "rk_d4",
             "q": "What tool did Julián create to control orders?",
             "options": [
               "A mobile app",
+              "A printed catalogue",
               "A simple spreadsheet",
-              "A video channel",
-              "A printed catalogue"
-            ]
+              "A video channel"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "rk_d5",
@@ -1258,24 +1370,27 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B1"
           },
           {
             "id": "rk_d6",
-            "q": "True / False / Not Given: Julián already sells in many countries.",
+            "q": "True / False / Not Given: Julián plans to hire an employee to help with the business.",
             "options": [
               "True",
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B1"
           }
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "tipo": "reading_set"
       },
       {
         "title": "Text — Studying and Working at the Same Time (B2)",
@@ -1285,41 +1400,49 @@ const BANK = {
             "id": "rk_e1",
             "q": "When does Mariana work?",
             "options": [
-              "In the morning",
               "In the evening",
+              "In the morning",
               "At night only",
               "On weekends"
-            ]
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "rk_e2",
             "q": "What is the main benefit of her job, according to the text?",
             "options": [
-              "It is very easy",
-              "It lets her apply theory and earn money",
+              "It replaces her classes",
               "It gives her a lot of free time",
-              "It replaces her classes"
-            ]
+              "It lets her apply theory and earn money",
+              "It is very easy"
+            ],
+            "nivel_cefr": "B2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "rk_e3",
             "q": "What does Mariana say is the most difficult part?",
             "options": [
+              "Learning English",
               "Understanding her teachers",
-              "Managing her time",
               "Travelling to work",
-              "Learning English"
-            ]
+              "Managing her time"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "rk_e4",
             "q": "How does Mariana stay organised?",
             "options": [
-              "She studies only when she feels like it",
-              "She plans every week in advance",
               "She works fewer hours",
-              "She asks others to do her tasks"
-            ]
+              "She studies only when she feels like it",
+              "She asks others to do her tasks",
+              "She plans every week in advance"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "rk_e5",
@@ -1329,7 +1452,8 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B1"
           },
           {
             "id": "rk_e6",
@@ -1339,12 +1463,14 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B2"
           }
         ],
         "contextos": [
           "sena"
-        ]
+        ],
+        "tipo": "reading_set"
       },
       {
         "title": "Text — Technology and the Environment (C1)",
@@ -1354,41 +1480,49 @@ const BANK = {
             "id": "rk_f1",
             "q": "According to the text, why is technology sometimes praised?",
             "options": [
-              "Because it always saves money",
+              "Because it replaces all workers",
               "Because it reduces paper and enables remote work",
               "Because it never uses electricity",
-              "Because it replaces all workers"
-            ]
+              "Because it always saves money"
+            ],
+            "nivel_cefr": "B2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "rk_f2",
             "q": "What ecological problem do data centres cause?",
             "options": [
               "They consume enormous amounts of electricity",
-              "They produce too much paper",
-              "They reduce internet speed",
-              "They create new jobs"
-            ]
+              "They create jobs in rural areas",
+              "They release large amounts of plastic into rivers",
+              "They increase the price of new computers"
+            ],
+            "nivel_cefr": "B2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "rk_f3",
             "q": "How can developers help extend the life of older machines?",
             "options": [
-              "By selling them quickly",
+              "By storing all user files on the local hard drive",
               "By designing software that runs efficiently on older hardware",
-              "By buying new devices often",
-              "By avoiding the cloud completely"
-            ]
+              "By updating their own computers more often",
+              "By adding heavy visual features that require much newer processors"
+            ],
+            "nivel_cefr": "B2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "rk_f4",
             "q": "What is the main message of the second paragraph?",
             "options": [
               "Sustainability should be ignored",
-              "Developers can make responsible choices that reduce environmental impact",
               "Technology cannot be improved",
-              "Old hardware must be thrown away"
-            ]
+              "Old hardware must be thrown away",
+              "Developers can make responsible choices that reduce environmental impact"
+            ],
+            "nivel_cefr": "C1",
+            "funcion": "proposito"
           },
           {
             "id": "rk_f5",
@@ -1398,7 +1532,8 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B2"
           },
           {
             "id": "rk_f6",
@@ -1408,14 +1543,16 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B2"
           }
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "tipo": "reading_set"
       }
     ],
     "evidence": [
@@ -1429,40 +1566,48 @@ const BANK = {
             "q": "Who wrote this email?",
             "options": [
               "Marcela Torres",
-              "Javier Rivas",
+              "The IT manager",
               "The auditors",
-              "The IT manager"
-            ]
+              "Javier Rivas"
+            ],
+            "nivel_cefr": "A2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "re_a2",
             "q": "What did Marcela remove from the shared folder?",
             "options": [
+              "Her contract",
               "The backups",
-              "The old reports",
               "The audit results",
-              "Her contract"
-            ]
+              "The old reports"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "re_a3",
             "q": "What does Marcela ask Javier to do?",
             "options": [
-              "Delete his account",
+              "Reset the servers",
               "Do the same with the backups",
-              "Speak to the auditors",
-              "Reset the servers"
-            ]
+              "Delete his account",
+              "Speak to the auditors"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "re_a4",
             "q": "What does Marcela ask Javier NOT to mention?",
             "options": [
+              "Her email address",
+              "The new monthly reports",
               "The weekend access",
-              "The lunch meeting",
-              "The new reports",
-              "Her email address"
-            ]
+              "The lunch meeting"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "re_a5",
@@ -1472,7 +1617,8 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B1"
           },
           {
             "id": "re_a6",
@@ -1482,14 +1628,16 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B2"
           }
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "tipo": "reading_set"
       },
       {
         "title": "Evidence #2 — Server access log (B2)",
@@ -1500,41 +1648,63 @@ const BANK = {
             "id": "re_b1",
             "q": "At what time did the first login happen?",
             "options": [
-              "01:58",
               "02:41",
-              "09:12",
-              "02:44"
-            ]
+              "01:58",
+              "02:44",
+              "09:12"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "re_b2",
             "q": "Which table did the user access?",
             "options": [
-              "customers",
               "employees",
-              "backups",
-              "reports"
-            ]
+              "customers",
+              "reports",
+              "backups"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "re_b3",
             "q": "What file was exported?",
             "options": [
-              "customers_full.csv",
-              "access.log",
               "report.pdf",
-              "backup.zip"
-            ]
+              "access.log",
+              "backup.zip",
+              "customers_full.csv"
+            ],
+            "nivel_cefr": "B1",
+            "fuera_de_nivel": [
+              "customers_full.csv"
+            ],
+            "funcion": "dato_explicito"
           },
           {
             "id": "re_b4",
             "q": "Compared with the night activity, the 09:12 login used a different ___.",
             "options": [
+              "registered username",
               "IP address",
-              "username",
-              "table",
-              "status"
-            ]
+              "browser version",
+              "computer password"
+            ],
+            "nivel_cefr": "B2",
+            "funcion": "relacion_entre_partes"
+          },
+          {
+            "id": "re_b6",
+            "q": "True / False / Not Given: The exported file contained information from the customers table.",
+            "options": [
+              "True",
+              "False",
+              "Not Given"
+            ],
+            "fixed": true,
+            "nivel_cefr": "B2"
           },
           {
             "id": "re_b5",
@@ -1544,24 +1714,16 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
-          },
-          {
-            "id": "re_b6",
-            "q": "True / False / Not Given: The large export happened during normal working hours.",
-            "options": [
-              "True",
-              "False",
-              "Not Given"
-            ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B1"
           }
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "tipo": "reading_set"
       },
       {
         "title": "Evidence #3 — Recovered chat (B1/B2)",
@@ -1573,50 +1735,59 @@ const BANK = {
             "q": "What did the IT department ask Sam to do?",
             "options": [
               "Change the admin password",
-              "Clean the meeting room",
-              "Call the auditors",
-              "Buy a new laptop"
-            ]
+              "Order a new laptop",
+              "Book the meeting room for Monday",
+              "Call the external auditors"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "re_c2",
             "q": "Why hasn't Sam changed the password?",
             "options": [
-              "He forgot the new one",
-              "The old one is easier for everyone",
               "IT never asked him",
-              "It is against the rules"
-            ]
+              "He forgot the new one",
+              "It is against the rules",
+              "The old one is easier for everyone"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "re_c3",
             "q": "Where was the password written?",
             "options": [
               "On the whiteboard in the meeting room",
-              "In a private email",
+              "In the server log",
               "On a personal phone",
-              "In the server log"
-            ]
+              "In a private email"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "re_c4",
             "q": "How does Sam feel at the end of the chat?",
             "options": [
-              "He realises it is a problem",
+              "He is completely calm",
               "He is proud of himself",
-              "He is angry with Dani",
-              "He is completely calm"
-            ]
+              "He realises it is a problem",
+              "He is angry with Dani"
+            ],
+            "nivel_cefr": "B2",
+            "funcion": "actitud_tono"
           },
           {
             "id": "re_c5",
-            "q": "True / False / Not Given: Sam is sure that only the team knows the password.",
+            "q": "True / False / Not Given: By the end of the chat, Sam still believes that only the team knows the password.",
             "options": [
               "True",
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B1"
           },
           {
             "id": "re_c6",
@@ -1626,14 +1797,16 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B2"
           }
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "tipo": "reading_set"
       }
     ]
   },
@@ -1645,46 +1818,52 @@ const BANK = {
         "id": "g1",
         "q": "I ___ to the cinema every weekend.",
         "options": [
-          "go",
           "goes",
+          "went",
           "going",
-          "went"
+          "go"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "A2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g2",
         "q": "She ___ an apple when I saw her.",
         "options": [
           "was eating",
-          "eats",
+          "eaten",
           "has eaten",
-          "eaten"
+          "eats"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g3",
         "q": "Where ___ you yesterday?",
         "options": [
-          "are",
-          "was",
           "were",
-          "did"
+          "have been",
+          "was being",
+          "used to be"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "A2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g4",
@@ -1699,67 +1878,77 @@ const BANK = {
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "A2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g5",
         "q": "This is ___ book I have ever read.",
         "options": [
-          "the better",
-          "the best",
           "best",
-          "more good"
+          "more good",
+          "the better",
+          "the best"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "A2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g6",
         "q": "I have lived here ___ 2015.",
         "options": [
+          "from",
           "since",
           "for",
-          "from",
           "during"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g7",
         "q": "If it rains, we ___ at home.",
         "options": [
           "would stay",
-          "stayed",
+          "stay",
           "will stay",
-          "stay"
+          "stayed"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g8",
         "q": "The package ___ yesterday morning.",
         "options": [
-          "was delivered",
           "delivered",
           "has delivered",
+          "was delivered",
           "is delivered"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g9",
@@ -1774,314 +1963,356 @@ const BANK = {
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "g10",
         "q": "She asked me where ___.",
         "options": [
-          "I am going",
-          "was I going",
           "I was going",
-          "am I going"
+          "I am going",
+          "am I going",
+          "was I going"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g11",
         "q": "By this time next year, I ___ my degree.",
         "options": [
-          "will finish",
-          "will have finished",
-          "finish",
-          "would finish"
+          "have already finished",
+          "had finished",
+          "was finishing",
+          "will have finished"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g12",
         "q": "I wish I ___ more time to travel.",
         "options": [
-          "have",
+          "will have",
           "had",
           "have had",
-          "will have"
-        ],
-        "contextos": [
-          "sena",
-          "uis",
-          "colegio"
-        ]
-      },
-      {
-        "id": "g13",
-        "q": "Not only ___ late, but he also forgot his passport.",
-        "options": [
-          "did he arrive",
-          "he arrived",
-          "he did arrive",
-          "arrived he"
-        ],
-        "contextos": [
-          "sena",
-          "uis",
-          "colegio"
-        ]
-      },
-      {
-        "id": "g14",
-        "q": "The CEO proposed that the new policy ___ implemented immediately.",
-        "options": [
-          "is",
-          "was",
-          "be",
-          "has been"
-        ],
-        "contextos": [
-          "sena",
-          "uis",
-          "colegio"
-        ]
-      },
-      {
-        "id": "g15",
-        "q": "If she had studied harder, she ___ the exam.",
-        "options": [
-          "would pass",
-          "will pass",
-          "passed",
-          "would have passed"
-        ],
-        "contextos": [
-          "sena",
-          "uis",
-          "colegio"
-        ]
-      },
-      {
-        "id": "g16",
-        "q": "Neither of the two answers ___ correct.",
-        "options": [
-          "is",
-          "are",
-          "were",
           "have"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "dato_explicito"
+      },
+      {
+        "id": "g13",
+        "q": "Not only ___ late, but he also forgot his passport.",
+        "options": [
+          "he did arrive",
+          "did he arrive",
+          "he arrived",
+          "arrived he"
+        ],
+        "contextos": [
+          "sena",
+          "uis",
+          "colegio"
+        ],
+        "nivel_cefr": "C1",
+        "funcion": "dato_explicito"
+      },
+      {
+        "id": "g14",
+        "q": "The CEO proposed that the new policy ___ implemented immediately.",
+        "options": [
+          "was",
+          "has been",
+          "is",
+          "be"
+        ],
+        "contextos": [
+          "sena",
+          "uis",
+          "colegio"
+        ],
+        "nivel_cefr": "C1",
+        "funcion": "dato_explicito"
+      },
+      {
+        "id": "g15",
+        "q": "If she had studied harder, she ___ the exam.",
+        "options": [
+          "had been able to pass",
+          "will have managed to pass",
+          "did not manage to pass",
+          "would have passed"
+        ],
+        "contextos": [
+          "sena",
+          "uis",
+          "colegio"
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "dato_explicito"
+      },
+      {
+        "id": "g16",
+        "q": "Neither of the two answers ___ correct.",
+        "options": [
+          "have",
+          "are",
+          "were",
+          "is"
+        ],
+        "contextos": [
+          "sena",
+          "uis",
+          "colegio"
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g17",
         "q": "By the time we arrived, the film ___.",
         "options": [
-          "had already started",
-          "already started",
           "has already started",
-          "was already start"
+          "already started",
+          "was already start",
+          "had already started"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g18",
         "q": "She's not used to ___ up so early.",
         "options": [
-          "get",
-          "gets",
           "getting",
-          "got"
+          "gets",
+          "got",
+          "get"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g19",
         "q": "I'd rather you ___ smoke in here.",
         "options": [
-          "don't",
           "didn't",
-          "not",
-          "weren't"
+          "weren't",
+          "don't",
+          "not"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g20",
         "q": "The more you practise, ___ you become.",
         "options": [
+          "the best",
           "the better",
           "better",
-          "the best",
-          "more good"
+          "the more better"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g21",
         "q": "Hardly ___ down when the phone rang.",
         "options": [
-          "had I sat",
-          "I had sat",
           "did I sit",
-          "I sat"
+          "I sat",
+          "I had sat",
+          "had I sat"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "C1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g22",
         "q": "He denied ___ the window.",
         "options": [
-          "to break",
-          "breaking",
+          "broke",
           "break",
-          "broke"
+          "breaking",
+          "to break"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g23",
         "q": "It's high time we ___ home.",
         "options": [
-          "go",
           "went",
-          "have gone",
-          "will go"
+          "go",
+          "will go",
+          "have gone"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g24",
         "q": "She had her car ___ yesterday.",
         "options": [
+          "to repair",
           "repair",
           "repaired",
-          "to repair",
           "repairing"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g25",
         "q": "___ harder, he would have passed the test.",
         "options": [
-          "Had he studied",
-          "If he studied",
           "Did he study",
-          "He had studied"
+          "He had studied",
+          "Had he studied",
+          "If he studied"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "C1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g26",
         "q": "The hotel ___ we stayed was wonderful.",
         "options": [
+          "that",
           "which",
           "where",
-          "that",
           "who"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g27",
         "q": "I look forward to ___ from you soon.",
         "options": [
-          "hear",
-          "hearing",
           "heard",
+          "hearing",
+          "hear",
           "be hearing"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g28",
         "q": "He's the man ___ wallet was stolen.",
         "options": [
-          "who",
+          "whom",
           "whose",
-          "which",
-          "whom"
+          "who",
+          "which"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g29",
         "q": "No sooner had I arrived ___ the meeting started.",
         "options": [
-          "when",
           "than",
-          "then",
-          "that"
+          "when",
+          "that",
+          "then"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "C1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g30",
         "q": "By next month, they ___ here for ten years.",
         "options": [
-          "will live",
           "will have lived",
+          "will live",
           "have lived",
           "live"
         ],
@@ -2089,95 +2320,109 @@ const BANK = {
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g31",
         "q": "If I ___ you, I would accept the offer.",
         "options": [
           "am",
-          "was",
+          "would be",
           "were",
-          "be"
+          "will be"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "g32",
         "q": "The report needs ___ before Friday.",
         "options": [
           "finish",
-          "to finishing",
           "finishing",
+          "to finishing",
           "finished"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk1",
         "q": "My teacher ___ English at the SENA every morning.",
         "options": [
           "teach",
-          "teaches",
+          "taught",
           "teaching",
-          "taught"
+          "teaches"
         ],
         "contextos": [
           "sena"
-        ]
+        ],
+        "nivel_cefr": "A2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk2",
         "q": "We ___ a new programming project last week.",
         "options": [
           "start",
-          "starts",
           "started",
-          "starting"
+          "starting",
+          "starts"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "A2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk3",
         "q": "There ___ many computers in the classroom.",
         "options": [
-          "is",
-          "are",
           "was",
+          "are",
+          "is",
           "be"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "A2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk4",
         "q": "Right now my classmates ___ a mobile app in the lab.",
         "options": [
-          "build",
-          "builds",
+          "frequently builds",
           "are building",
-          "built"
+          "has been building",
+          "will be building"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "A2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk5",
@@ -2192,200 +2437,228 @@ const BANK = {
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk6",
         "q": "She is the most talented developer ___ our team.",
         "options": [
-          "of",
+          "from",
           "in",
-          "at",
-          "from"
+          "of",
+          "at"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "A2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk7",
         "q": "You ___ submit the report before Friday or you will fail.",
         "options": [
           "can",
+          "could",
           "must",
-          "might",
-          "could"
+          "might"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "gk8",
         "q": "If you click that button, the program ___ the file automatically.",
         "options": [
-          "save",
           "saves",
-          "will saving",
-          "saved"
+          "save",
+          "saved",
+          "will saving"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk9",
         "q": "My laptop is faster ___ yours.",
         "options": [
-          "than",
-          "then",
           "that",
+          "then",
+          "than",
           "as"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "A2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk10",
         "q": "The teacher who ___ us last year moved to another city.",
         "options": [
           "teach",
-          "teaches",
           "taught",
-          "teaching"
+          "teaching",
+          "teaches"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk11",
         "q": "This is the website ___ I learned to code.",
         "options": [
+          "whose",
           "who",
           "where",
-          "which",
-          "whose"
+          "which"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk12",
         "q": "I am looking forward to ___ my first internship next month.",
         "options": [
-          "start",
-          "starts",
           "starting",
-          "started"
+          "start",
+          "have started",
+          "be starting"
         ],
         "contextos": [
           "sena"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk13",
         "q": "The new software ___ by our team last semester.",
         "options": [
+          "develops",
           "was developed",
           "developed",
-          "is developing",
-          "develops"
+          "is developing"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk14",
         "q": "If I ___ more time, I would learn JavaScript too.",
         "options": [
-          "have",
-          "had",
           "has",
-          "will have"
+          "have",
+          "will have",
+          "had"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk15",
         "q": "By the time the class started, we ___ already opened the computers.",
         "options": [
           "have",
-          "has",
           "had",
+          "has",
           "having"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk16",
         "q": "She asked me whether I ___ finished the exercise yet.",
         "options": [
           "have",
+          "having",
           "has",
-          "had",
-          "having"
+          "had"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk17",
         "q": "You should get your code ___ before the final presentation.",
         "options": [
-          "review",
-          "reviews",
           "reviewed",
-          "reviewing"
+          "reviewing",
+          "reviews",
+          "review"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk18",
         "q": "He told me that he ___ send the email the following day.",
         "options": [
           "will",
-          "would",
+          "can",
           "shall",
-          "can"
+          "would"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk19",
@@ -2393,74 +2666,84 @@ const BANK = {
         "options": [
           "was",
           "were",
-          "is",
-          "being"
+          "being",
+          "is"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk20",
         "q": "I would rather you ___ on social media during the lesson.",
         "options": [
-          "do not chat",
           "not chatting",
           "will not chat",
-          "are not chatting"
+          "are not chatting",
+          "do not chat"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk21",
         "q": "If I had backed up my project, I ___ all my work yesterday.",
         "options": [
-          "would not lose",
+          "will not have been losing",
+          "was never going to lose",
           "would not have lost",
-          "will not lose",
-          "had not lost"
+          "would not end up losing"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk22",
         "q": "It is essential that every student ___ a copy of the manual.",
         "options": [
-          "has",
           "have",
-          "having",
-          "had"
+          "has",
+          "had",
+          "having"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "C1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk23",
         "q": "Not only ___ the bug, but she also improved the design.",
         "options": [
           "she fixed",
-          "did she fix",
+          "fixed she",
           "she did fix",
-          "fixed she"
+          "did she fix"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "C1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk24",
@@ -2468,14 +2751,16 @@ const BANK = {
         "options": [
           "had",
           "has",
-          "have",
-          "did"
+          "did",
+          "have"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "C1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk25",
@@ -2483,59 +2768,67 @@ const BANK = {
         "options": [
           "would be",
           "would have been",
-          "will be",
-          "am"
+          "am",
+          "will be"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "C1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk26",
         "q": "___ harder last year, you would have your certificate now.",
         "options": [
-          "Had you worked",
-          "You had worked",
           "Did you work",
-          "If you work"
+          "Had you worked",
+          "If you work",
+          "You had worked"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "C1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk27",
         "q": "The manager insisted that the deadline ___ moved to Monday.",
         "options": [
-          "is",
           "was",
-          "be",
-          "being"
+          "being",
+          "is",
+          "be"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "C1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "gk28",
         "q": "So complex ___ the algorithm that nobody could understand it.",
         "options": [
-          "was",
+          "being",
           "it was",
           "that was",
-          "being"
+          "was"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "C1",
+        "funcion": "dato_explicito"
       }
     ]
   },
@@ -2548,15 +2841,17 @@ const BANK = {
         "q": "I need to ___ my phone, the battery is almost dead.",
         "options": [
           "charge",
-          "load",
           "fill",
-          "switch"
+          "switch",
+          "load"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "A2",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "v2",
@@ -2571,67 +2866,77 @@ const BANK = {
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "v3",
         "q": "Despite the heavy rain, they ___ to arrive on time.",
         "options": [
-          "succeeded",
-          "managed",
           "achieved",
-          "fulfilled"
+          "fulfilled",
+          "managed",
+          "succeeded"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "v4",
         "q": "He is very ___; he always expects the worst.",
         "options": [
-          "optimistic",
-          "pessimistic",
-          "reliable",
-          "sensible"
+          "uncommunicative",
+          "straightforward",
+          "self-disciplined",
+          "pessimistic"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "v5",
         "q": "The government plans to ___ taxes to reduce inflation.",
         "options": [
-          "rise",
           "arise",
           "raise",
-          "lift"
+          "lift",
+          "rise"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "v6",
         "q": "Please ___ me to call the dentist tomorrow.",
         "options": [
+          "memorize",
           "remember",
           "remind",
-          "recall",
-          "memorize"
+          "recall"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "v7",
@@ -2639,36 +2944,40 @@ const BANK = {
         "options": [
           "description",
           "definition",
-          "instruction",
-          "direction"
+          "direction",
+          "instruction"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "v8",
         "q": "It is highly ___ that it will snow tomorrow.",
         "options": [
           "probably",
+          "definitely",
           "likely",
-          "surely",
-          "definitely"
+          "surely"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "v9",
         "q": "We need an alternative ___ of energy.",
         "options": [
-          "source",
           "resource",
+          "source",
           "origin",
           "base"
         ],
@@ -2676,104 +2985,118 @@ const BANK = {
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "v10",
         "q": "She gave a brilliant ___ at the conference.",
         "options": [
-          "act",
           "performance",
-          "acting",
-          "playing"
+          "playing",
+          "act",
+          "acting"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "v11",
         "q": "The flight was ___ because of bad weather.",
         "options": [
-          "delayed",
-          "slowed",
-          "missed",
-          "lost"
+          "disappointed",
+          "double-booked",
+          "compensated",
+          "delayed"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "v12",
         "q": "She has a wide ___ of interests.",
         "options": [
+          "number",
           "range",
           "amount",
-          "number",
           "group"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "v13",
         "q": "Could you ___ me a favour, please?",
         "options": [
-          "make",
           "do",
+          "take",
           "give",
-          "take"
+          "make"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "v14",
         "q": "The medicine had no ___ on him at all.",
         "options": [
-          "affect",
+          "result",
           "effect",
-          "impact",
-          "result"
+          "affect",
+          "affection"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "v15",
         "q": "They ___ a lot of money on advertising.",
         "options": [
           "spend",
-          "pay",
+          "waste",
           "cost",
-          "waste"
+          "pay"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "v16",
         "q": "I'm really looking ___ to the holidays.",
         "options": [
-          "forward",
           "up",
+          "forward",
           "after",
           "into"
         ],
@@ -2781,187 +3104,213 @@ const BANK = {
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "v17",
         "q": "She ___ a strong argument during the debate.",
         "options": [
-          "made",
           "did",
           "took",
+          "made",
           "gave"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "v18",
         "q": "He apologised ___ being late to the meeting.",
         "options": [
-          "for",
-          "of",
+          "with",
           "about",
-          "with"
+          "of",
+          "for"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "v19",
         "q": "After hours of talks, the two sides reached an ___.",
         "options": [
-          "agreement",
-          "arrangement",
           "agree",
-          "accordance"
+          "arrangement",
+          "accordance",
+          "agreement"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "v20",
         "q": "I can't ___ with his behaviour any longer.",
         "options": [
           "put up",
-          "take up",
           "get up",
-          "make up"
+          "make up",
+          "take up"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "v21",
         "q": "The factory ___ off hundreds of workers last year.",
         "options": [
-          "laid",
           "lay",
           "lied",
+          "laid",
           "let"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "dato_explicito"
       },
       {
         "id": "v22",
         "q": "Her report was clear and ___.",
         "options": [
-          "concise",
-          "precise",
           "briefly",
-          "short"
+          "concise",
+          "short",
+          "precise"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "v23",
         "q": "We should ___ advantage of this opportunity.",
         "options": [
-          "take",
-          "make",
+          "have",
           "do",
-          "have"
+          "make",
+          "take"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "v24",
         "q": "The team made a major scientific ___.",
         "options": [
+          "discovered",
           "discover",
-          "discovery",
           "discovering",
-          "discovered"
+          "discovery"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "v25",
         "q": "His remarks were not ___ to the topic at all.",
         "options": [
+          "similar",
+          "opposed",
           "relevant",
-          "relevance",
-          "relation",
-          "related"
+          "comparable"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "v26",
         "q": "The company is trying to cut ___ on costs.",
         "options": [
-          "down",
           "off",
           "up",
+          "out",
+          "down"
+        ],
+        "contextos": [
+          "sena",
+          "uis",
+          "colegio"
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
+      },
+      {
+        "id": "vk1",
+        "q": "My internet connection is very ___; it never fails.",
+        "options": [
+          "unpredictable",
+          "entertaining",
+          "reliable",
+          "confidential"
+        ],
+        "contextos": [
+          "sena",
+          "uis",
+          "colegio"
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
+      },
+      {
+        "id": "vk2",
+        "q": "Please turn ___ your computer before you leave the lab.",
+        "options": [
+          "away",
+          "off",
+          "over",
           "out"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
-      },
-      {
-        "id": "vk1",
-        "q": "My internet connection is very ___; it never fails.",
-        "options": [
-          "fast",
-          "reliable",
-          "loud",
-          "empty"
         ],
-        "contextos": [
-          "sena",
-          "uis",
-          "colegio"
-        ]
-      },
-      {
-        "id": "vk2",
-        "q": "Please turn ___ your computer before you leave the lab.",
-        "options": [
-          "off",
-          "out",
-          "away",
-          "over"
-        ],
-        "contextos": [
-          "sena",
-          "uis",
-          "colegio"
-        ]
+        "nivel_cefr": "A2",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "vk3",
@@ -2969,269 +3318,305 @@ const BANK = {
         "options": [
           "out",
           "on",
-          "up",
-          "off"
+          "off",
+          "up"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "vk4",
         "q": "She is very ___ at solving coding problems quickly.",
         "options": [
+          "nice",
           "good",
           "well",
-          "nice",
           "strong"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "A2",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "vk5",
         "q": "A person who writes computer programs is a ___.",
         "options": [
-          "painter",
+          "police inspector",
           "programmer",
-          "plumber",
-          "player"
+          "product designer",
+          "personal trainer"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "A2",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "vk6",
         "q": "We had to ___ a meeting to discuss the new project.",
         "options": [
-          "do",
           "make",
-          "take",
-          "set up"
+          "do",
+          "set up",
+          "set off"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "vk7",
         "q": "The opposite of difficult is ___.",
         "options": [
           "hard",
-          "easy",
+          "busy",
           "heavy",
-          "busy"
+          "easy"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "A2",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "vk8",
         "q": "My teacher gave me useful ___ on how to improve my code.",
         "options": [
-          "advice",
-          "advise",
           "notice",
+          "advise",
+          "advice",
           "device"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "vk9",
         "q": "Could you ___ up the file? My laptop might crash.",
         "options": [
-          "back",
-          "look",
           "give",
-          "put"
+          "look",
+          "put",
+          "back"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "vk10",
         "q": "He is a ___ worker who never gives up.",
         "options": [
           "hardly",
-          "hard",
+          "harden",
           "hardness",
-          "harden"
+          "hard"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "vk11",
         "q": "After many errors, we finally ___ the bug in the program.",
         "options": [
-          "took off",
-          "came across",
           "sorted out",
-          "put off"
+          "put off",
+          "took off",
+          "came across"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "vk12",
         "q": "The application of new students is ___ on Monday.",
         "options": [
-          "date",
           "deadline",
+          "time",
           "due",
-          "time"
+          "date"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "vk13",
         "q": "To get the job, you must ___ a strong interview.",
         "options": [
           "do",
+          "have",
           "make",
-          "give",
-          "have"
+          "give"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "vk14",
         "q": "Learning to code requires a lot of ___ and practice.",
         "options": [
+          "patientness",
           "patient",
           "patience",
-          "patiently",
-          "patientness"
+          "patiently"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "vk15",
         "q": "The presentation was so boring that I almost ___ asleep.",
         "options": [
+          "feel",
           "fell",
           "felt",
-          "fall",
-          "feel"
+          "fall"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "A2",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "vk16",
         "q": "Our company decided to ___ a new policy on remote work.",
         "options": [
+          "call off",
           "carry out",
-          "run into",
           "give in",
-          "call off"
+          "run into"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B2",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "vk17",
         "q": "He showed great ___ when he led the team through the crisis.",
         "options": [
-          "leader",
-          "lead",
+          "administration",
           "leadership",
-          "leading"
+          "responsibilities",
+          "qualifications"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
       },
       {
         "id": "vk18",
         "q": "The project failed because the goals were too ___.",
         "options": [
           "ambition",
-          "ambitious",
           "ambitiously",
-          "ambitions"
+          "ambitions",
+          "ambitious"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "vk19",
         "q": "Despite the setback, the team remained ___ about the launch.",
         "options": [
           "optimist",
-          "optimism",
           "optimistic",
-          "optimize"
+          "optimism",
+          "optimistically"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "dato_explicito"
       },
       {
         "id": "vk20",
         "q": "The new intern quickly ___ the company culture and habits.",
         "options": [
-          "took on",
-          "gave away",
-          "adapted to",
-          "ran out"
+          "came down with",
+          "took over from",
+          "looked forward to",
+          "adapted to"
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "nivel_cefr": "B1",
+        "funcion": "vocabulario_en_contexto"
       }
     ]
   },
@@ -3420,31 +3805,37 @@ const BANK = {
             "id": "l_a1",
             "q": "Who is calling?",
             "options": [
-              "Diana from the front desk",
               "A manager",
               "The auditor",
-              "A police officer"
-            ]
+              "A police officer",
+              "Diana from the front desk"
+            ],
+            "nivel_cefr": "A2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "l_a2",
             "q": "What is ready for the listener?",
             "options": [
-              "A new access badge",
-              "A new computer",
+              "A parking space",
               "A meeting room",
-              "A parking space"
-            ]
+              "A new access badge",
+              "A new computer"
+            ],
+            "nivel_cefr": "A2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "l_a3",
             "q": "When was the old badge used?",
             "options": [
-              "Last Saturday night",
               "This morning",
+              "Last Saturday night",
               "On Sunday afternoon",
               "Before five today"
-            ]
+            ],
+            "nivel_cefr": "A2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "l_a4",
@@ -3452,9 +3843,11 @@ const BANK = {
             "options": [
               "Come to the front desk before five",
               "Send an email",
-              "Call the police",
-              "Wait until tomorrow"
-            ]
+              "Wait until tomorrow",
+              "Call the police"
+            ],
+            "nivel_cefr": "A2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "l_a5",
@@ -3464,14 +3857,25 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B1"
           }
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "guion": [
+          {
+            "hablante": "Receptionist",
+            "voz": "us_f",
+            "texto": "Hi, this is Diana from the front desk. I'm calling about your access badge for the building. Your new badge is ready, but there is a small problem. The system shows that your old badge was used last Saturday at eleven at night, but you told us you were not in the office that day. Please come to the front desk before five o'clock today so we can check this. Thank you."
+          }
+        ],
+        "subtipo": "mensaje_de_voz",
+        "voz_tts": "en-US-AriaNeural",
+        "tipo": "listening_set"
       },
       {
         "id": "lis_maintenance",
@@ -3482,58 +3886,77 @@ const BANK = {
             "id": "l_b1",
             "q": "Who is the announcement from?",
             "options": [
+              "A client",
               "The IT department",
               "The manager",
-              "A client",
               "The cleaning team"
-            ]
+            ],
+            "nivel_cefr": "A2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "l_b2",
             "q": "When will the servers be updated?",
             "options": [
-              "Tonight, 9 p.m. to midnight",
-              "Tomorrow morning",
-              "This weekend",
-              "Right now"
-            ]
+              "Right now, during office hours",
+              "This weekend, on Saturday",
+              "Tomorrow, 8 a.m. to noon",
+              "Tonight, 9 p.m. to midnight"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "l_b3",
             "q": "What will NOT work during the update?",
             "options": [
               "The network and email",
-              "The lights",
-              "The elevators",
-              "The phones"
-            ]
+              "The lights and the air conditioning",
+              "The elevators and the main door",
+              "The phones and the coffee machines"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "l_b4",
             "q": "What must employees do before leaving?",
             "options": [
-              "Save all their files",
-              "Turn off the lights",
+              "Restart the servers",
               "Lock the doors",
-              "Restart the servers"
-            ]
+              "Turn off the lights",
+              "Save all their files"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "l_b5",
-            "q": "True / False / Not Given: IT can recover any work that is lost.",
+            "q": "True / False / Not Given: The update was requested by the company's clients.",
             "options": [
               "True",
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B1"
           }
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "guion": [
+          {
+            "hablante": "IT Officer",
+            "voz": "us_m",
+            "texto": "Good morning, everyone. This is a quick announcement from the I T department. Tonight, between nine p m and midnight, we will update the company servers. During this time, the internal network and your email will not work. Please save all of your files before you leave the office today. If you lose any work, we cannot recover it. Normal service will return tomorrow morning. Thank you for your patience."
+          }
+        ],
+        "subtipo": "anuncio_publico",
+        "voz_tts": "en-US-GuyNeural",
+        "tipo": "listening_set"
       },
       {
         "id": "lis_complaint",
@@ -3544,58 +3967,77 @@ const BANK = {
             "id": "l_c1",
             "q": "When did the speaker send the final version?",
             "options": [
-              "Monday morning",
-              "Friday night",
               "This afternoon",
-              "Last month"
-            ]
+              "Friday night",
+              "Last month",
+              "Monday morning"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "l_c2",
             "q": "What happened to her file?",
             "options": [
-              "Someone replaced it with an older version",
               "It was deleted by accident",
               "She lost her password",
+              "Someone replaced it with an older version",
               "It was sent to a client"
-            ]
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "l_c3",
             "q": "What does she want the listener to do?",
             "options": [
+              "Call the client and explain the mistake",
               "Check who had access to the folder",
-              "Write the report again",
-              "Call the client",
-              "Forget about it"
-            ]
+              "Forget about it and move on to other tasks",
+              "Write the whole report again from the start"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "l_c4",
             "q": "How does the speaker feel?",
             "options": [
-              "Upset",
               "Happy",
+              "Upset",
               "Bored",
               "Relaxed"
-            ]
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "actitud_tono"
           },
           {
             "id": "l_c5",
-            "q": "True / False / Not Given: The speaker knows exactly who changed the file.",
+            "q": "True / False / Not Given: The speaker had worked on the report for several weeks.",
             "options": [
               "True",
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B1"
           }
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "guion": [
+          {
+            "hablante": "Colleague",
+            "voz": "us_f",
+            "texto": "Hey, it's me. I'm really not happy about what happened with the report. I sent the final version to the shared folder on Monday morning, like we agreed. But this afternoon I opened the folder and someone had replaced my file with an older version. All of my changes are gone. I don't know who did it, but I need you to check the folder history and tell me who had access this week. Call me back when you can. This is important."
+          }
+        ],
+        "subtipo": "mensaje_de_voz",
+        "voz_tts": "en-US-JennyNeural",
+        "tipo": "listening_set"
       },
       {
         "id": "lis_statement",
@@ -3606,41 +4048,49 @@ const BANK = {
             "id": "l_d1",
             "q": "What time did the speaker arrive at the office?",
             "options": [
-              "At eight",
-              "At ten",
               "After lunch",
-              "At midnight"
-            ]
+              "At midnight",
+              "At eight",
+              "At ten"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "l_d2",
             "q": "Where was the speaker during the morning?",
             "options": [
+              "On a business trip in a different city",
+              "At home with a bad internet connection",
               "In a meeting with the design team",
-              "At home",
-              "In the server room",
-              "On a business trip"
-            ]
+              "In the server room checking the backups"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "l_d3",
             "q": "Why does the speaker say it was not them?",
             "options": [
-              "They never opened the client database that week",
               "They were on holiday",
               "They have no computer",
+              "They never opened the client database that week",
               "They had already resigned"
-            ]
+            ],
+            "nivel_cefr": "B2",
+            "funcion": "dato_explicito"
           },
           {
             "id": "l_d4",
             "q": "What does the speaker suggest at the end?",
             "options": [
               "Their password may not be safe",
-              "They want a new job",
-              "The auditor is lying",
-              "They will pay for the damage"
-            ]
+              "The auditor may be hiding something",
+              "They may have to pay for the damage",
+              "They may need to look for another job"
+            ],
+            "nivel_cefr": "B2",
+            "funcion": "inferencia"
           },
           {
             "id": "l_d5",
@@ -3650,14 +4100,25 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B2"
           }
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "guion": [
+          {
+            "hablante": "Employee",
+            "voz": "uk_f",
+            "texto": "Look, I already told the auditor everything I know. On the day of the data leak, I arrived at the office at eight, the same as always. I spent the whole morning in a meeting with the design team. There were at least six people there, they can confirm it. I only used my computer after lunch, to answer emails. I never opened the client database that week because I was working on a different project. If someone used my account to download those files, it wasn't me. Maybe my password isn't as safe as I thought."
+          }
+        ],
+        "subtipo": "mensaje_de_voz",
+        "voz_tts": "en-GB-SoniaNeural",
+        "tipo": "listening_set"
       },
       {
         "id": "lis_briefing",
@@ -3668,58 +4129,81 @@ const BANK = {
             "id": "l_e1",
             "q": "When did the unusual activity start?",
             "options": [
+              "Late in the evening, before midnight",
+              "At lunchtime, just after twelve",
               "Around two in the morning",
-              "At lunchtime",
-              "In the evening",
-              "At nine a.m."
-            ]
+              "At nine in the morning, after breakfast"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "l_e2",
             "q": "What did the person download?",
             "options": [
-              "A large number of customer records",
               "A single email",
-              "Some photos",
-              "The company website"
-            ]
+              "A large number of customer records",
+              "The company website",
+              "Some photos"
+            ],
+            "nivel_cefr": "B1",
+            "funcion": "dato_explicito"
           },
           {
             "id": "l_e3",
             "q": "Why does the speaker find the case strange?",
             "options": [
-              "The same account was also used normally during the day",
-              "No files were taken",
+              "The password was very long",
               "The building was full",
-              "The password was very long"
-            ]
+              "No files were taken",
+              "The same account was also used normally during the day"
+            ],
+            "nivel_cefr": "B2",
+            "funcion": "relacion_entre_partes"
           },
           {
             "id": "l_e4",
             "q": "What does the speaker think about the password?",
             "options": [
+              "It was changed every week by the IT department",
+              "It was never used by anyone in the company",
               "It was shared, guessed or written down",
-              "It was extremely secure",
-              "It was never used",
-              "It was changed every week"
-            ]
+              "It was extremely secure and impossible to break"
+            ],
+            "nivel_cefr": "B2",
+            "funcion": "actitud_tono"
           },
           {
             "id": "l_e5",
             "q": "What is the priority now, according to the speaker?",
             "options": [
               "To find out how the credentials were exposed",
-              "To blame an employee",
-              "To close the company",
-              "To buy new computers"
-            ]
+              "To replace all the computers in the office",
+              "To close the company until the end of the year",
+              "To blame the employee who lost the password"
+            ],
+            "nivel_cefr": "B2",
+            "fuera_de_nivel": [
+              "credentials"
+            ],
+            "funcion": "dato_explicito"
           }
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "guion": [
+          {
+            "hablante": "Investigator",
+            "voz": "us_m",
+            "texto": "Alright, let me summarise what we know so far. The unusual activity started at around two in the morning, when most of the building was empty. Someone logged into the system using a valid employee account and downloaded a large number of customer records over about forty minutes. What's strange is that the same account was also active in the office during the day, doing normal work. That suggests the account was not stolen in the usual sense. The password was probably shared, guessed, or written down somewhere. Our priority now is not to blame anyone, but to find out how the credentials were exposed."
+          }
+        ],
+        "subtipo": "instrucciones",
+        "voz_tts": "en-US-ChristopherNeural",
+        "tipo": "listening_set"
       },
       {
         "id": "lis_expert",
@@ -3732,19 +4216,30 @@ const BANK = {
             "options": [
               "No, it was not",
               "Yes, very advanced",
-              "It used brand-new malware",
-              "It was impossible to understand"
-            ]
+              "It was impossible to understand",
+              "It used brand-new malware"
+            ],
+            "nivel_cefr": "B2",
+            "fuera_de_nivel": [
+              "malware"
+            ],
+            "funcion": "dato_explicito"
           },
           {
             "id": "l_f2",
             "q": "How did the attacker get into the system?",
             "options": [
               "Using legitimate credentials",
-              "By breaking the firewall",
               "With a virus",
-              "By stealing a laptop"
-            ]
+              "By stealing a laptop",
+              "By breaking the firewall"
+            ],
+            "nivel_cefr": "B2",
+            "fuera_de_nivel": [
+              "credentials",
+              "firewall"
+            ],
+            "funcion": "dato_explicito"
           },
           {
             "id": "l_f3",
@@ -3754,17 +4249,24 @@ const BANK = {
               "A hardware failure",
               "A power cut",
               "A software bug"
-            ]
+            ],
+            "nivel_cefr": "B2",
+            "funcion": "inferencia"
           },
           {
             "id": "l_f4",
             "q": "Which of these does the expert NOT mention as a possible cause?",
             "options": [
-              "A stolen laptop",
+              "Access rights never removed",
               "A reused password",
               "A phishing email",
-              "Access rights never removed"
-            ]
+              "A stolen laptop"
+            ],
+            "nivel_cefr": "C1",
+            "fuera_de_nivel": [
+              "phishing"
+            ],
+            "funcion": "dato_explicito"
           },
           {
             "id": "l_f5",
@@ -3774,14 +4276,25 @@ const BANK = {
               "False",
               "Not Given"
             ],
-            "fixed": true
+            "fixed": true,
+            "nivel_cefr": "B2"
           }
         ],
         "contextos": [
           "sena",
           "uis",
           "colegio"
-        ]
+        ],
+        "guion": [
+          {
+            "hablante": "Security Expert",
+            "voz": "uk_m",
+            "texto": "From a technical standpoint, the breach was not particularly sophisticated. There was no advanced malware, no clever piece of code. The attacker simply walked through the front door, so to speak, using legitimate credentials. In my experience, this almost always points to a human factor rather than a technical one: a reused password, a phishing email someone clicked months ago, or access rights that were never removed after a person changed roles. The technology did exactly what it was designed to do. The weakness, as is so often the case, was in the process around it."
+          }
+        ],
+        "subtipo": "charla",
+        "voz_tts": "en-GB-RyanNeural",
+        "tipo": "listening_set"
       }
     ]
   }
