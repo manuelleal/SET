@@ -137,6 +137,31 @@
   .note.warn{background:var(--err-bg);border-color:#f1c4b8;color:#8a3b2a}
   .note.warn b{color:#7a2f20}
 
+  /* ===== Aviso de privacidad y autorización (habeas data) =====
+     Las casillas NUNCA vienen marcadas y son CUADRADAS a propósito: una casilla
+     redonda se lee como "opción de un grupo", y aquí cada una es una decisión
+     independiente. El detalle de qué se recoge va desplegado, no escondido tras
+     un enlace. */
+  .legal{font-size:.9rem}
+  .legal h3{margin-top:18px}
+  .legal ul{margin:6px 0 0 20px}
+  .legal li{margin:3px 0}
+  .chk{display:flex;align-items:flex-start;gap:12px;padding:13px 15px;border:1.5px solid var(--line);
+    border-radius:11px;cursor:pointer;background:var(--paper);transition:.15s;font-size:.95rem;margin-top:10px}
+  .chk:hover{border-color:var(--primary)}
+  .chk input{appearance:none;width:22px;height:22px;border:2px solid #C9BFA8;border-radius:6px;
+    flex:0 0 auto;position:relative;transition:.15s;margin-top:1px;background:var(--surface)}
+  .chk input:checked{border-color:var(--primary);background:var(--primary)}
+  .chk input:checked::after{content:"";position:absolute;left:6px;top:1px;width:6px;height:12px;
+    border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(42deg)}
+  .chk input:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+  .chk:has(input:checked){border-color:var(--primary);background:var(--primary-soft)}
+  .chk .oblig{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--err);display:block;margin-top:3px}
+  .chk .opcio{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted);display:block;margin-top:3px}
+  button:disabled{opacity:.45;cursor:not-allowed;transform:none;filter:none}
+
   .loader-wrap{text-align:center;padding:36px 10px}
   .spin{width:54px;height:54px;border-radius:50%;margin:0 auto 18px;
     border:5px solid var(--primary-soft);border-top-color:var(--primary);animation:rot 1s linear infinite}
@@ -260,6 +285,84 @@
     <p id="code-err" style="display:none;color:#8a3b2a;font-weight:600;margin-top:10px"></p>
     <button class="btn-block" id="code-btn" onclick="pedirConfig()">Ingresar al examen</button>
     <p class="muted" style="margin-top:12px;font-size:.9rem">¿No tienes código? Pídeselo a tu docente.</p>
+  </div>
+
+  <!-- ===== AVISO DE PRIVACIDAD Y AUTORIZACIÓN (habeas data) =====
+       Va ANTES de pedir un solo dato personal. Cada finalidad se acepta por
+       separado y ninguna casilla viene marcada: un "al continuar aceptas" no es
+       autorización. El estudiante puede decir que no y no queda registrado. -->
+  <div id="consent-screen" class="card hidden">
+    <span class="eyebrow">Tus datos</span>
+    <h2>Antes de pedirte un solo dato</h2>
+    <div class="legal">
+      <p class="muted">Léelo y decide. Si no autorizas, no se recoge nada y no puedes presentar
+        este examen: avísale a tu docente para que te evalúe de otra forma.</p>
+
+      <h3>Quién trata tus datos</h3>
+      <p id="av-responsable"></p>
+
+      <h3>Qué se recoge</h3>
+      <ul>
+        <li><b>Identificación:</b> tu nombre, tipo y número de documento, ficha o grupo y programa.</li>
+        <li><b>Tu examen:</b> las opciones que marcas, los textos que escribes y el tiempo que tardas.</li>
+        <li><b>Señales técnicas de la sesión:</b> salidas de la pestaña, intentos de copiar, cortar,
+          pegar o abrir herramientas del navegador, y el identificador de tu navegador. Se usan para
+          detectar irregularidades durante la prueba.</li>
+      </ul>
+
+      <h3>Para qué — cada finalidad se acepta por separado</h3>
+      <label class="chk" for="av-calificar">
+        <input type="checkbox" id="av-calificar" onchange="avisoRevisar()">
+        <span><b>Calificar tu examen y entregarte el resultado</b>, y que tu docente pueda verlo
+          junto con el de tu grupo y tu progreso entre etapas.
+          <span class="oblig">Obligatoria · sin esto no hay examen</span></span>
+      </label>
+
+      <label class="chk" for="av-ia" id="av-ia-box" style="display:none">
+        <input type="checkbox" id="av-ia" onchange="avisoRevisar()">
+        <span><b>Calificar tu escritura (Writing) con un servicio de inteligencia artificial de un
+          tercero, fuera de Colombia.</b> El texto que escribas se envía a <b id="av-ia-prov">OpenRouter</b>
+          (Estados Unidos), que lo entrega a un modelo de lenguaje para puntuarlo y devolver un
+          comentario. Es una <b>transferencia internacional de datos</b>. Se envía únicamente el texto
+          y la consigna: <b>nunca tu nombre ni tu documento</b>.
+          <span class="oblig">Obligatoria si el examen tiene Writing</span></span>
+      </label>
+
+      <label class="chk" for="av-mejora">
+        <input type="checkbox" id="av-mejora" onchange="avisoRevisar()">
+        <span><b>Mejorar el banco de preguntas de forma agregada</b>: estudiar qué preguntas
+          funcionan bien o mal usando estadísticas del grupo, sin identificarte.
+          <span class="opcio">Opcional · puedes decir que no y presentar igual</span></span>
+      </label>
+
+      <h3>Si eres menor de edad</h3>
+      <p class="muted">Si tienes menos de 18 años, el tratamiento de tus datos requiere la
+        autorización de tu padre, madre o acudiente. Pídesela antes de continuar.</p>
+      <label class="chk" for="av-menor">
+        <input type="checkbox" id="av-menor" onchange="avisoRevisar()">
+        <span><b>Soy menor de 18 años.</b></span>
+      </label>
+      <label class="chk" for="av-acudiente" id="av-acudiente-box" style="display:none">
+        <input type="checkbox" id="av-acudiente" onchange="avisoRevisar()">
+        <span><b>Mi padre, madre o acudiente conoce este aviso y autoriza el tratamiento de mis
+          datos</b> en los términos aquí descritos.
+          <span class="oblig">Obligatoria para menores de edad</span></span>
+      </label>
+
+      <h3>Cuánto se conserva y cómo pedir que se borren</h3>
+      <p id="av-retencion"></p>
+
+      <h3>Tus derechos</h3>
+      <p class="muted">Puedes conocer, actualizar y rectificar tus datos, pedir prueba de esta
+        autorización, revocarla y solicitar la supresión, escribiendo al contacto de arriba.
+        Revocar la autorización no borra la nota que ya se entregó a tu docente, pero sí desliga
+        tus datos de tu identidad.</p>
+    </div>
+
+    <p id="av-err" style="display:none;color:#8a3b2a;font-weight:600;margin-top:12px"></p>
+    <button class="btn-block" id="av-btn" onclick="aceptarAviso()" disabled>Autorizo y continúo</button>
+    <button class="btn-block btn-ghost" onclick="rechazarAviso()">No autorizo</button>
+    <p class="muted" style="margin-top:10px;font-size:.8rem">Versión del aviso: <span id="av-version"></span></p>
   </div>
 
   <!-- ===== HOME ===== -->
@@ -3802,6 +3905,112 @@ let CFG=null;
 let SIM=false;
 const ETAPA_LBL={diagnostico:'Diagnóstico',intermedio:'Intermedio',final:'Final',demo:'Demostración'};
 
+/* =========================================================================
+   AVISO DE PRIVACIDAD Y AUTORIZACIÓN  (habeas data · Ley 1581 de 2012)
+   =========================================================================
+   Se muestra ANTES de pedir un solo dato personal. Tres reglas que no se
+   negocian, y que son la diferencia entre una autorización y un adorno:
+
+   1. Ninguna casilla viene marcada. "Al continuar aceptas" NO es autorización.
+   2. Cada finalidad se acepta por separado. La de mejorar el banco es
+      OPCIONAL de verdad: se puede presentar el examen sin ella.
+   3. La finalidad (c) —mandar el texto del Writing a un servicio de IA fuera
+      de Colombia— se declara como lo que es: una transferencia internacional
+      a un tercero. Solo se pide cuando el examen tiene Writing.
+
+   Lo aceptado viaja con el examen y queda guardado en la fila del resultado
+   (`autorizacion_version`, `autorizacion_fecha`, `finalidades_aceptadas`,
+   `es_menor`), que es lo que hace demostrable que hubo autorización.
+
+   ⚠️ RESPONSABLE Y CONTACTO: el default de abajo es genérico a propósito. Lo
+   correcto es que cada examen traiga el suyo desde el panel del docente
+   (`exams.config.responsable` / `.contacto_datos`), porque un examen de la UIS
+   no lo responde el SENA. Si el examen no lo trae, se muestra el genérico. */
+const AVISO_VERSION='1.0-2026-08-18';
+const AVISO_DEFECTO={
+  responsable:'La institución que aplica esta prueba, a través del docente que te entregó el código del examen.',
+  contacto:'Escríbele a tu docente por el canal institucional con el que te compartió el código.',
+  retencion:'Tu nombre y tu documento se conservan mientras dure tu proceso de formación y hasta 2 años después, '+
+            'para poder comparar tus etapas y responder reclamaciones. Después se disocian: se borra la '+
+            'correspondencia entre tu documento y el resultado, y queda un registro anónimo que ya no permite '+
+            'identificarte. Puedes pedir antes esa supresión escribiendo al contacto de arriba.'
+};
+function avisoTexto(k){
+  const c=(CFG&&CFG.config)||{};
+  const mapa={responsable:c.responsable, contacto:c.contacto_datos, retencion:c.retencion_datos};
+  const v=mapa[k];
+  return (typeof v==='string'&&v.trim())?v.trim():AVISO_DEFECTO[k];
+}
+/* La autorización de esta sesión. null = todavía no la dio: sin esto no se
+   piden datos ni se arranca el examen. */
+let AUTORIZACION=null;
+
+/* ¿Este examen tiene Writing? De eso depende que la finalidad (c) sea
+   obligatoria o que ni siquiera se pregunte: no se pide una autorización que
+   no hace falta. La muestra de práctica sí tiene una tarea de Writing. */
+function avisoConWriting(){
+  if(SIM) return true;
+  const w=CFG&&CFG.examen&&CFG.examen.writing;
+  return !!(w&&Array.isArray(w.tasks)&&w.tasks.length);
+}
+function mostrarAviso(){
+  const conIA=avisoConWriting();
+  $('av-responsable').innerHTML='<b>'+esc(avisoTexto('responsable'))+'</b><br>'+
+    '<span class="muted">Contacto para preguntas sobre tus datos: '+esc(avisoTexto('contacto'))+'</span>';
+  $('av-retencion').innerHTML='<span class="muted">'+esc(avisoTexto('retencion'))+'</span>';
+  $('av-version').textContent=AVISO_VERSION;
+  $('av-ia-box').style.display=conIA?'':'none';
+  // Sin marcar SIEMPRE, incluso si el estudiante vuelve atrás.
+  ['av-calificar','av-ia','av-mejora','av-menor','av-acudiente'].forEach(id=>{ const c=$(id); if(c) c.checked=false; });
+  $('av-err').style.display='none';
+  $('code-screen').classList.add('hidden');
+  $('home-screen').classList.add('hidden');
+  $('consent-screen').classList.remove('hidden');
+  avisoRevisar();
+  window.scrollTo(0,0);
+}
+/* Habilita el botón solo cuando están las obligatorias. No se "asume" ninguna. */
+function avisoRevisar(){
+  const menor=$('av-menor').checked;
+  $('av-acudiente-box').style.display=menor?'':'none';
+  if(!menor) $('av-acudiente').checked=false;
+  const conIA=avisoConWriting();
+  const listo=$('av-calificar').checked && (!conIA||$('av-ia').checked) && (!menor||$('av-acudiente').checked);
+  $('av-btn').disabled=!listo;
+}
+function aceptarAviso(){
+  const conIA=avisoConWriting(), menor=$('av-menor').checked;
+  if(!$('av-calificar').checked || (conIA&&!$('av-ia').checked) || (menor&&!$('av-acudiente').checked)){
+    $('av-err').textContent='Faltan las autorizaciones obligatorias.'; $('av-err').style.display='block'; return;
+  }
+  AUTORIZACION={
+    version:AVISO_VERSION,
+    fecha:new Date().toISOString(),
+    finalidades:{
+      calificar:true,
+      mejora_banco:$('av-mejora').checked,
+      ia_externa:conIA?true:false,      // no se declara aceptada una finalidad que no se pidió
+      acudiente:menor?true:null
+    },
+    es_menor:menor
+  };
+  $('consent-screen').classList.add('hidden');
+  $('home-screen').classList.remove('hidden');
+  window.scrollTo(0,0);
+}
+/* Decir que no es una respuesta válida y no deja rastro: no se ha pedido ni un
+   dato todavía, así que no hay nada que guardar. */
+function rechazarAviso(){
+  AUTORIZACION=null;
+  $('consent-screen').classList.add('hidden');
+  if(SIM){ location.hash=''; location.reload(); return; }
+  $('code-screen').classList.remove('hidden');
+  const err=$('code-err');
+  err.textContent='No autorizaste el tratamiento de tus datos, así que este examen no se puede presentar. Avísale a tu docente para que te evalúe de otra forma.';
+  err.style.display='block';
+  window.scrollTo(0,0);
+}
+
 // ¿Son el mismo nombre? (sin tildes, mayúsculas ni espacios dobles)
 function mismoNombre(a,b){
   const n=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim();
@@ -3845,9 +4054,11 @@ async function pedirConfig(){
     $('tk-titulo').textContent=CFG.titulo||'Examen de inglés — Nivel CEFR';
     $('tk-meta').textContent=[ETAPA_LBL[CFG.etapa]||CFG.etapa, CFG.grupo||'sin grupo', 'código '+CFG.codigo].join(' · ');
     if(CFG.grupo && !$('student-ficha').value) $('student-ficha').value=CFG.grupo;
-    $('code-screen').classList.add('hidden');
-    $('home-screen').classList.remove('hidden');
-    window.scrollTo(0,0);
+    /* El aviso de privacidad va AQUÍ: el código del examen no es un dato personal,
+       pero el nombre y el documento sí, y esa pantalla es la siguiente. Se muestra
+       ya sabiendo si el examen tiene Writing, que es lo que decide si hay que pedir
+       la autorización de la transferencia internacional. */
+    mostrarAviso();
   }catch(e){
     err.textContent=/Failed to fetch|NetworkError/i.test(String(e.message))
       ? 'No hay conexión. Verifica tu internet e intenta de nuevo.' : e.message;
@@ -3966,7 +4177,7 @@ function agGuardar(){
   try{
     localStorage.setItem(AG_KEY, JSON.stringify({
       v:AG_VERSION, codigo:CFG.codigo, cfg:CFG, exam, answers,
-      secIndex, examStart, timeLeft, student, telemetry, ts:Date.now()
+      secIndex, examStart, timeLeft, student, telemetry, aut:AUTORIZACION, ts:Date.now()
     }));
   }catch(e){ /* almacenamiento lleno o bloqueado: el examen sigue, sin red de rescate */ }
 }
@@ -3984,6 +4195,8 @@ function agLeer(){
 function agReanudar(s){
   CFG=s.cfg; exam=s.exam; answers=s.answers||{}; student=s.student||{};
   examStart=s.examStart||Date.now(); telemetry=s.telemetry||telemetry;
+  // La autorización se retoma con el examen: ya la dio, no se le vuelve a pedir.
+  AUTORIZACION=s.aut||null;
   $('tk-titulo').textContent=CFG.titulo||'Examen de inglés — Nivel CEFR';
   $('tk-meta').textContent=[ETAPA_LBL[CFG.etapa]||CFG.etapa, CFG.grupo||'sin grupo', 'código '+CFG.codigo].join(' · ');
   $('code-screen').classList.add('hidden'); $('home-screen').classList.add('hidden');
@@ -4037,7 +4250,10 @@ window.onload=()=>{
 function entrarSimulacion(){
   SIM=true;
   $('code-screen').classList.add('hidden');
-  $('home-screen').classList.remove('hidden');
+  /* La muestra no pide documento, pero sí escribe un texto que se manda a
+     calificar a un servicio de IA fuera del país y guarda una fila. Eso también
+     se autoriza antes, no después. */
+  mostrarAviso();
   $('tk-titulo').textContent='Muestra de práctica · 8 preguntas';
   $('tk-meta').textContent='Sin código y sin documento · puedes repetirla las veces que quieras';
   // Sin documento: no se piden datos personales, solo un nombre o apodo opcional.
@@ -4053,6 +4269,10 @@ function entrarSimulacion(){
 };
 
 async function startExam(){
+  /* Red de seguridad: a esta pantalla solo se llega pasando por el aviso, pero si
+     alguien la mostrara por otro camino, aquí se para. Sin autorización no se
+     procesa ni un dato. */
+  if(!AUTORIZACION){ toast('Primero tienes que leer y autorizar el tratamiento de tus datos.',true); mostrarAviso(); return; }
   const name=$('student-name').value.trim(), doc=$('student-doc').value.trim();
   // En la muestra no se pide nada: ni documento ni nombre.
   if(SIM){
@@ -4249,6 +4469,11 @@ async function submitExam(){
     codigo: (!SIM && CFG) ? CFG.codigo : '',   // enlaza el resultado con el examen, la etapa y el grupo
     modo: SIM ? 'simulacion' : '',              // la muestra se guarda aparte y no entra al panel
     student,
+    /* Lo que el estudiante autorizó, con su versión y su hora. Viaja junto al
+       examen y queda guardado en la fila del resultado: es lo que hace
+       DEMOSTRABLE que hubo autorización, y lo que le dice al servidor si puede
+       mandar el Writing al servicio de IA de fuera del país. */
+    autorizacion: AUTORIZACION,
     sections: sectionIds(),
     answers,                       // { id: opción marcada }  (sin saber cuál es la correcta)
     writing:{ t1, t2,

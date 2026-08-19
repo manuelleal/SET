@@ -126,6 +126,26 @@
   .partegrid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px 14px}
   @media(max-width:560px){.partegrid{grid-template-columns:1fr}}
 
+  /* .note se usaba en cuatro sitios de este panel SIN estar definida (el aviso
+     del banco v1 salía sin caja). Queda con el mismo aspecto que en index.html. */
+  .note{font-size:.85rem;color:var(--muted);background:var(--paper);border:1px dashed var(--line);
+    border-radius:11px;padding:12px 14px;margin:6px 0 14px;display:flex;gap:9px;align-items:flex-start}
+  .note b{color:var(--ink)}
+  .note.warn{background:var(--err-bg);border-color:#f1c4b8;color:#8a3b2a}
+  .note.warn b{color:#7a2f20}
+
+  /* ===== Franja de vista de administrador =====
+     Tiene que ser IMPOSIBLE confundirla con la vista propia: barra de color a
+     la izquierda, fondo distinto y el texto "Vista de administrador" literal. */
+  .adminbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;
+    background:var(--navy-soft);border:1px solid var(--navy);border-left:6px solid var(--navy);
+    border-radius:12px;padding:12px 16px;margin-bottom:14px}
+  .adminbar .t{font-weight:800;letter-spacing:.02em;color:var(--navy);display:flex;align-items:center;gap:8px}
+  .adminbar select{max-width:340px}
+  .adminbar .sub{font-size:.82rem;color:var(--muted);flex-basis:100%}
+  .idbar{font-size:.84rem;color:var(--muted);margin-bottom:12px}
+  .idbar b{color:var(--ink)}
+
   /* ===== Gráficos (SVG/CSS a mano — sin librería de gráficos) ===== */
   .blk{margin-top:22px}
   .blk h3{font-size:1rem;margin:0 0 2px;font-weight:800}
@@ -224,6 +244,20 @@
         <button class="btn-ghost" onclick="loadData()">↻ Actualizar</button>
         <button class="btn-ghost" onclick="logout()">Salir</button>
       </div>
+    </div>
+
+    <!-- Quién está viendo esto. Para el docente normal es una línea y nada más
+         cambia: su panel se ve igual que siempre. -->
+    <div class="idbar" id="idbar"></div>
+
+    <!-- Vista de administrador. Solo aparece con rol admin, y cuando el admin
+         mira datos que no son suyos queda anotado en `auditoria`. -->
+    <div class="adminbar hidden" id="admin-bar">
+      <div class="t"><span data-ic="lock"></span> Vista de administrador</div>
+      <div style="flex:1;min-width:220px">
+        <select id="admin-docente" onchange="cambioDocenteAdmin()"></select>
+      </div>
+      <div class="sub" id="admin-sub"></div>
     </div>
 
     <!-- ============ TAB: SIMULACRO ICFES ============ -->
@@ -393,6 +427,42 @@ let sb=null, rows=[], icfesRows=[], allRows=[], exams=[], sortKey='score_total',
    excluyen por defecto de todo cálculo (ver loadData). No se borran nunca. */
 const BANCO_VIGENTE='v2';
 let verHistoricoV1=false, v1Excluidas=0;
+
+/* =========================================================================
+   MULTITENANT  (§6 del ENCARGO_MVP_APLICABLE · database_v13_multitenant.sql)
+   =========================================================================
+   Cada docente ve, crea y cierra SOLO lo suyo. Quien filtra de verdad es la
+   base: las políticas RLS de `exams` y `exam_results` no devuelven ni una fila
+   ajena. Lo de aquí es la interfaz de eso, no la seguridad: si este archivo
+   mintiera, la base seguiría diciendo la verdad.
+
+   Tres cosas que no son adorno:
+   · `examenes_permitidos` vacío = no puede crear ningún examen. Con registro
+     abierto, un desconocido que pudiera crear exámenes tendría un código, y con
+     un código `get_config` le sirve ítems: repitiendo eso se lleva el banco. Los
+     tipos los habilita el admin uno por uno, por SQL.
+   · El rol `admin` NO se asigna desde aquí. No hay pantalla que lo cambie.
+   · Cuando el admin mira datos de otro docente se ve una franja que lo dice y
+     queda anotado en `auditoria`. Un privilegio sin registro es una puerta
+     trasera con buena intención. */
+let PERFIL=null;          // el perfil del que entró
+let DOCENTES=[];          // solo si es admin: todos los perfiles
+let adminVe='';           // '' = todos · uuid = ese docente. Solo lo usa el admin
+const esAdmin=()=>!!(PERFIL&&PERFIL.rol==='admin');
+/* `listo:false` = el permiso existe en el perfil pero el instrumento todavía no
+   se puede crear desde aquí. Ofrecerlo generaría exámenes que nadie puede
+   presentar; se dice, no se esconde. */
+const TIPOS_EXAMEN=[
+  {k:'cefr_general', n:'Examen de inglés CEFR (5 destrezas)', listo:true},
+  {k:'icfes_en',     n:'Simulacro tipo Saber 11° — Inglés (7 partes)', listo:true},
+  {k:'setp_internacional', n:'SET-P internacional', listo:false},
+];
+function tiposPermitidos(){
+  if(!PERFIL) return [];
+  if(PERFIL.rol==='admin') return TIPOS_EXAMEN.map(t=>t.k);
+  const p=PERFIL.examenes_permitidos;
+  return Array.isArray(p)?p.filter(k=>TIPOS_EXAMEN.some(t=>t.k===k)):[];
+}
 /* Llaves PÚBLICAS fijas: el docente solo escribe correo y contraseña.
    El anon key es seguro (RLS: el público no puede leer; solo un usuario autenticado lee). */
 const SUPABASE_URL = 'https://sacugfirjijrizcpsihn.supabase.co';
@@ -643,9 +713,81 @@ async function login(){
   sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
   const { error }=await sb.auth.signInWithPassword({email,password:pass});
   if(error){ toast(''+error.message,true); return; }
+  await cargarPerfil();
   $('login').classList.add('hidden'); $('dash').classList.remove('hidden');
+  pintarIdentidad();
   loadData();
 }
+
+/* Perfil del que entra. Si la tabla todavía no existe (v13 sin aplicar) el panel
+   NO se cae: entra en modo compatible y se comporta como antes, avisándolo. Un
+   panel que se rompe por el orden del despliegue deja al docente sin ver a su
+   grupo, que es peor que verlo sin la función nueva. */
+async function cargarPerfil(){
+  const { data:me }=await sb.auth.getUser();
+  const u=me&&me.user;
+  if(!u){ toast('No pude leer tu sesión.',true); return; }
+  const r=await sb.from('perfil_docente').select('*').eq('user_id',u.id).limit(1);
+  if(r.error){
+    PERFIL={ user_id:u.id, email:u.email, rol:'docente', informes_ia:true,
+             examenes_permitidos:['cefr_general','icfes_en'], sin_tabla:true };
+    console.warn('perfil_docente no disponible:',r.error.message);
+    return;
+  }
+  PERFIL=(r.data&&r.data[0])||null;
+  if(!PERFIL){
+    // Primer ingreso y sin trigger: se da de alta con lo mínimo. La política de
+    // la base obliga a rol 'docente', sin informes de IA y sin tipos: aunque
+    // este código pidiera otra cosa, la base no lo dejaría.
+    const alta=await sb.from('perfil_docente')
+      .insert({user_id:u.id,email:u.email,rol:'docente',informes_ia:false,examenes_permitidos:[]})
+      .select();
+    PERFIL=(alta.data&&alta.data[0])||{ user_id:u.id, email:u.email, rol:'docente',
+                                        informes_ia:false, examenes_permitidos:[] };
+  }
+  if(esAdmin()){
+    const rd=await sb.from('perfil_docente').select('*').order('creado_en',{ascending:true});
+    DOCENTES=rd.error?[]:(rd.data||[]);
+  }
+}
+const emailDocente=id=>((DOCENTES.find(d=>d.user_id===id)||{}).email)||'—';
+
+/* Registro del acceso del admin a datos ajenos (§6 D.5). Se escribe siempre que
+   mira algo que no es solo suyo; si falla, no se bloquea el panel, pero queda en
+   consola. Es lo que hace defendible el privilegio. */
+async function anotarAuditoria(accion,objetivo,detalle){
+  if(!esAdmin()||PERFIL.sin_tabla) return;
+  try{
+    const { error }=await sb.from('auditoria').insert({
+      actor:PERFIL.user_id, actor_email:PERFIL.email, accion,
+      objetivo:objetivo||null, objetivo_email:objetivo?emailDocente(objetivo):null,
+      detalle:detalle||null
+    });
+    if(error) console.warn('auditoria:',error.message);
+  }catch(e){ console.warn('auditoria:',e.message); }
+}
+
+function pintarIdentidad(){
+  const c=$('idbar'); if(!c||!PERFIL) return;
+  const tipos=tiposPermitidos();
+  c.innerHTML='Sesión de <b>'+esc(PERFIL.email||'')+'</b> · '+
+    (esAdmin()?'<b>administrador</b>':'docente')+
+    (PERFIL.sin_tabla
+      ? ' · <b>modo compatible</b>: la tabla de perfiles aún no existe en la base (falta aplicar <span class="mono">database_v13_multitenant.sql</span>).'
+      : ' · puede crear: '+(tipos.length?esc(tipos.join(', ')):'<b>ningún tipo de examen todavía</b> — pídeselo al administrador'));
+}
+function pintarAdmin(){
+  const bar=$('admin-bar'); if(!bar) return;
+  bar.classList.toggle('hidden',!esAdmin());
+  if(!esAdmin()) return;
+  const sel=$('admin-docente');
+  sel.innerHTML='<option value="">Todos los docentes</option>'+
+    DOCENTES.map(d=>`<option value="${esc(d.user_id)}"${d.user_id===adminVe?' selected':''}>${esc(d.email||d.nombre||d.user_id)}${d.rol==='admin'?' (admin)':''}</option>`).join('');
+  $('admin-sub').innerHTML = adminVe
+    ? 'Estás viendo los exámenes y resultados de <b>'+esc(emailDocente(adminVe))+'</b>, no los tuyos. Este acceso queda registrado.'
+    : 'Estás viendo <b>todos los docentes</b>. Un docente normal solo ve lo suyo. Este acceso queda registrado.';
+}
+function cambioDocenteAdmin(){ adminVe=$('admin-docente').value||''; loadData(); }
 async function logout(){ if(sb) await sb.auth.signOut(); location.reload(); }
 
 function verTab(t){
@@ -677,11 +819,28 @@ async function loadData(){
      del periodo— y el docente puede pedirlos explícitamente con el interruptor. */
   v1Excluidas=all.filter(r=>(r.banco_version||'v1')!==BANCO_VIGENTE).length;
   if(!verHistoricoV1) all=all.filter(r=>(r.banco_version||'v1')===BANCO_VIGENTE);
+  exams=(r2.error?[]:(r2.data||[]));
+  if(r2.error) toast('No pude leer la tabla exams: '+r2.error.message,true);
+
+  /* Multitenant. Quien filtra de verdad es la RLS: a un docente la base ya solo
+     le devolvió SUS exámenes y los resultados de esos exámenes. Lo de aquí es
+     únicamente el selector del admin, que sí recibe todo y elige a quién mirar.
+     Un resultado pertenece al docente de SU examen (join por exam_id), no lleva
+     columna propia: dos verdades se separan tarde o temprano. */
+  if(esAdmin()){
+    if(adminVe){
+      exams=exams.filter(e=>e.docente_id===adminVe);
+      const suyos=new Set(exams.map(e=>e.id));
+      all=all.filter(r=>r.exam_id&&suyos.has(r.exam_id));
+    }
+    anotarAuditoria(adminVe?'ver_datos_de_docente':'ver_datos_de_todos', adminVe||null,
+      {resultados:all.length, examenes:exams.length});
+  }
+  pintarAdmin();
+
   allRows=all;
   rows=all.filter(r=>r.exam_tipo!=='icfes_en');
   icfesRows=all.filter(r=>r.exam_tipo==='icfes_en');
-  exams=(r2.error?[]:(r2.data||[]));
-  if(r2.error) toast('No pude leer la tabla exams: '+r2.error.message,true);
   // CEFR: fichas
   const fichas=[...new Set(rows.map(r=>r.ficha).filter(Boolean))].sort();
   $('f-ficha').innerHTML='<option value="">Todas</option>'+fichas.map(f=>`<option>${esc(f)}</option>`).join('');
@@ -695,7 +854,8 @@ async function loadData(){
   pintarAvisoV1();
   toast(`${all.length} resultados cargados (${icfesRows.length} del simulacro)` +
         (sims?` · ${sims} de simulación excluidas`:'') +
-        (v1Excluidas&&!verHistoricoV1?` · ${v1Excluidas} del banco v1 excluidas`:'') + '.');
+        (v1Excluidas&&!verHistoricoV1?` · ${v1Excluidas} del banco v1 excluidas`:'') +
+        (esAdmin()&&adminVe?` · vista de ${emailDocente(adminVe)}`:'') + '.');
   if(rutaLive()) abrirLive();   // se entró directo a docente.html#/live
 }
 
@@ -891,7 +1051,7 @@ function renderExams(){
   $('e-tbody').innerHTML=exams.map((e,i)=>`
     <tr onclick="verExamen(${i})">
       <td><b class="mono">${esc(e.codigo)}</b></td>
-      <td>${esc(e.titulo||'—')}</td>
+      <td>${esc(e.titulo||'—')}${esAdmin()?`<div class="muted" style="font-size:.78rem">${esc(e.docente_email||emailDocente(e.docente_id))}</div>`:''}</td>
       <td>${TIPO_LBL[e.tipo]||esc(e.tipo)}${e.contexto?` <span class="muted" style="font-size:.8rem">· ${esc(CONTEXTO_LBL[e.contexto]||e.contexto)}</span>`:''}</td>
       <td>${esc(ETAPA_LBL[e.etapa]||e.etapa)}</td>
       <td>${esc(e.grupo||'—')}</td>
@@ -930,14 +1090,31 @@ function verExamen(i){
   try{ new QRCode(document.getElementById('qrbox'),{text:url+'#'+e.codigo,width:170,height:170,colorDark:'#1E3A5F'}); }catch(_){}
 }
 function abrirCrear(){
+  /* Sin tipos habilitados no hay formulario. No es una molestia burocrática: con
+     registro abierto, quien pueda crear un examen tiene un código, y con un
+     código el servidor le sirve ítems del banco. Los habilita el admin. */
+  const permitidos=tiposPermitidos().filter(k=>(TIPOS_EXAMEN.find(t=>t.k===k)||{}).listo);
+  if(!permitidos.length){
+    $('modal-box').innerHTML=`
+      <div style="display:flex;justify-content:space-between;align-items:start">
+        <h2 style="font-size:1.25rem">Crear examen</h2>
+        <button class="btn-ghost" onclick="closeModal()" style="padding:6px 12px">${ic('close',null,15)}</button></div>
+      <div class="note warn"><span>${ic('lock',null,16)}</span><div>
+        Tu cuenta todavía <b>no tiene habilitado ningún tipo de examen</b>. El administrador los
+        habilita uno por uno, y hasta entonces puedes entrar y ver tu panel, pero no crear exámenes.
+        <div class="muted" style="margin-top:6px">Escríbele al administrador indicando qué instrumento vas a aplicar.</div>
+      </div></div>`;
+    $('modal').classList.add('show'); return;
+  }
+  const opciones=TIPOS_EXAMEN.filter(t=>permitidos.includes(t.k))
+    .map(t=>`<option value="${t.k}">${esc(t.n)}</option>`).join('');
   $('modal-box').innerHTML=`
     <div style="display:flex;justify-content:space-between;align-items:start">
       <h2 style="font-size:1.25rem">Crear examen</h2>
       <button class="btn-ghost" onclick="closeModal()" style="padding:6px 12px">${ic('close',null,15)}</button></div>
     <label>Tipo de examen</label>
     <select id="c-tipo" onchange="cambioTipo()">
-      <option value="icfes_en">Simulacro tipo Saber 11° — Inglés (7 partes)</option>
-      <option value="cefr_general">Examen de inglés CEFR (5 destrezas)</option>
+      ${opciones}
     </select>
     <label>Título</label><input id="c-titulo" value="Simulacro tipo Saber 11° — Inglés" maxlength="120" oninput="this.dataset.tocado=1">
     <div class="cols">
@@ -946,6 +1123,16 @@ function abrirCrear(){
         <option value="intermedio">Intermedio (mitad)</option>
         <option value="final">Final (cierre)</option></select></div>
       <div><label>Grupo / colegio</label><input id="c-grupo" placeholder="Ej: 11A - Colegio San José" maxlength="60"></div>
+    </div>
+
+    <!-- Habeas data: quién responde por los datos de ESTE examen. Va en el aviso
+         que el estudiante lee antes de escribir su nombre. Si se deja vacío, el
+         aviso muestra un texto genérico, que cumple peor. -->
+    <div class="cols">
+      <div><label>Responsable del tratamiento de datos <span class="muted">(aparece en el aviso al estudiante)</span></label>
+        <input id="c-responsable" maxlength="160" placeholder="Ej: SENA — Centro Industrial · docente Juan Pérez"></div>
+      <div><label>Contacto para datos personales</label>
+        <input id="c-contacto" maxlength="160" placeholder="Ej: protecciondatos@midominio.edu.co"></div>
     </div>
     <div id="c-cefr-only" style="display:none">
       <div class="note">
@@ -1001,7 +1188,12 @@ function abrirCrear(){
     </div>
     <div class="cols">
       <div><label>Tiempo (minutos)</label><input type="number" id="c-min" value="70" min="5" max="240"></div>
-      <div><label>Informe IA con estrategias</label><select id="c-informe"><option value="true">Sí — informe completo por estudiante</option><option value="false">No — solo puntaje y nivel</option></select></div>
+      <div><label>Informe IA con estrategias</label>
+        ${puedeInformesIA()
+          ? `<select id="c-informe"><option value="true">Sí — informe completo por estudiante</option><option value="false">No — solo puntaje y nivel</option></select>`
+          : `<select id="c-informe" disabled><option value="false">No disponible en tu cuenta</option></select>
+             <div class="muted" style="font-size:.8rem;margin-top:4px">El informe narrativo por estudiante lo habilita el administrador: cada informe tiene un costo real por consulta a la IA.</div>`}
+      </div>
     </div>
     </div>
     <p class="muted" id="c-total" style="margin-top:10px;font-weight:700"></p>
@@ -1048,8 +1240,17 @@ function calcTotal(){
   if($('c-total')) $('c-total').textContent=`Total: ${n} preguntas · tiempo sugerido: ${sug} min`;
   return n;
 }
+/* ¿Puede esta cuenta encender el informe narrativo por estudiante? Es el único
+   gasto de IA que se dispara por cantidad de estudiantes en el simulacro. La
+   base lo vuelve a comprobar en la política de INSERT: esto es la interfaz. */
+function puedeInformesIA(){ return !!(PERFIL&&(PERFIL.rol==='admin'||PERFIL.informes_ia||PERFIL.sin_tabla)); }
+
 async function crearExamen(){
   const tipo=($('c-tipo')&&$('c-tipo').value)||'icfes_en';
+  // Guarda de interfaz. La de verdad está en la RLS: `puede_crear_tipo(tipo)`.
+  if(!tiposPermitidos().includes(tipo)){
+    toast('Tu cuenta no tiene habilitado ese tipo de examen. Pídeselo al administrador.',true); return;
+  }
   const cefr=tipo==='cefr_general';
   const config={};
   // El contexto del simulacro es siempre 'colegio': es la prueba Saber 11.
@@ -1079,6 +1280,14 @@ async function crearExamen(){
       config.conversion={ escala:'icfes_0_100', cortes:{}, peso_en_corte:null };
     }
   }
+  /* Quién responde por los datos de este examen. Va al aviso de privacidad que
+     el estudiante lee ANTES de escribir su nombre (index.html). Vacío = el aviso
+     muestra el texto genérico. */
+  const resp=($('c-responsable')&&$('c-responsable').value.trim())||'';
+  const cont=($('c-contacto')&&$('c-contacto').value.trim())||'';
+  if(resp) config.responsable=resp;
+  if(cont) config.contacto_datos=cont;
+
   const row={
     codigo:genCodigo(tipo), tipo, contexto,
     etapa:$('c-etapa').value,
@@ -1086,10 +1295,15 @@ async function crearExamen(){
     grupo:$('c-grupo').value.trim()||null,
     titulo:$('c-titulo').value.trim()||(cefr?'Examen de inglés — Nivel CEFR':'Simulacro tipo Saber 11° — Inglés'),
     config,
-    informe_completo: cefr ? true : ($('c-informe').value==='true')
+    // El informe narrativo solo se enciende si la cuenta lo tiene habilitado.
+    informe_completo: cefr ? true : (puedeInformesIA() && $('c-informe').value==='true')
   };
   const { data:me }=await sb.auth.getUser();
-  if(me&&me.user) row.docente_email=me.user.email;
+  if(me&&me.user){
+    row.docente_email=me.user.email;
+    // El dueño del examen. `exam_results` lo hereda por join, no lo duplica.
+    if(!(PERFIL&&PERFIL.sin_tabla)) row.docente_id=me.user.id;
+  }
   for(let intento=0;intento<3;intento++){
     const { error }=await sb.from('exams').insert(row);
     if(!error){ exams.unshift({...row,estado:'activo',created_at:new Date().toISOString(),id:null});
@@ -1097,6 +1311,11 @@ async function crearExamen(){
       if(fresh&&fresh[0]) exams[0]=fresh[0];
       renderExams(); verExamen(0); toast('Examen creado. Dicta o proyecta el código.'); return; }
     if(/duplicate|unique/i.test(error.message)){ row.codigo=genCodigo(tipo); continue; }
+    // La base rechaza por RLS cuando el tipo no está habilitado en el perfil, o
+    // cuando se pide informe de IA sin permiso. Se traduce, no se muestra en crudo.
+    if(/row-level security|violates row/i.test(error.message)){
+      toast('La base rechazó la creación: tu cuenta no tiene habilitado ese tipo de examen (o el informe de IA). Pídeselo al administrador.',true); return;
+    }
     toast(''+error.message,true); return;
   }
   toast('No pude generar un código único, intenta de nuevo.',true);
