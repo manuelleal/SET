@@ -126,6 +126,9 @@
     font-size:.98rem}
   .passage .ttl{font-family:'Fraunces',serif;font-weight:600;font-size:1.05rem;
     color:var(--primary-d);margin-bottom:8px}
+  /* Modo oscuro: el fondo claro fijo de .passage dejaba la lectura en letra blanca
+     sobre claro (visto en un diagnóstico en vivo el 12-oct). La evidencia ya tiene su par. */
+  [data-theme="dark"] .passage:not(.evidence){background:linear-gradient(180deg,var(--paper-alt),var(--paper))}
 
   .q{padding:18px 0;border-top:1px solid var(--line)}
   .q:first-child{border-top:none}
