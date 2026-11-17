@@ -2,7 +2,7 @@
 
 > A web-based English assessment suite that gives public-sector teachers a **CEFR placement exam** and a **Saber 11–style English mock test**, grades open writing with AI, and turns the results into actionable, per-student and per-cohort insight.
 
-> **Note (November 2026).** This repository holds the first public version of SET. The exam now runs at [set.engramaingles.com](https://set.engramaingles.com/). In the current version the teacher grades open writing with a rubric, without AI. The AI-graded writing described below belongs to this earlier version.
+> **Note (November 2026).** This repository holds the first public version of SET. The exam now runs at [set.engramaingles.com](https://set.engramaingles.com/). In the current version the teacher grades open writing with a rubric, without AI.
 
 **Status:** First public version, used in live assessment sessions during 2026 and kept here for reference. The current version runs at [set.engramaingles.com](https://set.engramaingles.com/).
 **Context:** Built for technical-training programs and public schools in Colombia. The learner-facing UI is in Spanish (its users are Colombian students); this README is in English for portfolio review.
@@ -11,7 +11,7 @@
 |---|---|
 | **Type** | Educational assessment web app (learner + teacher facing) |
 | **Role** | Learning Designer & Maker — assessment design, learning UX, and build |
-| **Domain** | Language assessment (CEFR / A1–C2), Colombian Saber 11 English |
+| **Domain** | Language assessment (CEFR / A1–C1 or above), Colombian Saber 11 English |
 | **Stack** | Vanilla HTML/CSS/JS · Supabase (Postgres, Auth, Edge Functions/Deno) · OpenRouter (Kimi K2) · edge-tts · SheetJS · GitHub Pages |
 | **Deploy** | 100% browser-based (no CLI required for the teacher to operate) |
 
@@ -27,14 +27,14 @@ English is a make-or-break subject for Colombian students, but the tools teacher
 - **"Practice tests" don't show growth.** A single mock score is a number, not a diagnosis. Teachers can't see whether a cohort *improved* between the start and end of a term, or *which* skills moved.
 - **Tooling assumes resources most public teachers don't have.** No IT department, no budget for proctoring suites, no command-line comfort.
 
-**SET addresses this** with two assessments a teacher can launch from a phone, automatic grading (including AI-graded writing), and a dashboard that reports growth across a term — all deployable and operable entirely from the browser.
+**SET addresses this** with two assessments a teacher can launch from a phone, automatic grading of the multiple-choice sections (writing graded by the teacher; AI-assisted grading in development), and a dashboard that reports growth across a term — all deployable and operable entirely from the browser.
 
 ---
 
 ## 🧩 What It Does
 
 ### 1. CEFR English Placement Exam (`index.html`)
-A five-skill placement test that maps a student to a CEFR band (A1–C2).
+A five-skill placement test that maps a student to a CEFR band (A1 to C1 or above).
 
 - **Five sections:** Reading, Listening, Grammar, Vocabulary, Writing.
 - **Weighted scoring** reflecting assessment priorities: Reading 25% · Listening 20% · Grammar 20% · Vocabulary 15% · Writing 20%.
@@ -65,7 +65,7 @@ The teacher's control room — no spreadsheets, no code.
 - **Custom player capped at 2 plays** per audio (mirrors real testing conditions); extra attempts are logged as telemetry rather than blocked silently.
 
 ### 5. Results, Feedback & Reporting
-- **AI-graded Writing.** Open essays are scored by **Kimi K2** (via OpenRouter) against a transparent **4-criterion rubric** (Task/Content, Coherence & Cohesion, Vocabulary, Grammar), and returned with actionable feedback — not just a number.
+- **Writing graded by the teacher; AI-assisted grading in development.** Open essays are scored against a transparent **4-criterion rubric** (Task/Content, Coherence & Cohesion, Vocabulary, Grammar), and returned with actionable feedback — not just a number.
 - **Comparative reports across stages.** When a student sits diagnostic → mid → final, the engine pulls prior results (linked by ID document) and produces an AI narrative report on what changed.
 - **Student-facing results screen:** score, CEFR/level gauge, per-skill bars, and written feedback.
 
@@ -166,7 +166,7 @@ I designed and built SET end-to-end as a single-maintainer project, wearing thre
 **This is a working MVP, honestly labeled as one** — deployed and used in real assessment sessions, not a finished commercial product.
 
 **Done & in use**
-- ✅ CEFR placement exam (5 skills) with AI-graded writing
+- ✅ CEFR placement exam (5 skills) with teacher-graded writing (AI-assisted grading in development)
 - ✅ Saber 11–style mock (7 parts / 55 questions, official 4-band scale)
 - ✅ Teacher dashboard: exam creation, access codes, QR/WhatsApp share, results, Excel export
 - ✅ Server-side grading, RLS lockdown, single-attempt, autosave/resume, anti-cheat telemetry
