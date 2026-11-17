@@ -2,7 +2,9 @@
 
 > A web-based English assessment suite that gives public-sector teachers a **CEFR placement exam** and a **Saber 11–style English mock test**, grades open writing with AI, and turns the results into actionable, per-student and per-cohort insight.
 
-**Status:** Working MVP — deployed and used in live assessment sessions. Actively iterated (see [Roadmap](#-project-status--roadmap)).
+> **Note (November 2026).** This repository holds the first public version of SET. The exam now runs at [set.engramaingles.com](https://set.engramaingles.com/). In the current version the teacher grades open writing with a rubric, without AI. The AI-graded writing described below belongs to this earlier version.
+
+**Status:** First public version, used in live assessment sessions during 2026 and kept here for reference. The current version runs at [set.engramaingles.com](https://set.engramaingles.com/).
 **Context:** Built for technical-training programs and public schools in Colombia. The learner-facing UI is in Spanish (its users are Colombian students); this README is in English for portfolio review.
 
 | | |
